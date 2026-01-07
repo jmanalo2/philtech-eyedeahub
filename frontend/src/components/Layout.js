@@ -24,12 +24,19 @@ export default function Layout() {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex justify-between items-center h-20">
             <Link to="/dashboard" className="flex items-center space-x-3">
-              <div className="w-10 h-10 bg-white rounded-lg flex items-center justify-center">
-                <Lightbulb className="w-6 h-6 text-blue-700" />
-              </div>
-              <div>
-                <h1 className="text-2xl font-bold tracking-tight">Philtech Eye-dea</h1>
-                <p className="text-xs text-blue-200">Innovation Management System</p>
+              <img 
+                src="https://customer-assets.emergentagent.com/job_idea-gateway/artifacts/pvc8r5o3_IMG_8308.jpeg" 
+                alt="Philtech Logo" 
+                className="h-12 w-auto"
+              />
+              <div className="flex items-center space-x-2">
+                <div className="w-10 h-10 bg-white rounded-lg flex items-center justify-center">
+                  <Lightbulb className="w-6 h-6 text-blue-700" />
+                </div>
+                <div>
+                  <h1 className="text-2xl font-bold tracking-tight">Philtech Eye-dea</h1>
+                  <p className="text-xs text-blue-200">Innovation Management System</p>
+                </div>
               </div>
             </Link>
 
