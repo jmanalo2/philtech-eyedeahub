@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useRef } from 'react';
 import axios from 'axios';
 import { Button } from '../components/ui/button';
 import { Input } from '../components/ui/input';
@@ -7,9 +7,10 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '.
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '../components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '../components/ui/tabs';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '../components/ui/table';
-import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from '../components/ui/dialog';
+import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from '../components/ui/dialog';
+import { Badge } from '../components/ui/badge';
 import { toast } from 'sonner';
-import { Plus, Trash2, Edit, Users, Briefcase, Building, UsersRound } from 'lucide-react';
+import { Plus, Trash2, Edit, Users, Briefcase, Building, UsersRound, Upload, Download } from 'lucide-react';
 
 export default function AdminPanel() {
   const [users, setUsers] = useState([]);
@@ -21,6 +22,8 @@ export default function AdminPanel() {
   const [newDepartment, setNewDepartment] = useState('');
   const [newPillar, setNewPillar] = useState('');
   const [newTeam, setNewTeam] = useState({ name: '', pillar: '' });
+  const [uploading, setUploading] = useState(false);
+  const fileInputRef = useRef(null);
 
   useEffect(() => {
     fetchAllData();
@@ -51,7 +54,11 @@ export default function AdminPanel() {
         email: editingUser.email,
         role: editingUser.role,
         department: editingUser.department,
-        team: editingUser.team
+        team: editingUser.team,
+        pillar: editingUser.pillar,
+        manager: editingUser.manager,
+        approved_pillars: editingUser.approved_pillars || [],
+        approved_departments: editingUser.approved_departments || []
       });
       toast.success('User updated successfully');
       setShowUserDialog(false);
@@ -69,8 +76,51 @@ export default function AdminPanel() {
       toast.success('User deleted');
       fetchAllData();
     } catch (error) {
-      toast.error('Failed to delete user');
+      toast.error(error.response?.data?.detail || 'Failed to delete user');
     }
+  };
+
+  const handleBulkUpload = async (event) => {
+    const file = event.target.files[0];
+    if (!file) return;
+
+    setUploading(true);
+    try {
+      const formData = new FormData();
+      formData.append('file', file);
+
+      const response = await axios.post(
+        `${process.env.REACT_APP_BACKEND_URL}/api/admin/users/bulk-upload`,
+        formData,
+        { headers: { 'Content-Type': 'multipart/form-data' } }
+      );
+
+      toast.success(response.data.message);
+      if (response.data.errors && response.data.errors.length > 0) {
+        console.log('Errors:', response.data.errors);
+        toast.warning(`${response.data.errors.length} errors occurred. Check console for details.`);
+      }
+      fetchAllData();
+    } catch (error) {
+      toast.error(error.response?.data?.detail || 'Failed to upload file');
+    } finally {
+      setUploading(false);
+      if (fileInputRef.current) fileInputRef.current.value = '';
+    }
+  };
+
+  const downloadTemplate = () => {
+    const csvContent = 'username,email,password,role,department,team,pillar,manager,approved_pillars,approved_departments\n' +
+      'johndoe,john@philtech.com,password123,user,Operations,Allowance Billing,GBS,manager1,,\n' +
+      'janesmith,jane@philtech.com,password123,approver,Technology,,Tech,admin,Tech;Finance,Technology;Finance';
+    
+    const blob = new Blob([csvContent], { type: 'text/csv' });
+    const url = window.URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = 'user_upload_template.csv';
+    a.click();
+    window.URL.revokeObjectURL(url);
   };
 
   const handleAddDepartment = async () => {
@@ -152,6 +202,24 @@ export default function AdminPanel() {
     }
   };
 
+  const toggleApprovedPillar = (pillar) => {
+    if (!editingUser) return;
+    const current = editingUser.approved_pillars || [];
+    const updated = current.includes(pillar)
+      ? current.filter(p => p !== pillar)
+      : [...current, pillar];
+    setEditingUser({ ...editingUser, approved_pillars: updated });
+  };
+
+  const toggleApprovedDepartment = (dept) => {
+    if (!editingUser) return;
+    const current = editingUser.approved_departments || [];
+    const updated = current.includes(dept)
+      ? current.filter(d => d !== dept)
+      : [...current, dept];
+    setEditingUser({ ...editingUser, approved_departments: updated });
+  };
+
   return (
     <div data-testid="admin-panel-page">
       <div className="mb-8">
@@ -193,62 +261,100 @@ export default function AdminPanel() {
         <TabsContent value="users">
           <Card>
             <CardHeader>
-              <CardTitle>Manage Users</CardTitle>
-              <CardDescription>View and edit user roles and assignments</CardDescription>
+              <div className="flex justify-between items-center">
+                <div>
+                  <CardTitle>Manage Users</CardTitle>
+                  <CardDescription>View and edit user roles and assignments</CardDescription>
+                </div>
+                <div className="flex gap-3">
+                  <Button
+                    data-testid="download-template-btn"
+                    variant="outline"
+                    onClick={downloadTemplate}
+                  >
+                    <Download className="w-4 h-4 mr-2" />
+                    Download Template
+                  </Button>
+                  <Button
+                    data-testid="bulk-upload-btn"
+                    onClick={() => fileInputRef.current?.click()}
+                    disabled={uploading}
+                    className="bg-blue-600 hover:bg-blue-700"
+                  >
+                    <Upload className="w-4 h-4 mr-2" />
+                    {uploading ? 'Uploading...' : 'Bulk Upload'}
+                  </Button>
+                  <input
+                    ref={fileInputRef}
+                    type="file"
+                    accept=".csv"
+                    onChange={handleBulkUpload}
+                    className="hidden"
+                  />
+                </div>
+              </div>
             </CardHeader>
             <CardContent>
-              <Table>
-                <TableHeader>
-                  <TableRow>
-                    <TableHead>Username</TableHead>
-                    <TableHead>Email</TableHead>
-                    <TableHead>Role</TableHead>
-                    <TableHead>Department</TableHead>
-                    <TableHead>Team</TableHead>
-                    <TableHead className="text-right">Actions</TableHead>
-                  </TableRow>
-                </TableHeader>
-                <TableBody>
-                  {users.map((user) => (
-                    <TableRow key={user.id} data-testid={`user-row-${user.id}`}>
-                      <TableCell className="font-medium">{user.username}</TableCell>
-                      <TableCell>{user.email}</TableCell>
-                      <TableCell>
-                        <span className={`px-2 py-1 rounded text-xs font-semibold ${
-                          user.role === 'admin' ? 'bg-purple-100 text-purple-800' :
-                          user.role === 'approver' ? 'bg-blue-100 text-blue-800' :
-                          'bg-gray-100 text-gray-800'
-                        }`}>
-                          {user.role}
-                        </span>
-                      </TableCell>
-                      <TableCell>{user.department || '-'}</TableCell>
-                      <TableCell>{user.team || '-'}</TableCell>
-                      <TableCell className="text-right space-x-2">
-                        <Button
-                          data-testid={`edit-user-${user.id}`}
-                          variant="outline"
-                          size="sm"
-                          onClick={() => {
-                            setEditingUser(user);
-                            setShowUserDialog(true);
-                          }}
-                        >
-                          <Edit className="w-4 h-4" />
-                        </Button>
-                        <Button
-                          data-testid={`delete-user-${user.id}`}
-                          variant="outline"
-                          size="sm"
-                          onClick={() => handleDeleteUser(user.id)}
-                        >
-                          <Trash2 className="w-4 h-4" />
-                        </Button>
-                      </TableCell>
+              <div className="overflow-x-auto">
+                <Table>
+                  <TableHeader>
+                    <TableRow>
+                      <TableHead>Username</TableHead>
+                      <TableHead>Email</TableHead>
+                      <TableHead>Role</TableHead>
+                      <TableHead>Pillar</TableHead>
+                      <TableHead>Department</TableHead>
+                      <TableHead>Manager</TableHead>
+                      <TableHead className="text-right">Actions</TableHead>
                     </TableRow>
-                  ))}
-                </TableBody>
-              </Table>
+                  </TableHeader>
+                  <TableBody>
+                    {users.map((user) => (
+                      <TableRow key={user.id} data-testid={`user-row-${user.id}`}>
+                        <TableCell className="font-medium">{user.username}</TableCell>
+                        <TableCell>{user.email}</TableCell>
+                        <TableCell>
+                          <span className={`px-2 py-1 rounded text-xs font-semibold ${
+                            user.role === 'admin' ? 'bg-purple-100 text-purple-800' :
+                            user.role === 'approver' ? 'bg-blue-100 text-blue-800' :
+                            'bg-gray-100 text-gray-800'
+                          }`}>
+                            {user.role}
+                          </span>
+                        </TableCell>
+                        <TableCell>{user.pillar || '-'}</TableCell>
+                        <TableCell>{user.department || '-'}</TableCell>
+                        <TableCell>{user.manager || '-'}</TableCell>
+                        <TableCell className="text-right space-x-2">
+                          <Button
+                            data-testid={`edit-user-${user.id}`}
+                            variant="outline"
+                            size="sm"
+                            onClick={() => {
+                              setEditingUser({
+                                ...user,
+                                approved_pillars: user.approved_pillars || [],
+                                approved_departments: user.approved_departments || []
+                              });
+                              setShowUserDialog(true);
+                            }}
+                          >
+                            <Edit className="w-4 h-4" />
+                          </Button>
+                          <Button
+                            data-testid={`delete-user-${user.id}`}
+                            variant="outline"
+                            size="sm"
+                            onClick={() => handleDeleteUser(user.id)}
+                          >
+                            <Trash2 className="w-4 h-4" />
+                          </Button>
+                        </TableCell>
+                      </TableRow>
+                    ))}
+                  </TableBody>
+                </Table>
+              </div>
             </CardContent>
           </Card>
         </TabsContent>
@@ -406,70 +512,146 @@ export default function AdminPanel() {
 
       {/* Edit User Dialog */}
       <Dialog open={showUserDialog} onOpenChange={setShowUserDialog}>
-        <DialogContent data-testid="edit-user-dialog">
+        <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto" data-testid="edit-user-dialog">
           <DialogHeader>
             <DialogTitle>Edit User</DialogTitle>
             <DialogDescription>Update user information and role assignments</DialogDescription>
           </DialogHeader>
           {editingUser && (
             <div className="space-y-4">
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <Label>Username</Label>
+                  <Input
+                    data-testid="edit-username-input"
+                    value={editingUser.username}
+                    onChange={(e) => setEditingUser({ ...editingUser, username: e.target.value })}
+                  />
+                </div>
+                <div>
+                  <Label>Email</Label>
+                  <Input
+                    data-testid="edit-email-input"
+                    type="email"
+                    value={editingUser.email}
+                    onChange={(e) => setEditingUser({ ...editingUser, email: e.target.value })}
+                  />
+                </div>
+              </div>
+              
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <Label>Role</Label>
+                  <Select value={editingUser.role} onValueChange={(value) => setEditingUser({ ...editingUser, role: value })}>
+                    <SelectTrigger data-testid="edit-role-select">
+                      <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="user">User</SelectItem>
+                      <SelectItem value="approver">Approver</SelectItem>
+                      <SelectItem value="admin">Admin</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+                <div>
+                  <Label>Pillar</Label>
+                  <Select value={editingUser.pillar || ''} onValueChange={(value) => setEditingUser({ ...editingUser, pillar: value })}>
+                    <SelectTrigger data-testid="edit-pillar-select">
+                      <SelectValue placeholder="Select Pillar" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {pillars.map((pillar) => (
+                        <SelectItem key={pillar.id} value={pillar.name}>{pillar.name}</SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </div>
+              </div>
+
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <Label>Department</Label>
+                  <Select value={editingUser.department || ''} onValueChange={(value) => setEditingUser({ ...editingUser, department: value })}>
+                    <SelectTrigger data-testid="edit-department-select">
+                      <SelectValue placeholder="Select Department" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {departments.map((dept) => (
+                        <SelectItem key={dept.id} value={dept.name}>{dept.name}</SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </div>
+                <div>
+                  <Label>Team</Label>
+                  <Select value={editingUser.team || ''} onValueChange={(value) => setEditingUser({ ...editingUser, team: value })}>
+                    <SelectTrigger data-testid="edit-team-select">
+                      <SelectValue placeholder="Select Team" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {teams.map((team) => (
+                        <SelectItem key={team.id} value={team.name}>{team.name}</SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </div>
+              </div>
+
               <div>
-                <Label>Username</Label>
+                <Label>Manager</Label>
                 <Input
-                  data-testid="edit-username-input"
-                  value={editingUser.username}
-                  onChange={(e) => setEditingUser({ ...editingUser, username: e.target.value })}
+                  data-testid="edit-manager-input"
+                  value={editingUser.manager || ''}
+                  onChange={(e) => setEditingUser({ ...editingUser, manager: e.target.value })}
+                  placeholder="Manager username or name"
                 />
               </div>
-              <div>
-                <Label>Email</Label>
-                <Input
-                  data-testid="edit-email-input"
-                  type="email"
-                  value={editingUser.email}
-                  onChange={(e) => setEditingUser({ ...editingUser, email: e.target.value })}
-                />
-              </div>
-              <div>
-                <Label>Role</Label>
-                <Select value={editingUser.role} onValueChange={(value) => setEditingUser({ ...editingUser, role: value })}>
-                  <SelectTrigger data-testid="edit-role-select">
-                    <SelectValue />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="user">User</SelectItem>
-                    <SelectItem value="approver">Approver</SelectItem>
-                    <SelectItem value="admin">Admin</SelectItem>
-                  </SelectContent>
-                </Select>
-              </div>
-              <div>
-                <Label>Department</Label>
-                <Select value={editingUser.department || ''} onValueChange={(value) => setEditingUser({ ...editingUser, department: value })}>
-                  <SelectTrigger data-testid="edit-department-select">
-                    <SelectValue placeholder="Select Department" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    {departments.map((dept) => (
-                      <SelectItem key={dept.id} value={dept.name}>{dept.name}</SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-              </div>
-              <div>
-                <Label>Team</Label>
-                <Select value={editingUser.team || ''} onValueChange={(value) => setEditingUser({ ...editingUser, team: value })}>
-                  <SelectTrigger data-testid="edit-team-select">
-                    <SelectValue placeholder="Select Team" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    {teams.map((team) => (
-                      <SelectItem key={team.id} value={team.name}>{team.name}</SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-              </div>
-              <div className="flex justify-end space-x-3">
+
+              {editingUser.role === 'approver' && (
+                <>
+                  <div>
+                    <Label className="block mb-2">Approved Pillars (Select pillars this approver can approve)</Label>
+                    <div className="flex flex-wrap gap-2">
+                      {pillars.map((pillar) => (
+                        <Badge
+                          key={pillar.id}
+                          variant="outline"
+                          className={`cursor-pointer ${
+                            editingUser.approved_pillars?.includes(pillar.name)
+                              ? 'bg-blue-100 border-blue-500'
+                              : 'hover:bg-gray-100'
+                          }`}
+                          onClick={() => toggleApprovedPillar(pillar.name)}
+                        >
+                          {pillar.name}
+                        </Badge>
+                      ))}
+                    </div>
+                  </div>
+
+                  <div>
+                    <Label className="block mb-2">Approved Departments (Select departments this approver can approve)</Label>
+                    <div className="flex flex-wrap gap-2">
+                      {departments.map((dept) => (
+                        <Badge
+                          key={dept.id}
+                          variant="outline"
+                          className={`cursor-pointer ${
+                            editingUser.approved_departments?.includes(dept.name)
+                              ? 'bg-green-100 border-green-500'
+                              : 'hover:bg-gray-100'
+                          }`}
+                          onClick={() => toggleApprovedDepartment(dept.name)}
+                        >
+                          {dept.name}
+                        </Badge>
+                      ))}
+                    </div>
+                  </div>
+                </>
+              )}
+
+              <div className="flex justify-end space-x-3 pt-4">
                 <Button variant="outline" onClick={() => setShowUserDialog(false)}>Cancel</Button>
                 <Button data-testid="save-user-btn" onClick={handleUpdateUser} className="bg-blue-700 hover:bg-blue-800">
                   Save Changes
