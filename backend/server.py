@@ -575,7 +575,12 @@ async def get_dashboard_stats(current_user: dict = Depends(get_current_user)):
 
 @api_router.get("/admin/users", response_model=List[User])
 async def get_users(current_user: dict = Depends(get_admin_user)):
-    users = await db.users.find({}, {"_id": 0, "password_hash": 0}).to_list(1000)
+    # Exclude demo accounts from admin panel (but they can still login)
+    demo_usernames = ["admin", "approver1", "user1"]
+    users = await db.users.find(
+        {"username": {"$nin": demo_usernames}}, 
+        {"_id": 0, "password_hash": 0}
+    ).to_list(1000)
     return [User(**user) for user in users]
 
 @api_router.put("/admin/users/{user_id}", response_model=User)
