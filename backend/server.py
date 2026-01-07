@@ -613,7 +613,11 @@ async def update_user(user_id: str, user_data: UserBase, current_user: dict = De
             "email": user_data.email,
             "role": user_data.role,
             "department": user_data.department,
-            "team": user_data.team
+            "team": user_data.team,
+            "pillar": user_data.pillar,
+            "manager": user_data.manager,
+            "approved_pillars": user_data.approved_pillars if user_data.role == "approver" else [],
+            "approved_departments": user_data.approved_departments if user_data.role == "approver" else []
         }}
     )
     
@@ -622,6 +626,65 @@ async def update_user(user_id: str, user_data: UserBase, current_user: dict = De
     
     updated_user = await db.users.find_one({"id": user_id}, {"_id": 0, "password_hash": 0})
     return User(**updated_user)
+
+@api_router.post("/admin/users/bulk-upload")
+async def bulk_upload_users(file: bytes = File(...), current_user: dict = Depends(get_admin_user)):
+    import csv
+    import io
+    
+    try:
+        # Parse CSV file
+        csv_content = file.decode('utf-8')
+        csv_reader = csv.DictReader(io.StringIO(csv_content))
+        
+        created_users = []
+        errors = []
+        
+        for row_num, row in enumerate(csv_reader, start=2):
+            try:
+                # Validate required fields
+                if not row.get('username') or not row.get('email') or not row.get('password'):
+                    errors.append(f"Row {row_num}: Missing required fields (username, email, password)")
+                    continue
+                
+                # Check if user already exists
+                existing = await db.users.find_one({"username": row['username']}, {"_id": 0})
+                if existing:
+                    errors.append(f"Row {row_num}: Username '{row['username']}' already exists")
+                    continue
+                
+                # Create user
+                user_id = f"user_{datetime.now(timezone.utc).timestamp()}_{row['username']}"
+                approved_pillars = row.get('approved_pillars', '').split(';') if row.get('approved_pillars') else []
+                approved_departments = row.get('approved_departments', '').split(';') if row.get('approved_departments') else []
+                
+                user_doc = {
+                    "id": user_id,
+                    "username": row['username'],
+                    "email": row['email'],
+                    "password_hash": get_password_hash(row['password']),
+                    "role": row.get('role', 'user'),
+                    "department": row.get('department', ''),
+                    "team": row.get('team', ''),
+                    "pillar": row.get('pillar', ''),
+                    "manager": row.get('manager', ''),
+                    "approved_pillars": approved_pillars,
+                    "approved_departments": approved_departments,
+                    "created_at": datetime.now(timezone.utc).isoformat()
+                }
+                
+                await db.users.insert_one(user_doc)
+                created_users.append(row['username'])
+            except Exception as e:
+                errors.append(f"Row {row_num}: {str(e)}")
+        
+        return {
+            "message": f"Bulk upload completed. Created {len(created_users)} users.",
+            "created_users": created_users,
+            "errors": errors
+        }
+    except Exception as e:
+        raise HTTPException(status_code=400, detail=f"Failed to process file: {str(e)}")
 
 @api_router.delete("/admin/users/{user_id}")
 async def delete_user(user_id: str, current_user: dict = Depends(get_admin_user)):
