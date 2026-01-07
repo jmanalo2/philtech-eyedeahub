@@ -207,66 +207,85 @@ export default function IdeasList() {
             </CardContent>
           </Card>
         ) : (
-          ideas.map((idea) => (
-            <Link key={idea.id} to={`/ideas/${idea.id}`}>
-              <Card className="hover:shadow-lg transition-shadow duration-200 cursor-pointer" data-testid={`idea-card-${idea.id}`}>
-                <CardHeader>
-                  <div className="flex justify-between items-start">
-                    <div className="flex-1">
-                      <div className="flex items-center space-x-3 mb-2">
-                        <CardTitle className="text-xl">{idea.title}</CardTitle>
-                        <Badge {...getStatusBadge(idea.status)} data-testid={`idea-status-${idea.id}`}>
-                          {getStatusLabel(idea.status)}
-                        </Badge>
+          ideas.map((idea) => {
+            const needsRevision = idea.status === 'revision_requested' && idea.submitted_by === user?.id;
+            return (
+              <Link key={idea.id} to={`/ideas/${idea.id}`}>
+                <Card 
+                  className={`hover:shadow-lg transition-all duration-200 cursor-pointer ${
+                    needsRevision ? 'border-2 border-orange-400 bg-orange-50' : ''
+                  }`} 
+                  data-testid={`idea-card-${idea.id}`}
+                >
+                  <CardHeader>
+                    <div className="flex justify-between items-start">
+                      <div className="flex-1">
+                        <div className="flex items-center space-x-3 mb-2">
+                          <CardTitle className="text-xl">{idea.title}</CardTitle>
+                          <Badge {...getStatusBadge(idea.status)} data-testid={`idea-status-${idea.id}`}>
+                            {getStatusLabel(idea.status)}
+                          </Badge>
+                          {needsRevision && (
+                            <Badge className="bg-orange-600 text-white animate-pulse">
+                              Action Required
+                            </Badge>
+                          )}
+                        </div>
+                        <CardDescription className="flex items-center space-x-4 text-sm">
+                          <span className="font-semibold">{idea.idea_number}</span>
+                          <span>•</span>
+                          <span>{idea.pillar}</span>
+                          {idea.department && (
+                            <>
+                              <span>•</span>
+                              <span>{idea.department}</span>
+                            </>
+                          )}
+                          {idea.team && (
+                            <>
+                              <span>•</span>
+                              <span>{idea.team}</span>
+                            </>
+                          )}
+                        </CardDescription>
                       </div>
-                      <CardDescription className="flex items-center space-x-4 text-sm">
-                        <span className="font-semibold">{idea.idea_number}</span>
-                        <span>•</span>
-                        <span>{idea.pillar}</span>
-                        {idea.department && (
-                          <>
-                            <span>•</span>
-                            <span>{idea.department}</span>
-                          </>
-                        )}
-                        {idea.team && (
-                          <>
-                            <span>•</span>
-                            <span>{idea.team}</span>
-                          </>
-                        )}
-                      </CardDescription>
                     </div>
-                  </div>
-                </CardHeader>
-                <CardContent>
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm">
-                    <div>
-                      <span className="font-medium text-gray-700">Improvement Type:</span>
-                      <span className="ml-2 text-gray-600">{idea.improvement_type}</span>
-                    </div>
-                    <div>
-                      <span className="font-medium text-gray-700">Target Completion:</span>
-                      <span className="ml-2 text-gray-600">{idea.target_completion}</span>
-                    </div>
-                    <div>
-                      <span className="font-medium text-gray-700">Submitted By:</span>
-                      <span className="ml-2 text-gray-600">{idea.submitted_by_username}</span>
-                    </div>
-                    {idea.assigned_approver_username && (
+                  </CardHeader>
+                  <CardContent>
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm">
                       <div>
-                        <span className="font-medium text-gray-700">Approver:</span>
-                        <span className="ml-2 text-gray-600">{idea.assigned_approver_username}</span>
+                        <span className="font-medium text-gray-700">Improvement Type:</span>
+                        <span className="ml-2 text-gray-600">{idea.improvement_type}</span>
+                      </div>
+                      <div>
+                        <span className="font-medium text-gray-700">Target Completion:</span>
+                        <span className="ml-2 text-gray-600">{idea.target_completion}</span>
+                      </div>
+                      <div>
+                        <span className="font-medium text-gray-700">Submitted By:</span>
+                        <span className="ml-2 text-gray-600">{idea.submitted_by_username}</span>
+                      </div>
+                      {idea.assigned_approver_username && (
+                        <div>
+                          <span className="font-medium text-gray-700">Approver:</span>
+                          <span className="ml-2 text-gray-600">{idea.assigned_approver_username}</span>
+                        </div>
+                      )}
+                    </div>
+                    <div className="mt-4">
+                      <p className="text-gray-700 line-clamp-2">{idea.suggested_solution}</p>
+                    </div>
+                    {needsRevision && (
+                      <div className="mt-4 flex items-center space-x-2 text-orange-700 font-medium">
+                        <AlertCircle className="w-4 h-4" />
+                        <span className="text-sm">Revision requested - Click to view comments and resubmit</span>
                       </div>
                     )}
-                  </div>
-                  <div className="mt-4">
-                    <p className="text-gray-700 line-clamp-2">{idea.suggested_solution}</p>
-                  </div>
-                </CardContent>
-              </Card>
-            </Link>
-          ))
+                  </CardContent>
+                </Card>
+              </Link>
+            );
+          })
         )}
       </div>
     </div>
