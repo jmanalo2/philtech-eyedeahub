@@ -247,23 +247,48 @@ export default function IdeaDetail() {
           </CardContent>
         </Card>
 
-        {/* Resubmit Button */}
+        {/* Resubmit Button for Revision Requested */}
         {isOwner && idea.status === 'revision_requested' && (
-          <Card className="bg-orange-50 border-orange-200">
+          <Card className="bg-orange-50 border-orange-300 border-2 shadow-md">
             <CardContent className="py-6">
-              <div className="flex items-center justify-between">
-                <div>
-                  <h3 className="font-semibold text-orange-900 mb-1">Revision Requested</h3>
-                  <p className="text-sm text-orange-700">Please review the comments below and update your Eye-dea.</p>
+              <div className="flex flex-col md:flex-row items-center justify-between gap-4">
+                <div className="flex items-start space-x-3">
+                  <AlertCircle className="w-6 h-6 text-orange-700 flex-shrink-0 mt-1" />
+                  <div>
+                    <h3 className="font-bold text-orange-900 text-lg mb-1">Revision Requested</h3>
+                    <p className="text-sm text-orange-800 mb-2">
+                      The approver has requested changes to your Eye-dea. Please review the comments below, 
+                      make necessary updates using the Edit button, and then resubmit for review.
+                    </p>
+                    <div className="flex items-center space-x-2 text-sm text-orange-700">
+                      <span className="font-semibold">Steps:</span>
+                      <span>1. Review comments</span>
+                      <span>→</span>
+                      <span>2. Edit Eye-dea</span>
+                      <span>→</span>
+                      <span>3. Resubmit</span>
+                    </div>
+                  </div>
                 </div>
-                <Button
-                  data-testid="resubmit-btn"
-                  onClick={handleResubmit}
-                  className="bg-orange-600 hover:bg-orange-700"
-                >
-                  <Send className="w-4 h-4 mr-2" />
-                  Resubmit for Review
-                </Button>
+                <div className="flex flex-col sm:flex-row gap-3">
+                  <Button
+                    data-testid="edit-idea-from-revision-btn"
+                    onClick={() => navigate(`/ideas/edit/${idea.id}`)}
+                    variant="outline"
+                    className="border-orange-600 text-orange-700 hover:bg-orange-100"
+                  >
+                    <Edit className="w-4 h-4 mr-2" />
+                    Edit Eye-dea
+                  </Button>
+                  <Button
+                    data-testid="resubmit-btn"
+                    onClick={handleResubmit}
+                    className="bg-orange-600 hover:bg-orange-700 text-white shadow-md"
+                  >
+                    <Send className="w-4 h-4 mr-2" />
+                    Resubmit for Review
+                  </Button>
+                </div>
               </div>
             </CardContent>
           </Card>
