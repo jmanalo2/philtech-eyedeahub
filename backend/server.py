@@ -793,9 +793,40 @@ async def seed_data(current_user: dict = Depends(get_admin_user)):
     
     # Seed sample users
     sample_users = [
-        {"username": "admin", "email": "admin@philtech.com", "password": "admin123", "role": "admin", "department": "Operations"},
-        {"username": "approver1", "email": "approver1@philtech.com", "password": "approver123", "role": "approver", "department": "Operations"},
-        {"username": "user1", "email": "user1@philtech.com", "password": "user123", "role": "user", "department": "Operations", "team": "Allowance Billing"}
+        {
+            "username": "admin", 
+            "email": "admin@philtech.com", 
+            "password": "admin123", 
+            "role": "admin", 
+            "department": "Operations",
+            "pillar": "GBS",
+            "manager": "",
+            "approved_pillars": [],
+            "approved_departments": []
+        },
+        {
+            "username": "approver1", 
+            "email": "approver1@philtech.com", 
+            "password": "approver123", 
+            "role": "approver", 
+            "department": "Operations",
+            "pillar": "GBS",
+            "manager": "admin",
+            "approved_pillars": ["GBS", "Tech"],
+            "approved_departments": ["Operations", "Technology"]
+        },
+        {
+            "username": "user1", 
+            "email": "user1@philtech.com", 
+            "password": "user123", 
+            "role": "user", 
+            "department": "Operations", 
+            "team": "Allowance Billing",
+            "pillar": "GBS",
+            "manager": "approver1",
+            "approved_pillars": [],
+            "approved_departments": []
+        }
     ]
     
     for user_data in sample_users:
