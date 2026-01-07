@@ -1,11 +1,48 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { useAuth } from '../contexts/AuthContext';
+import axios from 'axios';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '../components/ui/card';
 import { Badge } from '../components/ui/badge';
-import { User, Mail, Shield, Building, Users } from 'lucide-react';
+import { Button } from '../components/ui/button';
+import { Input } from '../components/ui/input';
+import { Label } from '../components/ui/label';
+import { toast } from 'sonner';
+import { User, Mail, Shield, Building, Users, Key } from 'lucide-react';
 
 export default function Profile() {
   const { user } = useAuth();
+  const [changingPassword, setChangingPassword] = useState(false);
+  const [passwordForm, setPasswordForm] = useState({
+    current_password: '',
+    new_password: '',
+    confirm_password: ''
+  });
+
+  const handlePasswordChange = async (e) => {
+    e.preventDefault();
+    
+    if (passwordForm.new_password !== passwordForm.confirm_password) {
+      toast.error('New passwords do not match');
+      return;
+    }
+
+    if (passwordForm.new_password.length < 6) {
+      toast.error('New password must be at least 6 characters');
+      return;
+    }
+
+    try {
+      await axios.post(`${process.env.REACT_APP_BACKEND_URL}/api/auth/change-password`, {
+        current_password: passwordForm.current_password,
+        new_password: passwordForm.new_password
+      });
+      toast.success('Password changed successfully');
+      setPasswordForm({ current_password: '', new_password: '', confirm_password: '' });
+      setChangingPassword(false);
+    } catch (error) {
+      toast.error(error.response?.data?.detail || 'Failed to change password');
+    }
+  };
 
   if (!user) {
     return <div className="flex items-center justify-center h-64">Loading...</div>;
@@ -24,12 +61,12 @@ export default function Profile() {
     <div data-testid="profile-page">
       <div className="mb-8">
         <h1 className="text-3xl font-bold text-gray-900 mb-2">Profile</h1>
-        <p className="text-gray-600">View your account information and access details</p>
+        <p className="text-gray-600">View your account information and manage access</p>
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         {/* Profile Card */}
-        <div className="lg:col-span-2">
+        <div className="lg:col-span-2 space-y-6">
           <Card>
             <CardHeader>
               <CardTitle>Account Information</CardTitle>
@@ -65,6 +102,14 @@ export default function Profile() {
                     </div>
                     <p className="text-gray-900">{user.role.charAt(0).toUpperCase() + user.role.slice(1)}</p>
                   </div>
+
+                  <div>
+                    <div className="flex items-center space-x-2 text-gray-600 mb-2">
+                      <Briefcase className="w-4 h-4" />
+                      <span className="text-sm font-semibold">Pillar</span>
+                    </div>
+                    <p className="text-gray-900" data-testid="user-pillar">{user.pillar || 'Not assigned'}</p>
+                  </div>
                 </div>
 
                 <div className="space-y-4">
@@ -83,9 +128,97 @@ export default function Profile() {
                     </div>
                     <p className="text-gray-900" data-testid="user-team">{user.team || 'Not assigned'}</p>
                   </div>
+
+                  <div>
+                    <div className="flex items-center space-x-2 text-gray-600 mb-2">
+                      <User className="w-4 h-4" />
+                      <span className="text-sm font-semibold">Manager</span>
+                    </div>
+                    <p className="text-gray-900">{user.manager || 'Not assigned'}</p>
+                  </div>
                 </div>
               </div>
             </CardContent>
+          </Card>
+
+          {/* Password Change */}
+          <Card>
+            <CardHeader>
+              <div className="flex justify-between items-center">
+                <div>
+                  <CardTitle>Security</CardTitle>
+                  <CardDescription>Change your password</CardDescription>
+                </div>
+                {!changingPassword && (
+                  <Button
+                    data-testid="change-password-btn"
+                    onClick={() => setChangingPassword(true)}
+                    variant="outline"
+                  >
+                    <Key className="w-4 h-4 mr-2" />
+                    Change Password
+                  </Button>
+                )}
+              </div>
+            </CardHeader>
+            {changingPassword && (
+              <CardContent>
+                <form onSubmit={handlePasswordChange} className="space-y-4">
+                  <div>
+                    <Label htmlFor="current-password">Current Password</Label>
+                    <Input
+                      id="current-password"
+                      data-testid="current-password-input"
+                      type="password"
+                      value={passwordForm.current_password}
+                      onChange={(e) => setPasswordForm({ ...passwordForm, current_password: e.target.value })}
+                      required
+                    />
+                  </div>
+                  <div>
+                    <Label htmlFor="new-password">New Password</Label>
+                    <Input
+                      id="new-password"
+                      data-testid="new-password-input"
+                      type="password"
+                      value={passwordForm.new_password}
+                      onChange={(e) => setPasswordForm({ ...passwordForm, new_password: e.target.value })}
+                      required
+                    />
+                  </div>
+                  <div>
+                    <Label htmlFor="confirm-password">Confirm New Password</Label>
+                    <Input
+                      id="confirm-password"
+                      data-testid="confirm-password-input"
+                      type="password"
+                      value={passwordForm.confirm_password}
+                      onChange={(e) => setPasswordForm({ ...passwordForm, confirm_password: e.target.value })}
+                      required
+                    />
+                  </div>
+                  <div className="flex space-x-3">
+                    <Button
+                      type="button"
+                      variant="outline"
+                      onClick={() => {
+                        setChangingPassword(false);
+                        setPasswordForm({ current_password: '', new_password: '', confirm_password: '' });
+                      }}
+                    >
+                      Cancel
+                    </Button>
+                    <Button
+                      type="submit"
+                      data-testid="save-password-btn"
+                      className="bg-blue-700 hover:bg-blue-800"
+                    >
+                      Save New Password
+                    </Button>
+                  </div>
+                </form>
+              </CardContent>
+            )}
           </Card>
         </div>
 
@@ -93,8 +226,8 @@ export default function Profile() {
         <div>
           <Card>
             <CardHeader>
-              <CardTitle>Access & Security</CardTitle>
-              <CardDescription>Your permissions and security settings</CardDescription>
+              <CardTitle>Access & Permissions</CardTitle>
+              <CardDescription>Your role permissions</CardDescription>
             </CardHeader>
             <CardContent className="space-y-4">
               <div>
@@ -130,6 +263,32 @@ export default function Profile() {
                         <span className="w-2 h-2 bg-blue-700 rounded-full mr-2"></span>
                         Decline submissions
                       </li>
+                      {user.approved_pillars && user.approved_pillars.length > 0 && (
+                        <li className="flex items-start text-blue-700 mt-3">
+                          <span className="w-2 h-2 bg-blue-700 rounded-full mr-2 mt-1.5"></span>
+                          <div>
+                            <span className="font-semibold">Approved Pillars:</span>
+                            <div className="flex flex-wrap gap-1 mt-1">
+                              {user.approved_pillars.map((p, i) => (
+                                <Badge key={i} variant="outline" className="text-xs">{p}</Badge>
+                              ))}
+                            </div>
+                          </div>
+                        </li>
+                      )}
+                      {user.approved_departments && user.approved_departments.length > 0 && (
+                        <li className="flex items-start text-blue-700 mt-3">
+                          <span className="w-2 h-2 bg-blue-700 rounded-full mr-2 mt-1.5"></span>
+                          <div>
+                            <span className="font-semibold">Approved Departments:</span>
+                            <div className="flex flex-wrap gap-1 mt-1">
+                              {user.approved_departments.map((d, i) => (
+                                <Badge key={i} variant="outline" className="text-xs">{d}</Badge>
+                              ))}
+                            </div>
+                          </div>
+                        </li>
+                      )}
                     </>
                   )}
                   <li className="flex items-center text-gray-700">
