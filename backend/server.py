@@ -190,6 +190,13 @@ async def generate_idea_number() -> str:
     count = await db.ideas.count_documents({})
     return f"EYE-{str(count + 1).zfill(5)}"
 
+# ==================== HEALTH CHECK ====================
+
+# Health check route
+@api_router.get("/health")
+async def health():
+    return {"status": "healthy", "service": "Philtech Eye-dea API"}
+
 # ==================== AUTH ROUTES ====================
 
 @api_router.post("/auth/register", response_model=User)
