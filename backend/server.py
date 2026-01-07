@@ -839,6 +839,10 @@ async def seed_data(current_user: dict = Depends(get_admin_user)):
             "role": user_data["role"],
             "department": user_data["department"],
             "team": user_data.get("team"),
+            "pillar": user_data.get("pillar", ""),
+            "manager": user_data.get("manager", ""),
+            "approved_pillars": user_data.get("approved_pillars", []),
+            "approved_departments": user_data.get("approved_departments", []),
             "created_at": datetime.now(timezone.utc).isoformat()
         })
     
