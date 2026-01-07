@@ -46,6 +46,10 @@ class UserBase(BaseModel):
     role: str = "user"  # user, approver, admin
     department: Optional[str] = None
     team: Optional[str] = None
+    pillar: Optional[str] = None
+    manager: Optional[str] = None
+    approved_pillars: Optional[List[str]] = []  # For approvers: which pillars they can approve
+    approved_departments: Optional[List[str]] = []  # For approvers: which departments they can approve
 
 class UserCreate(UserBase):
     password: str
