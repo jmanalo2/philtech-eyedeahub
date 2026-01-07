@@ -295,9 +295,14 @@ async def create_idea(idea_data: IdeaCreate, current_user: dict = Depends(get_cu
     idea_id = f"idea_{datetime.now(timezone.utc).timestamp()}"
     
     # Find approver for this pillar/department
+    # First try to find an approver assigned to this specific pillar or department
     approver = await db.users.find_one({
         "role": "approver",
-        "department": idea_data.department
+        "$or": [
+            {"approved_pillars": idea_data.pillar},
+            {"approved_departments": idea_data.department},
+            {"department": idea_data.department}  # Fallback to approver's own department
+        ]
     }, {"_id": 0})
     
     idea_doc = {
