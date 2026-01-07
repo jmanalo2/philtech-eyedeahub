@@ -604,7 +604,12 @@ async def update_user(user_id: str, user_data: UserBase, current_user: dict = De
 
 @api_router.delete("/admin/users/{user_id}")
 async def delete_user(user_id: str, current_user: dict = Depends(get_admin_user)):
-    result = await db.users.delete_one({"id": user_id})
+    # Prevent deletion of demo accounts
+    user = await db.users.find_one({"id": user_id}, {"_id": 0})
+    if user and user.get("username") in ["admin", "approver1", "user1"]:
+        raise HTTPException(status_code=403, detail="Cannot delete demo accounts")
+    
+    result = await db.users.delete_one({{"id": user_id}})
     if result.deleted_count == 0:
         raise HTTPException(status_code=404, detail="User not found")
     return {"message": "User deleted successfully"}
