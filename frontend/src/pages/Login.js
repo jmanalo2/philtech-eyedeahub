@@ -174,13 +174,6 @@ export default function Login() {
             </Tabs>
           </CardContent>
         </Card>
-
-        <div className="mt-6 text-center text-sm text-gray-600">
-          <p>Demo accounts:</p>
-          <p className="mt-1">Admin: admin / admin123</p>
-          <p>Approver: approver1 / approver123</p>
-          <p>User: user1 / user123</p>
-        </div>
       </div>
     </div>
   );
