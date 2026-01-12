@@ -283,6 +283,66 @@ async def change_password(password_data: UserPasswordChange, current_user: dict 
     )
     return {"message": "Password changed successfully"}
 
+@api_router.post("/auth/forgot-password")
+async def forgot_password(request: ForgotPasswordRequest):
+    user = await db.users.find_one({"email": request.email}, {"_id": 0})
+    
+    # Always return success to prevent email enumeration
+    if not user:
+        return {"message": "If the email exists, a password reset link has been sent"}
+    
+    # Generate reset token
+    reset_token = create_reset_token(request.email)
+    
+    # Create reset link
+    frontend_url = os.environ.get('FRONTEND_URL', 'http://localhost:3000')
+    reset_link = f"{frontend_url}/reset-password?token={reset_token}"
+    
+    # Send email if configured
+    if RESEND_API_KEY:
+        html = f"""
+        <html>
+            <body>
+                <h2>Password Reset Request</h2>
+                <p>Hello {user['username']},</p>
+                <p>You requested to reset your password for Philtech Eye-dea.</p>
+                <p>Click the link below to reset your password (valid for 1 hour):</p>
+                <p><a href="{reset_link}">Reset Password</a></p>
+                <p>If you didn't request this, please ignore this email.</p>
+                <br>
+                <p>Best regards,<br>Philtech Eye-dea Team</p>
+            </body>
+        </html>
+        """
+        asyncio.create_task(send_email_async(request.email, "Password Reset Request", html))
+        return {"message": "Password reset link has been sent to your email"}
+    else:
+        # For testing without email configuration
+        return {
+            "message": "Password reset link generated (email service not configured)",
+            "reset_link": reset_link,
+            "token": reset_token
+        }
+
+@api_router.post("/auth/reset-password")
+async def reset_password(request: ResetPasswordRequest):
+    # Verify token and get email
+    email = verify_reset_token(request.token)
+    
+    # Find user
+    user = await db.users.find_one({"email": email}, {"_id": 0})
+    if not user:
+        raise HTTPException(status_code=404, detail="User not found")
+    
+    # Update password
+    new_hash = get_password_hash(request.new_password)
+    await db.users.update_one(
+        {"email": email},
+        {"$set": {"password_hash": new_hash}}
+    )
+    
+    return {"message": "Password reset successfully. You can now login with your new password."}
+
 # ==================== IDEAS ROUTES ====================
 
 @api_router.get("/ideas", response_model=List[Idea])
