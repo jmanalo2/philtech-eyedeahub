@@ -163,6 +163,22 @@ def create_access_token(data: dict) -> str:
     to_encode.update({"exp": expire})
     return jwt.encode(to_encode, SECRET_KEY, algorithm=ALGORITHM)
 
+def create_reset_token(email: str) -> str:
+    expire = datetime.now(timezone.utc) + timedelta(hours=1)  # Token valid for 1 hour
+    to_encode = {"email": email, "exp": expire, "type": "password_reset"}
+    return jwt.encode(to_encode, SECRET_KEY, algorithm=ALGORITHM)
+
+def verify_reset_token(token: str) -> str:
+    try:
+        payload = jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
+        email: str = payload.get("email")
+        token_type: str = payload.get("type")
+        if email is None or token_type != "password_reset":
+            raise HTTPException(status_code=400, detail="Invalid reset token")
+        return email
+    except JWTError:
+        raise HTTPException(status_code=400, detail="Invalid or expired reset token")
+
 async def get_current_user(credentials: HTTPAuthorizationCredentials = Depends(security)) -> dict:
     try:
         token = credentials.credentials
