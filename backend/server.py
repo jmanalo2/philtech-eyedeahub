@@ -303,6 +303,21 @@ async def login(credentials: UserLogin):
 async def get_me(current_user: dict = Depends(get_current_user)):
     return User(**current_user)
 
+@api_router.post("/auth/set-sub-role")
+async def set_sub_role(selection: SubRoleSelection, current_user: dict = Depends(get_current_user)):
+    if current_user["role"] != "approver":
+        raise HTTPException(status_code=403, detail="Only approvers can set sub-role")
+    
+    if selection.sub_role not in ["approver", "ci_excellence"]:
+        raise HTTPException(status_code=400, detail="Invalid sub-role")
+    
+    await db.users.update_one(
+        {"id": current_user["id"]},
+        {"$set": {"sub_role": selection.sub_role}}
+    )
+    
+    return {"message": "Sub-role set successfully", "sub_role": selection.sub_role}
+
 @api_router.post("/auth/change-password")
 async def change_password(password_data: UserPasswordChange, current_user: dict = Depends(get_current_user)):
     user = await db.users.find_one({"id": current_user["id"]}, {"_id": 0})
