@@ -10,6 +10,7 @@ import { Separator } from '../components/ui/separator';
 import { toast } from 'sonner';
 import { ArrowLeft, CheckCircle, XCircle, AlertCircle, Edit, Send } from 'lucide-react';
 import { format } from 'date-fns';
+import CIEvaluationPanel from '../components/CIEvaluationPanel';
 
 export default function IdeaDetail() {
   const { id } = useParams();
