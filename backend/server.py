@@ -44,6 +44,7 @@ class UserBase(BaseModel):
     username: str
     email: EmailStr
     role: str = "user"  # user, approver, admin
+    sub_role: Optional[str] = None  # For approver: "approver" or "ci_excellence"
     department: Optional[str] = None
     team: Optional[str] = None
     pillar: Optional[str] = None
