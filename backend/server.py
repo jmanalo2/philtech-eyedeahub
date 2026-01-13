@@ -93,6 +93,21 @@ class IdeaBase(BaseModel):
 class IdeaCreate(IdeaBase):
     pass
 
+class CIEvaluation(BaseModel):
+    is_quick_win: bool
+    complexity_level: Optional[str] = None  # Low, Medium, High
+    savings_type: Optional[str] = None  # cost_savings, time_saved
+    cost_savings: Optional[float] = None
+    time_saved_hours: Optional[float] = None
+    time_saved_minutes: Optional[float] = None
+    evaluation_notes: Optional[str] = None
+    assigned_to_tech: Optional[bool] = False
+    tech_person_name: Optional[str] = None
+
+class BestIdeaSelection(BaseModel):
+    idea_id: str
+    is_best_idea: bool
+
 class Idea(IdeaBase):
     model_config = ConfigDict(extra="ignore")
     id: str
