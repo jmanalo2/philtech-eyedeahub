@@ -613,6 +613,9 @@ async def decline_idea(idea_id: str, action: IdeaAction, current_user: dict = De
 
 @api_router.post("/ideas/{idea_id}/request-revision")
 async def request_revision(idea_id: str, action: IdeaAction, current_user: dict = Depends(get_current_user)):
+    # Only approvers with "approver" sub_role or admins can request revision
+    if current_user["role"] == "approver" and current_user.get("sub_role") == "ci_excellence":
+        raise HTTPException(status_code=403, detail="C.I. Excellence Team cannot request revisions")
     if current_user["role"] not in ["approver", "admin"]:
         raise HTTPException(status_code=403, detail="Only approvers can request revisions")
     
