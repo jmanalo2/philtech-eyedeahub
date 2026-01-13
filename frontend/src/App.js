@@ -22,7 +22,16 @@ const PrivateRoute = ({ children }) => {
     return <div className="flex items-center justify-center h-screen">Loading...</div>;
   }
   
-  return user ? children : <Navigate to="/login" />;
+  if (!user) {
+    return <Navigate to="/login" />;
+  }
+  
+  // Redirect approvers without sub_role to role selection
+  if (user.role === 'approver' && !user.sub_role) {
+    return <Navigate to="/select-role" />;
+  }
+  
+  return children;
 };
 
 const AdminRoute = ({ children }) => {
