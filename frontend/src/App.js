@@ -4,6 +4,7 @@ import { Toaster } from '@/components/ui/sonner';
 import Login from './pages/Login';
 import ForgotPassword from './pages/ForgotPassword';
 import ResetPassword from './pages/ResetPassword';
+import RoleSelection from './pages/RoleSelection';
 import Dashboard from './pages/Dashboard';
 import IdeasList from './pages/IdeasList';
 import IdeaDetail from './pages/IdeaDetail';
