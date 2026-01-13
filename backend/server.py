@@ -689,6 +689,72 @@ async def add_comment(idea_id: str, comment_data: CommentBase, current_user: dic
     await db.comments.insert_one(comment_doc)
     return Comment(**comment_doc)
 
+# ==================== C.I. EXCELLENCE TEAM ROUTES ====================
+
+@api_router.post("/ideas/{idea_id}/ci-evaluate")
+async def ci_evaluate_idea(idea_id: str, evaluation: CIEvaluation, current_user: dict = Depends(get_current_user)):
+    if current_user["role"] not in ["ci_excellence", "admin"]:
+        raise HTTPException(status_code=403, detail="Only C.I. Excellence Team can evaluate ideas")
+    
+    idea = await db.ideas.find_one({"id": idea_id}, {"_id": 0})
+    if not idea:
+        raise HTTPException(status_code=404, detail="Idea not found")
+    
+    update_doc = {
+        "is_quick_win": evaluation.is_quick_win,
+        "evaluated_by": current_user["id"],
+        "evaluated_by_username": current_user["username"],
+        "evaluated_at": datetime.now(timezone.utc).isoformat(),
+        "updated_at": datetime.now(timezone.utc).isoformat()
+    }
+    
+    if not evaluation.is_quick_win:
+        update_doc["complexity_level"] = evaluation.complexity_level
+        update_doc["savings_type"] = evaluation.savings_type
+        update_doc["cost_savings"] = evaluation.cost_savings
+        update_doc["time_saved_hours"] = evaluation.time_saved_hours
+        update_doc["time_saved_minutes"] = evaluation.time_saved_minutes
+        update_doc["evaluation_notes"] = evaluation.evaluation_notes
+        update_doc["assigned_to_tech"] = evaluation.assigned_to_tech
+        update_doc["tech_person_name"] = evaluation.tech_person_name
+    
+    await db.ideas.update_one({"id": idea_id}, {"$set": update_doc})
+    
+    # Send notification to submitter
+    submitter = await db.users.find_one({"id": idea["submitted_by"]}, {"_id": 0})
+    if submitter and RESEND_API_KEY:
+        html = f"""
+        <html>
+            <body>
+                <h2>Your Eye-dea Has Been Evaluated</h2>
+                <p><strong>Idea Number:</strong> {idea['idea_number']}</p>
+                <p><strong>Title:</strong> {idea['title']}</p>
+                <p><strong>Evaluated By:</strong> {current_user['username']} (C.I. Excellence Team)</p>
+                <p><strong>Quick Win:</strong> {'Yes' if evaluation.is_quick_win else 'No'}</p>
+                {f'<p><strong>Complexity Level:</strong> {evaluation.complexity_level}</p>' if not evaluation.is_quick_win else ''}
+            </body>
+        </html>
+        """
+        asyncio.create_task(send_email_async(submitter["email"], f"Eye-dea Evaluated: {idea['title']}", html))
+    
+    return {"message": "Idea evaluated successfully"}
+
+@api_router.post("/ideas/{idea_id}/set-best-idea")
+async def set_best_idea(idea_id: str, selection: BestIdeaSelection, current_user: dict = Depends(get_current_user)):
+    if current_user["role"] not in ["ci_excellence", "admin"]:
+        raise HTTPException(status_code=403, detail="Only C.I. Excellence Team can select best ideas")
+    
+    # Unset previous best idea if exists
+    if selection.is_best_idea:
+        await db.ideas.update_many({}, {"$set": {"is_best_idea": False}})
+    
+    await db.ideas.update_one(
+        {"id": idea_id},
+        {"$set": {"is_best_idea": selection.is_best_idea, "updated_at": datetime.now(timezone.utc).isoformat()}}
+    )
+    
+    return {"message": "Best idea status updated"}
+
 # ==================== DASHBOARD ROUTES ====================
 
 @api_router.get("/dashboard/stats", response_model=DashboardStats)
