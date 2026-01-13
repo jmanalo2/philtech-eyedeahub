@@ -119,6 +119,20 @@ class Idea(IdeaBase):
     assigned_approver_username: Optional[str] = None
     created_at: str
     updated_at: str
+    # C.I. Excellence Team Evaluation fields
+    is_quick_win: Optional[bool] = None
+    complexity_level: Optional[str] = None
+    savings_type: Optional[str] = None
+    cost_savings: Optional[float] = None
+    time_saved_hours: Optional[float] = None
+    time_saved_minutes: Optional[float] = None
+    evaluation_notes: Optional[str] = None
+    assigned_to_tech: Optional[bool] = False
+    tech_person_name: Optional[str] = None
+    is_best_idea: Optional[bool] = False
+    evaluated_by: Optional[str] = None
+    evaluated_by_username: Optional[str] = None
+    evaluated_at: Optional[str] = None
 
 class CommentBase(BaseModel):
     comment_text: str
