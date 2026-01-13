@@ -66,6 +66,9 @@ class ResetPasswordRequest(BaseModel):
     token: str
     new_password: str
 
+class SubRoleSelection(BaseModel):
+    sub_role: str  # "approver" or "ci_excellence"
+
 class UserLogin(BaseModel):
     username: str
     password: str
