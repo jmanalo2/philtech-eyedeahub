@@ -775,6 +775,162 @@ async def get_dashboard_stats(current_user: dict = Depends(get_current_user)):
         my_ideas=my_ideas
     )
 
+@api_router.get("/dashboard/analytics")
+async def get_dashboard_analytics(current_user: dict = Depends(get_current_user)):
+    # Quick Wins count
+    quick_wins_count = await db.ideas.count_documents({"is_quick_win": True})
+    
+    # Complexity counts
+    low_complexity = await db.ideas.count_documents({"complexity_level": "Low"})
+    medium_complexity = await db.ideas.count_documents({"complexity_level": "Medium"})
+    high_complexity = await db.ideas.count_documents({"complexity_level": "High"})
+    
+    # Best idea
+    best_idea = await db.ideas.find_one({"is_best_idea": True}, {"_id": 0})
+    
+    # Total cost savings
+    cost_savings_pipeline = [
+        {"$match": {"savings_type": "cost_savings", "cost_savings": {"$ne": None}}},
+        {"$group": {"_id": None, "total": {"$sum": "$cost_savings"}}}
+    ]
+    cost_result = await db.ideas.aggregate(cost_savings_pipeline).to_list(1)
+    total_cost_savings = cost_result[0]["total"] if cost_result else 0
+    
+    # Total time saved
+    time_saved_pipeline = [
+        {"$match": {"savings_type": "time_saved"}},
+        {"$group": {
+            "_id": None,
+            "total_hours": {"$sum": {"$ifNull": ["$time_saved_hours", 0]}},
+            "total_minutes": {"$sum": {"$ifNull": ["$time_saved_minutes", 0]}}
+        }}
+    ]
+    time_result = await db.ideas.aggregate(time_saved_pipeline).to_list(1)
+    total_hours = time_result[0]["total_hours"] if time_result else 0
+    total_minutes = time_result[0]["total_minutes"] if time_result else 0
+    
+    # Convert minutes to hours
+    total_hours += total_minutes // 60
+    total_minutes = total_minutes % 60
+    
+    # Approval rates
+    total_evaluated = await db.ideas.count_documents({"status": {"$in": ["approved", "declined"]}})
+    approved_count = await db.ideas.count_documents({"status": "approved"})
+    approval_rate = (approved_count / total_evaluated * 100) if total_evaluated > 0 else 0
+    
+    # Implementation rate (approved ideas that are marked as implemented)
+    implemented_count = await db.ideas.count_documents({"status": "approved"})
+    implementation_rate = (implemented_count / total_evaluated * 100) if total_evaluated > 0 else 0
+    
+    return {
+        "quick_wins_count": quick_wins_count,
+        "complexity_counts": {
+            "low": low_complexity,
+            "medium": medium_complexity,
+            "high": high_complexity
+        },
+        "best_idea": Idea(**best_idea) if best_idea else None,
+        "total_cost_savings": total_cost_savings,
+        "total_time_saved": {
+            "hours": total_hours,
+            "minutes": total_minutes
+        },
+        "approval_rate": round(approval_rate, 2),
+        "implementation_rate": round(implementation_rate, 2),
+        "charts_data": {
+            "complexity_chart": [
+                {"name": "Low Complexity", "value": low_complexity},
+                {"name": "Medium Complexity", "value": medium_complexity},
+                {"name": "High Complexity", "value": high_complexity}
+            ],
+            "quick_wins_chart": [
+                {"name": "Quick Wins", "value": quick_wins_count},
+                {"name": "Not Quick Wins", "value": low_complexity + medium_complexity + high_complexity}
+            ],
+            "approval_pie": [
+                {"name": "Approved", "value": approved_count},
+                {"name": "Declined", "value": total_evaluated - approved_count}
+            ]
+        }
+    }
+
+@api_router.get("/dashboard/export-excel")
+async def export_ideas_excel(current_user: dict = Depends(get_current_user)):
+    import io
+    from openpyxl import Workbook
+    from openpyxl.styles import Font, PatternFill
+    
+    # Fetch all ideas
+    ideas = await db.ideas.find({}, {"_id": 0}).to_list(10000)
+    
+    # Create workbook
+    wb = Workbook()
+    ws = wb.active
+    ws.title = "Eye-deas"
+    
+    # Headers
+    headers = [
+        "Idea Number", "Title", "Status", "Pillar", "Department", "Team",
+        "Improvement Type", "Submitted By", "Assigned Approver",
+        "Quick Win", "Complexity", "Savings Type", "Cost Savings",
+        "Time Saved (Hours)", "Time Saved (Minutes)", "Evaluated By",
+        "Tech Person", "Best Idea", "Target Completion", "Created At"
+    ]
+    
+    # Style headers
+    header_fill = PatternFill(start_color="0066CC", end_color="0066CC", fill_type="solid")
+    header_font = Font(color="FFFFFF", bold=True)
+    
+    for col_num, header in enumerate(headers, 1):
+        cell = ws.cell(row=1, column=col_num, value=header)
+        cell.fill = header_fill
+        cell.font = header_font
+    
+    # Add data
+    for row_num, idea in enumerate(ideas, 2):
+        ws.cell(row=row_num, column=1, value=idea.get("idea_number"))
+        ws.cell(row=row_num, column=2, value=idea.get("title"))
+        ws.cell(row=row_num, column=3, value=idea.get("status"))
+        ws.cell(row=row_num, column=4, value=idea.get("pillar"))
+        ws.cell(row=row_num, column=5, value=idea.get("department"))
+        ws.cell(row=row_num, column=6, value=idea.get("team"))
+        ws.cell(row=row_num, column=7, value=idea.get("improvement_type"))
+        ws.cell(row=row_num, column=8, value=idea.get("submitted_by_username"))
+        ws.cell(row=row_num, column=9, value=idea.get("assigned_approver_username"))
+        ws.cell(row=row_num, column=10, value="Yes" if idea.get("is_quick_win") else "No" if idea.get("is_quick_win") is not None else "")
+        ws.cell(row=row_num, column=11, value=idea.get("complexity_level") or "")
+        ws.cell(row=row_num, column=12, value=idea.get("savings_type") or "")
+        ws.cell(row=row_num, column=13, value=idea.get("cost_savings") or "")
+        ws.cell(row=row_num, column=14, value=idea.get("time_saved_hours") or "")
+        ws.cell(row=row_num, column=15, value=idea.get("time_saved_minutes") or "")
+        ws.cell(row=row_num, column=16, value=idea.get("evaluated_by_username") or "")
+        ws.cell(row=row_num, column=17, value=idea.get("tech_person_name") or "")
+        ws.cell(row=row_num, column=18, value="Yes" if idea.get("is_best_idea") else "No")
+        ws.cell(row=row_num, column=19, value=idea.get("target_completion"))
+        ws.cell(row=row_num, column=20, value=idea.get("created_at"))
+    
+    # Adjust column widths
+    for col in ws.columns:
+        max_length = 0
+        column = col[0].column_letter
+        for cell in col:
+            if cell.value:
+                max_length = max(max_length, len(str(cell.value)))
+        ws.column_dimensions[column].width = min(max_length + 2, 50)
+    
+    # Save to bytes
+    excel_file = io.BytesIO()
+    wb.save(excel_file)
+    excel_file.seek(0)
+    
+    from fastapi.responses import StreamingResponse
+    
+    return StreamingResponse(
+        excel_file,
+        media_type="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+        headers={"Content-Disposition": "attachment; filename=philtech_eyedeas.xlsx"}
+    )
+
 # ==================== ADMIN ROUTES ====================
 
 @api_router.get("/admin/users", response_model=List[User])
