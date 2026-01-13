@@ -712,8 +712,9 @@ async def add_comment(idea_id: str, comment_data: CommentBase, current_user: dic
 
 @api_router.post("/ideas/{idea_id}/ci-evaluate")
 async def ci_evaluate_idea(idea_id: str, evaluation: CIEvaluation, current_user: dict = Depends(get_current_user)):
-    if current_user["role"] not in ["ci_excellence", "admin"]:
-        raise HTTPException(status_code=403, detail="Only C.I. Excellence Team can evaluate ideas")
+    if current_user["role"] != "approver" or current_user.get("sub_role") != "ci_excellence":
+        if current_user["role"] != "admin":
+            raise HTTPException(status_code=403, detail="Only C.I. Excellence Team can evaluate ideas")
     
     idea = await db.ideas.find_one({"id": idea_id}, {"_id": 0})
     if not idea:
