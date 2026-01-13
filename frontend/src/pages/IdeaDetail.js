@@ -296,7 +296,7 @@ export default function IdeaDetail() {
         )}
 
         {/* Approver Actions */}
-        {isApprover && idea.status === 'pending' && (
+        {isApprover && idea.status === 'pending' && user.sub_role === 'approver' && (
           <Card>
             <CardHeader>
               <CardTitle>Approver Actions</CardTitle>
@@ -341,6 +341,14 @@ export default function IdeaDetail() {
               </div>
             </CardContent>
           </Card>
+        )}
+
+        {/* C.I. Excellence Team Evaluation */}
+        {user?.role === 'approver' && user?.sub_role === 'ci_excellence' && idea.status === 'approved' && (
+          <CIEvaluationPanel 
+            idea={idea}
+            onEvaluationComplete={fetchIdea}
+          />
         )}
 
         {/* Comments */}
