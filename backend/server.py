@@ -761,8 +761,9 @@ async def ci_evaluate_idea(idea_id: str, evaluation: CIEvaluation, current_user:
 
 @api_router.post("/ideas/{idea_id}/set-best-idea")
 async def set_best_idea(idea_id: str, selection: BestIdeaSelection, current_user: dict = Depends(get_current_user)):
-    if current_user["role"] not in ["ci_excellence", "admin"]:
-        raise HTTPException(status_code=403, detail="Only C.I. Excellence Team can select best ideas")
+    if current_user["role"] != "approver" or current_user.get("sub_role") != "ci_excellence":
+        if current_user["role"] != "admin":
+            raise HTTPException(status_code=403, detail="Only C.I. Excellence Team can select best ideas")
     
     # Unset previous best idea if exists
     if selection.is_best_idea:
