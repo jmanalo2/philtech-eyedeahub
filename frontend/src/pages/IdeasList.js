@@ -30,6 +30,13 @@ export default function IdeasList() {
     fetchFilterData();
   }, [filters]);
 
+  useEffect(() => {
+    // Auto-filter approved ideas for C.I. Excellence Team
+    if (user?.role === 'approver' && user?.sub_role === 'ci_excellence') {
+      setFilters(prev => ({ ...prev, status: 'approved' }));
+    }
+  }, [user]);
+
   const fetchIdeas = async () => {
     try {
       const params = {};
