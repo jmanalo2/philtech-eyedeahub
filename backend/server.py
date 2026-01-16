@@ -1081,14 +1081,15 @@ async def delete_user(user_id: str, current_user: dict = Depends(get_admin_user)
     return {"message": "User deleted successfully"}
 
 @api_router.get("/admin/departments", response_model=List[Department])
-async def get_departments(current_user: dict = Depends(get_current_user)):
-    departments = await db.departments.find({}, {"_id": 0}).to_list(1000)
+async def get_departments(pillar: Optional[str] = None, current_user: dict = Depends(get_current_user)):
+    query = {"pillar": pillar} if pillar else {}
+    departments = await db.departments.find(query, {"_id": 0}).to_list(1000)
     return [Department(**dept) for dept in departments]
 
 @api_router.post("/admin/departments", response_model=Department)
 async def create_department(dept_data: DepartmentBase, current_user: dict = Depends(get_admin_user)):
     dept_id = f"dept_{datetime.now(timezone.utc).timestamp()}"
-    dept_doc = {"id": dept_id, "name": dept_data.name}
+    dept_doc = {"id": dept_id, "name": dept_data.name, "pillar": dept_data.pillar}
     await db.departments.insert_one(dept_doc)
     return Department(**dept_doc)
 
