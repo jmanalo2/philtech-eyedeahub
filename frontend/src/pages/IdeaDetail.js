@@ -7,8 +7,10 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '../co
 import { Textarea } from '../components/ui/textarea';
 import { Badge } from '../components/ui/badge';
 import { Separator } from '../components/ui/separator';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '../components/ui/select';
+import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogFooter } from '../components/ui/dialog';
 import { toast } from 'sonner';
-import { ArrowLeft, CheckCircle, XCircle, AlertCircle, Edit, Send } from 'lucide-react';
+import { ArrowLeft, CheckCircle, XCircle, AlertCircle, Edit, Send, Star, Settings } from 'lucide-react';
 import { format } from 'date-fns';
 import CIEvaluationPanel from '../components/CIEvaluationPanel';
 
