@@ -46,6 +46,25 @@ export default function Profile() {
     }
   };
 
+  const handleSubRoleChange = async () => {
+    if (!selectedSubRole) {
+      toast.error('Please select a sub-role');
+      return;
+    }
+
+    try {
+      await axios.post(`${process.env.REACT_APP_BACKEND_URL}/api/auth/set-sub-role`, {
+        sub_role: selectedSubRole
+      });
+      toast.success('Sub-role updated successfully! Please refresh the page.');
+      setChangingSubRole(false);
+      // Refresh the page to update permissions
+      setTimeout(() => window.location.reload(), 1500);
+    } catch (error) {
+      toast.error(error.response?.data?.detail || 'Failed to change sub-role');
+    }
+  };
+
   if (!user) {
     return <div className="flex items-center justify-center h-64">Loading...</div>;
   }
