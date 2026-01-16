@@ -87,6 +87,8 @@ export default function IdeasList() {
     const variants = {
       pending: { variant: 'default', className: 'bg-yellow-100 text-yellow-800 border-yellow-300' },
       approved: { variant: 'default', className: 'bg-green-100 text-green-800 border-green-300' },
+      implemented: { variant: 'default', className: 'bg-emerald-100 text-emerald-800 border-emerald-300' },
+      assigned_to_te: { variant: 'default', className: 'bg-purple-100 text-purple-800 border-purple-300' },
       declined: { variant: 'default', className: 'bg-red-100 text-red-800 border-red-300' },
       revision_requested: { variant: 'default', className: 'bg-orange-100 text-orange-800 border-orange-300' }
     };
@@ -97,6 +99,8 @@ export default function IdeasList() {
     const labels = {
       pending: 'Pending',
       approved: 'Approved',
+      implemented: 'Implemented',
+      assigned_to_te: 'Assigned to T&E',
       declined: 'Declined',
       revision_requested: 'Revision Requested'
     };
