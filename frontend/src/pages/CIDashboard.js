@@ -3,27 +3,36 @@ import axios from 'axios';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '../components/ui/card';
 import { Button } from '../components/ui/button';
 import { Badge } from '../components/ui/badge';
+import { Calendar } from '../components/ui/calendar';
+import { Popover, PopoverContent, PopoverTrigger } from '../components/ui/popover';
 import { toast } from 'sonner';
 import { 
   Zap, Award, TrendingUp, DollarSign, Clock, Download, 
-  BarChart3, PieChart as PieChartIcon, Lightbulb, Users
+  BarChart3, PieChart as PieChartIcon, Lightbulb, Users, CalendarIcon, CheckCircle, Wrench
 } from 'lucide-react';
 import { PieChart, Pie, Cell, BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from 'recharts';
+import { format } from 'date-fns';
 
-const COLORS = ['#10B981', '#F59E0B', '#EF4444', '#3B82F6', '#8B5CF6'];
+const COLORS = ['#10B981', '#F59E0B', '#EF4444', '#3B82F6', '#8B5CF6', '#EC4899'];
 
 export default function CIDashboard() {
   const [analytics, setAnalytics] = useState(null);
   const [loading, setLoading] = useState(true);
   const [exporting, setExporting] = useState(false);
+  const [startDate, setStartDate] = useState(null);
+  const [endDate, setEndDate] = useState(null);
 
   useEffect(() => {
     fetchAnalytics();
-  }, []);
+  }, [startDate, endDate]);
 
   const fetchAnalytics = async () => {
     try {
-      const response = await axios.get(`${process.env.REACT_APP_BACKEND_URL}/api/dashboard/analytics`);
+      const params = {};
+      if (startDate) params.start_date = format(startDate, 'yyyy-MM-dd');
+      if (endDate) params.end_date = format(endDate, 'yyyy-MM-dd');
+      
+      const response = await axios.get(`${process.env.REACT_APP_BACKEND_URL}/api/dashboard/analytics`, { params });
       setAnalytics(response.data);
     } catch (error) {
       console.error('Failed to fetch analytics:', error);
@@ -31,6 +40,11 @@ export default function CIDashboard() {
     } finally {
       setLoading(false);
     }
+  };
+
+  const clearDateFilter = () => {
+    setStartDate(null);
+    setEndDate(null);
   };
 
   const handleExportExcel = async () => {
