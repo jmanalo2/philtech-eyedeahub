@@ -45,6 +45,22 @@ const AdminRoute = ({ children }) => {
   return user && user.role === 'admin' ? children : <Navigate to="/dashboard" />;
 };
 
+const CIRoute = ({ children }) => {
+  const { user, loading } = useAuth();
+  
+  if (loading) {
+    return <div className="flex items-center justify-center h-screen">Loading...</div>;
+  }
+  
+  // Allow access for admins and C.I. Excellence team members
+  const hasAccess = user && (
+    user.role === 'admin' || 
+    (user.role === 'approver' && user.sub_role === 'ci_excellence')
+  );
+  
+  return hasAccess ? children : <Navigate to="/dashboard" />;
+};
+
 function App() {
   return (
     <AuthProvider>
