@@ -1,16 +1,18 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import { Button } from './ui/button';
 import { Input } from './ui/input';
 import { Label } from './ui/label';
 import { Textarea } from './ui/textarea';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from './ui/select';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from './ui/card';
 import { Badge } from './ui/badge';
 import { toast } from 'sonner';
 import { CheckCircle, XCircle, Users, DollarSign, Clock } from 'lucide-react';
 
 export default function CIEvaluationPanel({ idea, onEvaluationComplete }) {
-  const [step, setStep] = useState(1); // 1: Quick Wins question, 2: Complexity or Implemented, 3: Tech Assignment
+  const [step, setStep] = useState(1);
+  const [techPersons, setTechPersons] = useState([]);
   const [evaluation, setEvaluation] = useState({
     is_quick_win: null,
     complexity_level: null,
@@ -23,6 +25,19 @@ export default function CIEvaluationPanel({ idea, onEvaluationComplete }) {
     tech_person_name: ''
   });
   const [submitting, setSubmitting] = useState(false);
+
+  useEffect(() => {
+    fetchTechPersons();
+  }, []);
+
+  const fetchTechPersons = async () => {
+    try {
+      const response = await axios.get(`${process.env.REACT_APP_BACKEND_URL}/api/admin/tech-persons`);
+      setTechPersons(response.data);
+    } catch (error) {
+      console.error('Failed to fetch tech persons:', error);
+    }
+  };
 
   const handleQuickWinSelection = (isQuickWin) => {
     setEvaluation({ ...evaluation, is_quick_win: isQuickWin });
