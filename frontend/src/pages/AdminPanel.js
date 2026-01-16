@@ -503,18 +503,19 @@ export default function AdminPanel() {
           <Card>
             <CardHeader>
               <CardTitle>Manage Teams</CardTitle>
-              <CardDescription>Add or remove teams within pillars</CardDescription>
+              <CardDescription>Add or remove teams within departments</CardDescription>
             </CardHeader>
             <CardContent className="space-y-6">
-              <div className="flex space-x-3">
+              <div className="flex space-x-3 flex-wrap gap-2">
                 <Input
                   data-testid="new-team-name-input"
                   value={newTeam.name}
                   onChange={(e) => setNewTeam({ ...newTeam, name: e.target.value })}
                   placeholder="Team name"
+                  className="flex-1 min-w-[150px]"
                 />
-                <Select value={newTeam.pillar} onValueChange={(value) => setNewTeam({ ...newTeam, pillar: value })}>
-                  <SelectTrigger data-testid="new-team-pillar-select" className="w-[200px]">
+                <Select value={newTeam.pillar} onValueChange={(value) => setNewTeam({ ...newTeam, pillar: value, department: '' })}>
+                  <SelectTrigger data-testid="new-team-pillar-select" className="w-[150px]">
                     <SelectValue placeholder="Select Pillar" />
                   </SelectTrigger>
                   <SelectContent>
@@ -523,40 +524,141 @@ export default function AdminPanel() {
                     ))}
                   </SelectContent>
                 </Select>
+                <Select 
+                  value={newTeam.department} 
+                  onValueChange={(value) => setNewTeam({ ...newTeam, department: value })}
+                  disabled={!newTeam.pillar}
+                >
+                  <SelectTrigger data-testid="new-team-department-select" className="w-[180px]">
+                    <SelectValue placeholder="Select Department" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {departments
+                      .filter(d => d.pillar === newTeam.pillar)
+                      .map((dept) => (
+                        <SelectItem key={dept.id} value={dept.name}>{dept.name}</SelectItem>
+                      ))}
+                  </SelectContent>
+                </Select>
                 <Button data-testid="add-team-btn" onClick={handleAddTeam}>
                   <Plus className="w-4 h-4 mr-2" />
                   Add
                 </Button>
               </div>
-              <div className="space-y-4">
+              <div className="space-y-6">
                 {pillars.map((pillar) => {
+                  const pillarDepts = departments.filter(d => d.pillar === pillar.name);
                   const pillarTeams = teams.filter(t => t.pillar === pillar.name);
                   if (pillarTeams.length === 0) return null;
                   return (
-                    <div key={pillar.id}>
-                      <h3 className="font-semibold text-gray-900 mb-3">{pillar.name}</h3>
-                      <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-                        {pillarTeams.map((team) => (
-                          <div
-                            key={team.id}
-                            data-testid={`team-${team.id}`}
-                            className="flex items-center justify-between p-3 bg-gray-50 rounded-lg border"
-                          >
-                            <span>{team.name}</span>
-                            <Button
-                              data-testid={`delete-team-${team.id}`}
-                              variant="ghost"
-                              size="sm"
-                              onClick={() => handleDeleteTeam(team.id)}
-                            >
-                              <Trash2 className="w-4 h-4 text-red-600" />
-                            </Button>
+                    <div key={pillar.id} className="border rounded-lg p-4">
+                      <h3 className="font-bold text-blue-800 mb-4">{pillar.name}</h3>
+                      {pillarDepts.map((dept) => {
+                        const deptTeams = pillarTeams.filter(t => t.department === dept.name);
+                        if (deptTeams.length === 0) return null;
+                        return (
+                          <div key={dept.id} className="ml-4 mb-4">
+                            <h4 className="font-semibold text-gray-700 mb-2">{dept.name}</h4>
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-2 ml-4">
+                              {deptTeams.map((team) => (
+                                <div
+                                  key={team.id}
+                                  data-testid={`team-${team.id}`}
+                                  className="flex items-center justify-between p-2 bg-gray-50 rounded border"
+                                >
+                                  <span className="text-sm">{team.name}</span>
+                                  <Button
+                                    data-testid={`delete-team-${team.id}`}
+                                    variant="ghost"
+                                    size="sm"
+                                    onClick={() => handleDeleteTeam(team.id)}
+                                  >
+                                    <Trash2 className="w-4 h-4 text-red-600" />
+                                  </Button>
+                                </div>
+                              ))}
+                            </div>
                           </div>
-                        ))}
-                      </div>
+                        );
+                      })}
                     </div>
                   );
                 })}
+              </div>
+            </CardContent>
+          </Card>
+        </TabsContent>
+
+        {/* Tech & Engineering Tab */}
+        <TabsContent value="tech">
+          <Card>
+            <CardHeader>
+              <CardTitle>Tech & Engineering Personnel</CardTitle>
+              <CardDescription>Manage technical resources for complex idea implementation</CardDescription>
+            </CardHeader>
+            <CardContent className="space-y-6">
+              <div className="flex space-x-3 flex-wrap gap-2">
+                <Input
+                  data-testid="new-tech-name-input"
+                  value={newTechPerson.name}
+                  onChange={(e) => setNewTechPerson({ ...newTechPerson, name: e.target.value })}
+                  placeholder="Full name"
+                  className="flex-1 min-w-[150px]"
+                />
+                <Input
+                  data-testid="new-tech-email-input"
+                  type="email"
+                  value={newTechPerson.email}
+                  onChange={(e) => setNewTechPerson({ ...newTechPerson, email: e.target.value })}
+                  placeholder="Email address"
+                  className="flex-1 min-w-[150px]"
+                />
+                <Input
+                  data-testid="new-tech-specialization-input"
+                  value={newTechPerson.specialization}
+                  onChange={(e) => setNewTechPerson({ ...newTechPerson, specialization: e.target.value })}
+                  placeholder="Specialization"
+                  className="flex-1 min-w-[150px]"
+                />
+                <Button data-testid="add-tech-btn" onClick={handleAddTechPerson} className="bg-blue-700 hover:bg-blue-800">
+                  <Plus className="w-4 h-4 mr-2" />
+                  Add
+                </Button>
+              </div>
+              <div className="overflow-x-auto">
+                <Table>
+                  <TableHeader>
+                    <TableRow>
+                      <TableHead>Name</TableHead>
+                      <TableHead>Email</TableHead>
+                      <TableHead>Specialization</TableHead>
+                      <TableHead className="text-right">Actions</TableHead>
+                    </TableRow>
+                  </TableHeader>
+                  <TableBody>
+                    {techPersons.map((person) => (
+                      <TableRow key={person.id} data-testid={`tech-person-${person.id}`}>
+                        <TableCell className="font-medium">{person.name}</TableCell>
+                        <TableCell>{person.email || '-'}</TableCell>
+                        <TableCell>
+                          {person.specialization ? (
+                            <Badge variant="outline" className="bg-blue-50">{person.specialization}</Badge>
+                          ) : '-'}
+                        </TableCell>
+                        <TableCell className="text-right">
+                          <Button
+                            data-testid={`delete-tech-${person.id}`}
+                            variant="outline"
+                            size="sm"
+                            onClick={() => handleDeleteTechPerson(person.id)}
+                          >
+                            <Trash2 className="w-4 h-4" />
+                          </Button>
+                        </TableCell>
+                      </TableRow>
+                    ))}
+                  </TableBody>
+                </Table>
               </div>
             </CardContent>
           </Card>
