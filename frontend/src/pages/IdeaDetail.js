@@ -225,18 +225,35 @@ export default function IdeaDetail() {
                 </div>
                 <CardDescription className="text-base">
                   {idea.idea_number} • Submitted by {idea.submitted_by_username}
+                  {idea.is_best_idea && (
+                    <Badge className="ml-3 bg-yellow-500 text-white">
+                      <Star className="w-3 h-3 mr-1" /> Best Eye-dea
+                    </Badge>
+                  )}
                 </CardDescription>
               </div>
-              {canEdit && (
-                <Button
-                  data-testid="edit-idea-btn"
-                  onClick={() => navigate(`/ideas/edit/${idea.id}`)}
-                  className="bg-blue-700 hover:bg-blue-800"
-                >
-                  <Edit className="w-4 h-4 mr-2" />
-                  Edit
-                </Button>
-              )}
+              <div className="flex space-x-2">
+                {canChangeStatus && (
+                  <Button
+                    data-testid="edit-status-btn"
+                    onClick={() => setShowStatusDialog(true)}
+                    className="bg-purple-600 hover:bg-purple-700"
+                  >
+                    <Settings className="w-4 h-4 mr-2" />
+                    Edit Status
+                  </Button>
+                )}
+                {canEdit && (
+                  <Button
+                    data-testid="edit-idea-btn"
+                    onClick={() => navigate(`/ideas/edit/${idea.id}`)}
+                    className="bg-blue-700 hover:bg-blue-800"
+                  >
+                    <Edit className="w-4 h-4 mr-2" />
+                    Edit
+                  </Button>
+                )}
+              </div>
             </div>
           </CardHeader>
         </Card>
