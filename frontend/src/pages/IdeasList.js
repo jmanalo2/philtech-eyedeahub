@@ -65,7 +65,9 @@ export default function IdeasList() {
   };
 
   const handleFilterChange = (key, value) => {
-    const newFilters = { ...filters, [key]: value };
+    // Handle "all" selection by clearing the filter
+    const actualValue = value === ' ' ? '' : value;
+    const newFilters = { ...filters, [key]: actualValue };
     setFilters(newFilters);
     
     const params = new URLSearchParams();
