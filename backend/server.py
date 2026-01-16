@@ -437,6 +437,11 @@ async def reset_password(request: ResetPasswordRequest):
 
 # ==================== IDEAS ROUTES ====================
 
+def add_is_evaluated(idea_doc: dict) -> dict:
+    """Add computed is_evaluated field based on evaluated_by presence"""
+    idea_doc["is_evaluated"] = idea_doc.get("evaluated_by") is not None
+    return idea_doc
+
 @api_router.get("/ideas", response_model=List[Idea])
 async def get_ideas(
     status: Optional[str] = None,
@@ -462,7 +467,7 @@ async def get_ideas(
         query["assigned_approver"] = assigned_approver
     
     ideas = await db.ideas.find(query, {"_id": 0}).sort("created_at", -1).to_list(1000)
-    return [Idea(**idea) for idea in ideas]
+    return [Idea(**add_is_evaluated(idea)) for idea in ideas]
 
 @api_router.post("/ideas", response_model=Idea)
 async def create_idea(idea_data: IdeaCreate, current_user: dict = Depends(get_current_user)):
