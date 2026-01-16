@@ -31,9 +31,10 @@ export default function CreateIdea() {
     current_process: '',
     suggested_solution: '',
     benefits: '',
-    target_completion: '',
+    target_completion: null,
     department: '',
-    team: ''
+    team: '',
+    manager: ''
   });
 
   const improvementTypes = [
@@ -51,10 +52,20 @@ export default function CreateIdea() {
 
   useEffect(() => {
     fetchDropdownData();
+    // Auto-populate from user profile if creating new idea
+    if (!id && user) {
+      setFormData(prev => ({
+        ...prev,
+        pillar: user.pillar || '',
+        department: user.department || '',
+        team: user.team || '',
+        manager: user.manager || ''
+      }));
+    }
     if (id) {
       fetchIdea();
     }
-  }, [id]);
+  }, [id, user]);
 
   useEffect(() => {
     if (formData.pillar) {
