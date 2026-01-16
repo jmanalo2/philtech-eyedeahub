@@ -131,6 +131,27 @@ export default function IdeaDetail() {
     }
   };
 
+  const handleUpdateStatus = async () => {
+    if (!newStatus) {
+      toast.error('Please select a status');
+      return;
+    }
+    setUpdatingStatus(true);
+    try {
+      await axios.post(`${process.env.REACT_APP_BACKEND_URL}/api/ideas/${id}/ci-update-status`, {
+        new_status: newStatus
+      });
+      toast.success(`Status updated to ${newStatus.replace('_', ' ')}`);
+      setShowStatusDialog(false);
+      setNewStatus('');
+      fetchIdea();
+    } catch (error) {
+      toast.error(error.response?.data?.detail || 'Failed to update status');
+    } finally {
+      setUpdatingStatus(false);
+    }
+  };
+
   const getStatusBadge = (status) => {
     const variants = {
       pending: { className: 'bg-yellow-100 text-yellow-800 border-yellow-300' },
