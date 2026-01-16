@@ -196,6 +196,29 @@ export default function AdminPanel() {
     }
   };
 
+  const handleAddTechPerson = async () => {
+    if (!newTechPerson.name.trim()) return;
+    try {
+      await axios.post(`${process.env.REACT_APP_BACKEND_URL}/api/admin/tech-persons`, newTechPerson);
+      toast.success('Tech & Engineering person added');
+      setNewTechPerson({ name: '', email: '', specialization: '' });
+      fetchAllData();
+    } catch (error) {
+      toast.error('Failed to add tech person');
+    }
+  };
+
+  const handleDeleteTechPerson = async (personId) => {
+    if (!window.confirm('Are you sure?')) return;
+    try {
+      await axios.delete(`${process.env.REACT_APP_BACKEND_URL}/api/admin/tech-persons/${personId}`);
+      toast.success('Tech person deleted');
+      fetchAllData();
+    } catch (error) {
+      toast.error('Failed to delete tech person');
+    }
+  };
+
   const handleSeedData = async () => {
     try {
       await axios.post(`${process.env.REACT_APP_BACKEND_URL}/api/admin/seed-data`);
