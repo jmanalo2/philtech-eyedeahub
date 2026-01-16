@@ -1120,15 +1120,19 @@ async def delete_pillar(pillar_id: str, current_user: dict = Depends(get_admin_u
     return {"message": "Pillar deleted successfully"}
 
 @api_router.get("/admin/teams", response_model=List[Team])
-async def get_teams(pillar: Optional[str] = None, current_user: dict = Depends(get_current_user)):
-    query = {"pillar": pillar} if pillar else {}
+async def get_teams(pillar: Optional[str] = None, department: Optional[str] = None, current_user: dict = Depends(get_current_user)):
+    query = {}
+    if pillar:
+        query["pillar"] = pillar
+    if department:
+        query["department"] = department
     teams = await db.teams.find(query, {"_id": 0}).to_list(1000)
     return [Team(**team) for team in teams]
 
 @api_router.post("/admin/teams", response_model=Team)
 async def create_team(team_data: TeamBase, current_user: dict = Depends(get_admin_user)):
     team_id = f"team_{datetime.now(timezone.utc).timestamp()}"
-    team_doc = {"id": team_id, "name": team_data.name, "pillar": team_data.pillar}
+    team_doc = {"id": team_id, "name": team_data.name, "pillar": team_data.pillar, "department": team_data.department}
     await db.teams.insert_one(team_doc)
     return Team(**team_doc)
 
