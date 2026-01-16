@@ -231,14 +231,38 @@ export default function CreateIdea() {
               </div>
 
               <div>
-                <Label htmlFor="target_completion">Target Completion *</Label>
+                <Label htmlFor="target_completion">Target Completion Date *</Label>
+                <Popover>
+                  <PopoverTrigger asChild>
+                    <Button
+                      variant="outline"
+                      data-testid="target-completion-input"
+                      className={`w-full justify-start text-left font-normal ${!formData.target_completion && 'text-muted-foreground'}`}
+                    >
+                      <CalendarIcon className="mr-2 h-4 w-4" />
+                      {formData.target_completion ? format(formData.target_completion, 'PPP') : 'Select date'}
+                    </Button>
+                  </PopoverTrigger>
+                  <PopoverContent className="w-auto p-0" align="start">
+                    <Calendar
+                      mode="single"
+                      selected={formData.target_completion}
+                      onSelect={(date) => handleChange('target_completion', date)}
+                      initialFocus
+                    />
+                  </PopoverContent>
+                </Popover>
+              </div>
+
+              <div>
+                <Label htmlFor="manager">Manager</Label>
                 <Input
-                  id="target_completion"
-                  data-testid="target-completion-input"
-                  value={formData.target_completion}
-                  onChange={(e) => handleChange('target_completion', e.target.value)}
-                  placeholder="e.g., Q2 2025"
-                  required
+                  id="manager"
+                  data-testid="manager-input"
+                  value={formData.manager}
+                  onChange={(e) => handleChange('manager', e.target.value)}
+                  placeholder="Manager's name"
+                  disabled={!!user?.manager}
                 />
               </div>
             </div>
