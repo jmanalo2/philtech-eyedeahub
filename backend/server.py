@@ -43,8 +43,8 @@ api_router = APIRouter(prefix="/api")
 class UserBase(BaseModel):
     username: str
     email: EmailStr
-    first_name: str
-    last_name: str
+    first_name: Optional[str] = None
+    last_name: Optional[str] = None
     role: str = "user"  # user, approver, admin
     sub_role: Optional[str] = None  # For approver: "approver" or "ci_excellence"
     department: Optional[str] = None
