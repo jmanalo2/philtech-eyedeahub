@@ -139,6 +139,7 @@ class Idea(IdeaBase):
     evaluated_by: Optional[str] = None
     evaluated_by_username: Optional[str] = None
     evaluated_at: Optional[str] = None
+    is_evaluated: Optional[bool] = False  # Computed field to indicate if idea has been evaluated
 
 class CommentBase(BaseModel):
     comment_text: str
