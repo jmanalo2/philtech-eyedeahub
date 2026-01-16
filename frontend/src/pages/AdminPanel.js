@@ -10,18 +10,20 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '.
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from '../components/ui/dialog';
 import { Badge } from '../components/ui/badge';
 import { toast } from 'sonner';
-import { Plus, Trash2, Edit, Users, Briefcase, Building, UsersRound, Upload, Download } from 'lucide-react';
+import { Plus, Trash2, Edit, Users, Briefcase, Building, UsersRound, Upload, Download, Wrench } from 'lucide-react';
 
 export default function AdminPanel() {
   const [users, setUsers] = useState([]);
   const [departments, setDepartments] = useState([]);
   const [pillars, setPillars] = useState([]);
   const [teams, setTeams] = useState([]);
+  const [techPersons, setTechPersons] = useState([]);
   const [editingUser, setEditingUser] = useState(null);
   const [showUserDialog, setShowUserDialog] = useState(false);
-  const [newDepartment, setNewDepartment] = useState('');
+  const [newDepartment, setNewDepartment] = useState({ name: '', pillar: '' });
   const [newPillar, setNewPillar] = useState('');
-  const [newTeam, setNewTeam] = useState({ name: '', pillar: '' });
+  const [newTeam, setNewTeam] = useState({ name: '', pillar: '', department: '' });
+  const [newTechPerson, setNewTechPerson] = useState({ name: '', email: '', specialization: '' });
   const [uploading, setUploading] = useState(false);
   const fileInputRef = useRef(null);
 
@@ -31,16 +33,18 @@ export default function AdminPanel() {
 
   const fetchAllData = async () => {
     try {
-      const [usersRes, deptsRes, pillarsRes, teamsRes] = await Promise.all([
+      const [usersRes, deptsRes, pillarsRes, teamsRes, techRes] = await Promise.all([
         axios.get(`${process.env.REACT_APP_BACKEND_URL}/api/admin/users`),
         axios.get(`${process.env.REACT_APP_BACKEND_URL}/api/admin/departments`),
         axios.get(`${process.env.REACT_APP_BACKEND_URL}/api/admin/pillars`),
-        axios.get(`${process.env.REACT_APP_BACKEND_URL}/api/admin/teams`)
+        axios.get(`${process.env.REACT_APP_BACKEND_URL}/api/admin/teams`),
+        axios.get(`${process.env.REACT_APP_BACKEND_URL}/api/admin/tech-persons`)
       ]);
       setUsers(usersRes.data);
       setDepartments(deptsRes.data);
       setPillars(pillarsRes.data);
       setTeams(teamsRes.data);
+      setTechPersons(techRes.data);
     } catch (error) {
       console.error('Failed to fetch data:', error);
     }
