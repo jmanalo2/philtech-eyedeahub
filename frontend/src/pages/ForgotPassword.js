@@ -70,7 +70,7 @@ export default function ForgotPassword() {
                       type="email"
                       value={email}
                       onChange={(e) => setEmail(e.target.value)}
-                      placeholder="your.email@philtech.com"
+                      placeholder="yourname@albertsons.com"
                       className="pl-10"
                       required
                     />
