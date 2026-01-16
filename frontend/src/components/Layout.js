@@ -74,6 +74,18 @@ export default function Layout() {
                   </Button>
                 </Link>
               )}
+              {(user?.role === 'admin' || (user?.role === 'approver' && user?.sub_role === 'ci_excellence')) && (
+                <Link to="/ci-dashboard">
+                  <Button
+                    data-testid="nav-ci-dashboard-btn"
+                    variant={isActive('/ci-dashboard') ? 'secondary' : 'ghost'}
+                    className={isActive('/ci-dashboard') ? 'bg-white text-blue-900' : 'text-white hover:bg-blue-800'}
+                  >
+                    <BarChart3 className="w-4 h-4 mr-2" />
+                    C.I. Analytics
+                  </Button>
+                </Link>
+              )}
               <Link to="/profile">
                 <Button
                   data-testid="nav-profile-btn"
