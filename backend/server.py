@@ -558,7 +558,7 @@ async def update_idea(idea_id: str, idea_data: IdeaCreate, current_user: dict = 
     
     await db.ideas.update_one({"id": idea_id}, {"$set": update_doc})
     updated_idea = await db.ideas.find_one({"id": idea_id}, {"_id": 0})
-    return Idea(**updated_idea)
+    return Idea(**add_is_evaluated(updated_idea))
 
 @api_router.delete("/ideas/{idea_id}")
 async def delete_idea(idea_id: str, current_user: dict = Depends(get_admin_user)):
