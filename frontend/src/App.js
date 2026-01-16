@@ -79,6 +79,7 @@ function App() {
             <Route path="ideas/new" element={<CreateIdea />} />
             <Route path="ideas/edit/:id" element={<CreateIdea />} />
             <Route path="profile" element={<Profile />} />
+            <Route path="ci-dashboard" element={<CIRoute><CIDashboard /></CIRoute>} />
             <Route path="admin" element={<AdminRoute><AdminPanel /></AdminRoute>} />
           </Route>
         </Routes>
