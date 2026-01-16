@@ -1,8 +1,10 @@
 import React, { useEffect, useState } from 'react';
+import { Link } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
 import axios from 'axios';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '../components/ui/card';
-import { TrendingUp, CheckCircle2, XCircle, AlertCircle, Clock, Lightbulb } from 'lucide-react';
+import { Badge } from '../components/ui/badge';
+import { TrendingUp, CheckCircle2, XCircle, AlertCircle, Clock, Lightbulb, Award, Wrench, Star } from 'lucide-react';
 
 export default function Dashboard() {
   const { user } = useAuth();
@@ -34,42 +36,64 @@ export default function Dashboard() {
       value: stats?.total_ideas || 0,
       icon: Lightbulb,
       color: 'bg-blue-500',
-      textColor: 'text-blue-600'
+      textColor: 'text-blue-600',
+      link: '/ideas'
     },
     {
       title: 'Pending Review',
       value: stats?.pending_ideas || 0,
       icon: Clock,
       color: 'bg-yellow-500',
-      textColor: 'text-yellow-600'
+      textColor: 'text-yellow-600',
+      link: '/ideas?status=pending'
     },
     {
       title: 'Approved',
       value: stats?.approved_ideas || 0,
       icon: CheckCircle2,
       color: 'bg-green-500',
-      textColor: 'text-green-600'
+      textColor: 'text-green-600',
+      link: '/ideas?status=approved'
     },
     {
-      title: 'Declined',
-      value: stats?.declined_ideas || 0,
-      icon: XCircle,
-      color: 'bg-red-500',
-      textColor: 'text-red-600'
+      title: 'Implemented',
+      value: stats?.implemented_ideas || 0,
+      icon: Award,
+      color: 'bg-emerald-500',
+      textColor: 'text-emerald-600',
+      link: '/ideas?status=implemented'
+    },
+    {
+      title: 'Assigned to T&E',
+      value: stats?.assigned_to_te_ideas || 0,
+      icon: Wrench,
+      color: 'bg-purple-500',
+      textColor: 'text-purple-600',
+      link: '/ideas?status=assigned_to_te'
     },
     {
       title: 'Revision Requested',
       value: stats?.revision_requested_ideas || 0,
       icon: AlertCircle,
       color: 'bg-orange-500',
-      textColor: 'text-orange-600'
+      textColor: 'text-orange-600',
+      link: '/ideas?status=revision_requested'
     },
     {
-      title: 'My Eye-deas',
+      title: 'Declined',
+      value: stats?.declined_ideas || 0,
+      icon: XCircle,
+      color: 'bg-red-500',
+      textColor: 'text-red-600',
+      link: '/ideas?status=declined'
+    },
+    {
+      title: 'My Submissions',
       value: stats?.my_ideas || 0,
       icon: TrendingUp,
-      color: 'bg-purple-500',
-      textColor: 'text-purple-600'
+      color: 'bg-indigo-500',
+      textColor: 'text-indigo-600',
+      link: '/ideas'
     }
   ];
 
@@ -80,30 +104,60 @@ export default function Dashboard() {
         <p className="text-gray-600">Here's an overview of your Eye-dea management system</p>
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+      {/* Best Eye-dea Banner */}
+      {stats?.best_idea && (
+        <Link to={`/ideas/${stats.best_idea.id}`}>
+          <Card className="mb-8 bg-gradient-to-r from-yellow-50 to-amber-50 border-yellow-300 hover:shadow-lg transition-shadow cursor-pointer">
+            <CardContent className="py-4">
+              <div className="flex items-center justify-between">
+                <div className="flex items-center space-x-4">
+                  <div className="bg-yellow-500 p-3 rounded-full">
+                    <Star className="w-6 h-6 text-white" />
+                  </div>
+                  <div>
+                    <div className="flex items-center space-x-2">
+                      <Badge className="bg-yellow-500 text-white">Best Eye-dea</Badge>
+                      <span className="text-sm text-gray-600">{stats.best_idea.idea_number}</span>
+                    </div>
+                    <h3 className="text-lg font-bold text-gray-900 mt-1">{stats.best_idea.title}</h3>
+                    <p className="text-sm text-gray-600">Submitted by {stats.best_idea.submitted_by_username} • {stats.best_idea.pillar}</p>
+                  </div>
+                </div>
+                <div className="text-right hidden md:block">
+                  <p className="text-sm text-gray-500">Click to view details</p>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+        </Link>
+      )}
+
+      <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
         {statCards.map((stat, index) => {
           const Icon = stat.icon;
           return (
-            <Card key={index} className="hover:shadow-lg transition-shadow duration-300" data-testid={`stat-card-${index}`}>
-              <CardHeader className="flex flex-row items-center justify-between pb-2">
-                <CardTitle className="text-sm font-medium text-gray-600">
-                  {stat.title}
-                </CardTitle>
-                <div className={`${stat.color} p-2 rounded-lg`}>
-                  <Icon className="w-5 h-5 text-white" />
-                </div>
-              </CardHeader>
-              <CardContent>
-                <div className={`text-3xl font-bold ${stat.textColor}`}>
-                  {stat.value}
-                </div>
-              </CardContent>
-            </Card>
+            <Link key={index} to={stat.link}>
+              <Card className="hover:shadow-lg transition-shadow duration-300 cursor-pointer h-full" data-testid={`stat-card-${index}`}>
+                <CardHeader className="flex flex-row items-center justify-between pb-2">
+                  <CardTitle className="text-xs font-medium text-gray-600">
+                    {stat.title}
+                  </CardTitle>
+                  <div className={`${stat.color} p-2 rounded-lg`}>
+                    <Icon className="w-4 h-4 text-white" />
+                  </div>
+                </CardHeader>
+                <CardContent>
+                  <div className={`text-2xl font-bold ${stat.textColor}`}>
+                    {stat.value}
+                  </div>
+                </CardContent>
+              </Card>
+            </Link>
           );
         })}
       </div>
 
-      <div className="mt-12">
+      <div className="mt-8">
         <Card>
           <CardHeader>
             <CardTitle>Quick Actions</CardTitle>
