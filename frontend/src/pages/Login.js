@@ -294,17 +294,14 @@ export default function Login() {
                   )}
 
                   <div>
-                    <Label htmlFor="register-manager">Manager</Label>
-                    <Select value={registerForm.manager} onValueChange={(value) => setRegisterForm({ ...registerForm, manager: value })}>
-                      <SelectTrigger data-testid="register-manager-select">
-                        <SelectValue placeholder="Select Manager" />
-                      </SelectTrigger>
-                      <SelectContent>
-                        {managers.map((mgr) => (
-                          <SelectItem key={mgr.id} value={mgr.username}>{mgr.username}</SelectItem>
-                        ))}
-                      </SelectContent>
-                    </Select>
+                    <Label htmlFor="register-manager">Manager (optional)</Label>
+                    <Input
+                      id="register-manager"
+                      data-testid="register-manager-input"
+                      value={registerForm.manager}
+                      onChange={(e) => setRegisterForm({ ...registerForm, manager: e.target.value })}
+                      placeholder="Enter manager's name or username"
+                    />
                   </div>
 
                   <div>
