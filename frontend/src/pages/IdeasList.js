@@ -292,7 +292,7 @@ export default function IdeasList() {
                     )}
                   </CardContent>
                 </Card>
-              </Link>
+              </div>
             );
           })
         )}
