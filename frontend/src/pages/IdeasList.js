@@ -220,6 +220,7 @@ export default function IdeasList() {
         ) : (
           ideas.map((idea) => {
             const needsRevision = idea.status === 'revision_requested' && idea.submitted_by === user?.id;
+            const isBestIdea = idea.is_best_idea;
             return (
               <div 
                 key={idea.id} 
@@ -228,10 +229,17 @@ export default function IdeasList() {
               >
                 <Card 
                   className={`hover:shadow-lg transition-all duration-200 ${
+                    isBestIdea ? 'border-2 border-yellow-400 bg-yellow-50' :
                     needsRevision ? 'border-2 border-orange-400 bg-orange-50' : ''
                   }`} 
                   data-testid={`idea-card-${idea.id}`}
                 >
+                  {isBestIdea && (
+                    <div className="bg-yellow-400 text-yellow-900 px-4 py-2 flex items-center space-x-2 rounded-t-lg">
+                      <Star className="w-5 h-5" />
+                      <span className="font-bold">BEST EYE-DEA</span>
+                    </div>
+                  )}
                   <CardHeader>
                     <div className="flex justify-between items-start">
                       <div className="flex-1">
