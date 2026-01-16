@@ -114,8 +114,31 @@ export default function CIEvaluationPanel({ idea, onEvaluationComplete }) {
     return (
       <Card className="bg-green-50 border-green-200">
         <CardHeader>
-          <CardTitle className="text-green-900">✓ Already Evaluated</CardTitle>
-          <CardDescription>This Eye-dea has been evaluated by the C.I. Excellence Team</CardDescription>
+          <div className="flex justify-between items-start">
+            <div>
+              <CardTitle className="text-green-900 flex items-center">
+                <CheckCircle className="w-5 h-5 mr-2" />
+                Already Evaluated
+                {idea.is_best_idea && (
+                  <Badge className="ml-3 bg-yellow-500 text-white">
+                    <Star className="w-3 h-3 mr-1" /> Best Eye-dea
+                  </Badge>
+                )}
+              </CardTitle>
+              <CardDescription>This Eye-dea has been evaluated by the C.I. Excellence Team</CardDescription>
+            </div>
+            {!idea.is_best_idea && (
+              <Button
+                data-testid="mark-best-idea-btn"
+                onClick={handleMarkAsBestIdea}
+                disabled={markingBest}
+                className="bg-yellow-500 hover:bg-yellow-600 text-white"
+              >
+                <Award className="w-4 h-4 mr-2" />
+                {markingBest ? 'Marking...' : 'Mark as Best Eye-dea'}
+              </Button>
+            )}
+          </div>
         </CardHeader>
         <CardContent>
           <div className="space-y-3">
