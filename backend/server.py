@@ -920,29 +920,57 @@ async def get_dashboard_stats(current_user: dict = Depends(get_current_user)):
     )
 
 @api_router.get("/dashboard/analytics")
-async def get_dashboard_analytics(current_user: dict = Depends(get_current_user)):
+async def get_dashboard_analytics(
+    start_date: Optional[str] = None,
+    end_date: Optional[str] = None,
+    current_user: dict = Depends(get_current_user)
+):
+    # Build date filter
+    date_filter = {}
+    if start_date:
+        date_filter["created_at"] = {"$gte": start_date}
+    if end_date:
+        if "created_at" in date_filter:
+            date_filter["created_at"]["$lte"] = end_date
+        else:
+            date_filter["created_at"] = {"$lte": end_date}
+    
+    # Base query with date filter
+    base_query = date_filter if date_filter else {}
+    
+    # Total counts
+    total_ideas = await db.ideas.count_documents(base_query)
+    declined_count = await db.ideas.count_documents({**base_query, "status": "declined"})
+    approved_count = await db.ideas.count_documents({**base_query, "status": "approved"})
+    implemented_count = await db.ideas.count_documents({**base_query, "status": "implemented"})
+    assigned_to_te_count = await db.ideas.count_documents({**base_query, "status": "assigned_to_te"})
+    pending_count = await db.ideas.count_documents({**base_query, "status": "pending"})
+    revision_count = await db.ideas.count_documents({**base_query, "status": "revision_requested"})
+    
     # Quick Wins count
-    quick_wins_count = await db.ideas.count_documents({"is_quick_win": True})
+    quick_wins_count = await db.ideas.count_documents({**base_query, "is_quick_win": True})
     
     # Complexity counts
-    low_complexity = await db.ideas.count_documents({"complexity_level": "Low"})
-    medium_complexity = await db.ideas.count_documents({"complexity_level": "Medium"})
-    high_complexity = await db.ideas.count_documents({"complexity_level": "High"})
+    low_complexity = await db.ideas.count_documents({**base_query, "complexity_level": "Low"})
+    medium_complexity = await db.ideas.count_documents({**base_query, "complexity_level": "Medium"})
+    high_complexity = await db.ideas.count_documents({**base_query, "complexity_level": "High"})
     
     # Best idea
     best_idea = await db.ideas.find_one({"is_best_idea": True}, {"_id": 0})
     
     # Total cost savings
+    cost_match = {**base_query, "savings_type": "cost_savings", "cost_savings": {"$ne": None}}
     cost_savings_pipeline = [
-        {"$match": {"savings_type": "cost_savings", "cost_savings": {"$ne": None}}},
+        {"$match": cost_match},
         {"$group": {"_id": None, "total": {"$sum": "$cost_savings"}}}
     ]
     cost_result = await db.ideas.aggregate(cost_savings_pipeline).to_list(1)
     total_cost_savings = cost_result[0]["total"] if cost_result else 0
     
     # Total time saved
+    time_match = {**base_query, "savings_type": "time_saved"}
     time_saved_pipeline = [
-        {"$match": {"savings_type": "time_saved"}},
+        {"$match": time_match},
         {"$group": {
             "_id": None,
             "total_hours": {"$sum": {"$ifNull": ["$time_saved_hours", 0]}},
@@ -957,14 +985,17 @@ async def get_dashboard_analytics(current_user: dict = Depends(get_current_user)
     total_hours += total_minutes // 60
     total_minutes = total_minutes % 60
     
-    # Approval rates
-    total_evaluated = await db.ideas.count_documents({"status": {"$in": ["approved", "declined"]}})
-    approved_count = await db.ideas.count_documents({"status": "approved"})
-    approval_rate = (approved_count / total_evaluated * 100) if total_evaluated > 0 else 0
+    # Calculate rates using formula: count / (total - declined)
+    denominator = total_ideas - declined_count
     
-    # Implementation rate (approved ideas that are marked as implemented)
-    implemented_count = await db.ideas.count_documents({"status": "approved"})
-    implementation_rate = (implemented_count / total_evaluated * 100) if total_evaluated > 0 else 0
+    # Approval Rate = approved / (total - declined)
+    approval_rate = (approved_count / denominator * 100) if denominator > 0 else 0
+    
+    # Implementation Rate = implemented / (total - declined)
+    implementation_rate = (implemented_count / denominator * 100) if denominator > 0 else 0
+    
+    # Assigned to T&E Rate = assigned_to_te / (total - declined)
+    assigned_to_te_rate = (assigned_to_te_count / denominator * 100) if denominator > 0 else 0
     
     return {
         "quick_wins_count": quick_wins_count,
@@ -973,14 +1004,24 @@ async def get_dashboard_analytics(current_user: dict = Depends(get_current_user)
             "medium": medium_complexity,
             "high": high_complexity
         },
-        "best_idea": Idea(**best_idea) if best_idea else None,
+        "best_idea": Idea(**add_is_evaluated(best_idea)) if best_idea else None,
         "total_cost_savings": total_cost_savings,
         "total_time_saved": {
             "hours": total_hours,
             "minutes": total_minutes
         },
+        # Counts
+        "total_ideas": total_ideas,
+        "approved_count": approved_count,
+        "declined_count": declined_count,
+        "implemented_count": implemented_count,
+        "assigned_to_te_count": assigned_to_te_count,
+        "pending_count": pending_count,
+        "revision_count": revision_count,
+        # Rates
         "approval_rate": round(approval_rate, 2),
         "implementation_rate": round(implementation_rate, 2),
+        "assigned_to_te_rate": round(assigned_to_te_rate, 2),
         "charts_data": {
             "complexity_chart": [
                 {"name": "Low Complexity", "value": low_complexity},
@@ -991,9 +1032,13 @@ async def get_dashboard_analytics(current_user: dict = Depends(get_current_user)
                 {"name": "Quick Wins", "value": quick_wins_count},
                 {"name": "Not Quick Wins", "value": low_complexity + medium_complexity + high_complexity}
             ],
-            "approval_pie": [
+            "status_chart": [
                 {"name": "Approved", "value": approved_count},
-                {"name": "Declined", "value": total_evaluated - approved_count}
+                {"name": "Implemented", "value": implemented_count},
+                {"name": "Assigned to T&E", "value": assigned_to_te_count},
+                {"name": "Pending", "value": pending_count},
+                {"name": "Revision Requested", "value": revision_count},
+                {"name": "Declined", "value": declined_count}
             ]
         }
     }
