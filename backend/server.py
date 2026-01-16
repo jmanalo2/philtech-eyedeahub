@@ -828,6 +828,28 @@ async def set_best_idea(idea_id: str, selection: BestIdeaSelection, current_user
     
     return {"message": "Best idea status updated"}
 
+@api_router.post("/ideas/{idea_id}/mark-best-idea")
+async def mark_best_idea(idea_id: str, current_user: dict = Depends(get_current_user)):
+    if current_user["role"] != "approver" or current_user.get("sub_role") != "ci_excellence":
+        if current_user["role"] != "admin":
+            raise HTTPException(status_code=403, detail="Only C.I. Excellence Team can select best ideas")
+    
+    # Verify idea exists
+    idea = await db.ideas.find_one({"id": idea_id}, {"_id": 0})
+    if not idea:
+        raise HTTPException(status_code=404, detail="Idea not found")
+    
+    # Unset previous best idea if exists
+    await db.ideas.update_many({}, {"$set": {"is_best_idea": False}})
+    
+    # Set this idea as best
+    await db.ideas.update_one(
+        {"id": idea_id},
+        {"$set": {"is_best_idea": True, "updated_at": datetime.now(timezone.utc).isoformat()}}
+    )
+    
+    return {"message": "Idea marked as best Eye-dea"}
+
 # ==================== DASHBOARD ROUTES ====================
 
 @api_router.get("/dashboard/stats", response_model=DashboardStats)
