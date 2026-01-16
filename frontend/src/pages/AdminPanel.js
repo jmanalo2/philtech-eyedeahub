@@ -174,11 +174,11 @@ export default function AdminPanel() {
   };
 
   const handleAddTeam = async () => {
-    if (!newTeam.name.trim() || !newTeam.pillar) return;
+    if (!newTeam.name.trim() || !newTeam.pillar || !newTeam.department) return;
     try {
       await axios.post(`${process.env.REACT_APP_BACKEND_URL}/api/admin/teams`, newTeam);
       toast.success('Team added');
-      setNewTeam({ name: '', pillar: '' });
+      setNewTeam({ name: '', pillar: '', department: '' });
       fetchAllData();
     } catch (error) {
       toast.error('Failed to add team');
