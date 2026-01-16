@@ -265,22 +265,26 @@ export default function AdminPanel() {
       </div>
 
       <Tabs defaultValue="users" className="space-y-6">
-        <TabsList className="grid w-full grid-cols-4">
+        <TabsList className="grid w-full grid-cols-5">
           <TabsTrigger value="users" data-testid="users-tab">
             <Users className="w-4 h-4 mr-2" />
             Users
-          </TabsTrigger>
-          <TabsTrigger value="departments" data-testid="departments-tab">
-            <Building className="w-4 h-4 mr-2" />
-            Departments
           </TabsTrigger>
           <TabsTrigger value="pillars" data-testid="pillars-tab">
             <Briefcase className="w-4 h-4 mr-2" />
             Pillars
           </TabsTrigger>
+          <TabsTrigger value="departments" data-testid="departments-tab">
+            <Building className="w-4 h-4 mr-2" />
+            Departments
+          </TabsTrigger>
           <TabsTrigger value="teams" data-testid="teams-tab">
             <UsersRound className="w-4 h-4 mr-2" />
             Teams
+          </TabsTrigger>
+          <TabsTrigger value="tech" data-testid="tech-tab">
+            <Wrench className="w-4 h-4 mr-2" />
+            Tech & Eng
           </TabsTrigger>
         </TabsList>
 
