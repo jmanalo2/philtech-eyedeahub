@@ -908,16 +908,24 @@ async def get_dashboard_stats(current_user: dict = Depends(get_current_user)):
     approved = await db.ideas.count_documents({"status": "approved"})
     declined = await db.ideas.count_documents({"status": "declined"})
     revision = await db.ideas.count_documents({"status": "revision_requested"})
+    implemented = await db.ideas.count_documents({"status": "implemented"})
+    assigned_to_te = await db.ideas.count_documents({"status": "assigned_to_te"})
     my_ideas = await db.ideas.count_documents({"submitted_by": current_user["id"]})
     
-    return DashboardStats(
-        total_ideas=total,
-        pending_ideas=pending,
-        approved_ideas=approved,
-        declined_ideas=declined,
-        revision_requested_ideas=revision,
-        my_ideas=my_ideas
-    )
+    # Get best idea for display
+    best_idea = await db.ideas.find_one({"is_best_idea": True}, {"_id": 0})
+    
+    return {
+        "total_ideas": total,
+        "pending_ideas": pending,
+        "approved_ideas": approved,
+        "declined_ideas": declined,
+        "revision_requested_ideas": revision,
+        "implemented_ideas": implemented,
+        "assigned_to_te_ideas": assigned_to_te,
+        "my_ideas": my_ideas,
+        "best_idea": Idea(**add_is_evaluated(best_idea)) if best_idea else None
+    }
 
 @api_router.get("/dashboard/analytics")
 async def get_dashboard_analytics(
