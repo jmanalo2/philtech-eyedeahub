@@ -274,6 +274,32 @@ async def generate_idea_number() -> str:
 async def health():
     return {"status": "healthy", "service": "Philtech Eye-dea API"}
 
+# ==================== PUBLIC DATA ROUTES (for registration) ====================
+
+@api_router.get("/public/pillars", response_model=List[Pillar])
+async def get_public_pillars():
+    """Public endpoint to get pillars for registration form"""
+    pillars = await db.pillars.find({}, {"_id": 0}).to_list(1000)
+    return [Pillar(**pillar) for pillar in pillars]
+
+@api_router.get("/public/departments", response_model=List[Department])
+async def get_public_departments(pillar: Optional[str] = None):
+    """Public endpoint to get departments for registration form"""
+    query = {"pillar": pillar} if pillar else {}
+    departments = await db.departments.find(query, {"_id": 0}).to_list(1000)
+    return [Department(**dept) for dept in departments]
+
+@api_router.get("/public/teams", response_model=List[Team])
+async def get_public_teams(pillar: Optional[str] = None, department: Optional[str] = None):
+    """Public endpoint to get teams for registration form"""
+    query = {}
+    if pillar:
+        query["pillar"] = pillar
+    if department:
+        query["department"] = department
+    teams = await db.teams.find(query, {"_id": 0}).to_list(1000)
+    return [Team(**team) for team in teams]
+
 # ==================== AUTH ROUTES ====================
 
 @api_router.post("/auth/register", response_model=User)
