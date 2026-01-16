@@ -152,8 +152,10 @@ export default function IdeasList() {
                   <SelectItem value=" ">All Statuses</SelectItem>
                   <SelectItem value="pending">Pending</SelectItem>
                   <SelectItem value="approved">Approved</SelectItem>
-                  <SelectItem value="declined">Declined</SelectItem>
+                  <SelectItem value="implemented">Implemented</SelectItem>
+                  <SelectItem value="assigned_to_te">Assigned to T&E</SelectItem>
                   <SelectItem value="revision_requested">Revision Requested</SelectItem>
+                  <SelectItem value="declined">Declined</SelectItem>
                 </SelectContent>
               </Select>
             </div>
