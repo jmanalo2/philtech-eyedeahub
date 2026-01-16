@@ -532,7 +532,7 @@ async def get_idea(idea_id: str, current_user: dict = Depends(get_current_user))
     idea = await db.ideas.find_one({"id": idea_id}, {"_id": 0})
     if not idea:
         raise HTTPException(status_code=404, detail="Idea not found")
-    return Idea(**idea)
+    return Idea(**add_is_evaluated(idea))
 
 @api_router.put("/ideas/{idea_id}", response_model=Idea)
 async def update_idea(idea_id: str, idea_data: IdeaCreate, current_user: dict = Depends(get_current_user)):
