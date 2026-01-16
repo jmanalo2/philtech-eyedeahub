@@ -274,19 +274,19 @@ export default function CIDashboard() {
           </CardContent>
         </Card>
 
-        {/* Approval Rate Chart */}
+        {/* Status Distribution Chart */}
         <Card>
           <CardHeader>
             <div className="flex items-center space-x-2">
               <BarChart3 className="w-5 h-5 text-green-600" />
-              <CardTitle>Approval Overview</CardTitle>
+              <CardTitle>Status Distribution</CardTitle>
             </div>
-            <CardDescription>Ideas approved vs declined</CardDescription>
+            <CardDescription>Overview of all idea statuses</CardDescription>
           </CardHeader>
           <CardContent>
-            {approvalData.length > 0 ? (
+            {statusData.length > 0 ? (
               <ResponsiveContainer width="100%" height={300}>
-                <BarChart data={approvalData}>
+                <BarChart data={statusData}>
                   <CartesianGrid strokeDasharray="3 3" />
                   <XAxis dataKey="name" />
                   <YAxis />
@@ -297,7 +297,7 @@ export default function CIDashboard() {
               </ResponsiveContainer>
             ) : (
               <div className="h-[300px] flex items-center justify-center text-gray-500">
-                No approval data available yet
+                No status data available yet
               </div>
             )}
           </CardContent>
@@ -305,21 +305,22 @@ export default function CIDashboard() {
       </div>
 
       {/* Rates Row */}
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
         <Card>
           <CardHeader>
             <CardTitle className="text-lg">Approval Rate</CardTitle>
+            <CardDescription>Approved / (Total - Declined)</CardDescription>
           </CardHeader>
           <CardContent>
             <div className="flex items-center space-x-4">
-              <div className="text-5xl font-bold text-blue-600">
+              <div className="text-4xl font-bold text-blue-600">
                 {analytics?.approval_rate || 0}%
               </div>
               <div className="flex-1">
                 <div className="w-full bg-gray-200 rounded-full h-4">
                   <div 
                     className="bg-blue-600 h-4 rounded-full transition-all duration-500" 
-                    style={{ width: `${analytics?.approval_rate || 0}%` }}
+                    style={{ width: `${Math.min(analytics?.approval_rate || 0, 100)}%` }}
                   />
                 </div>
               </div>
@@ -328,6 +329,49 @@ export default function CIDashboard() {
         </Card>
 
         <Card>
+          <CardHeader>
+            <CardTitle className="text-lg">Implementation Rate</CardTitle>
+            <CardDescription>Implemented / (Total - Declined)</CardDescription>
+          </CardHeader>
+          <CardContent>
+            <div className="flex items-center space-x-4">
+              <div className="text-4xl font-bold text-emerald-600">
+                {analytics?.implementation_rate || 0}%
+              </div>
+              <div className="flex-1">
+                <div className="w-full bg-gray-200 rounded-full h-4">
+                  <div 
+                    className="bg-emerald-600 h-4 rounded-full transition-all duration-500" 
+                    style={{ width: `${Math.min(analytics?.implementation_rate || 0, 100)}%` }}
+                  />
+                </div>
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+
+        <Card>
+          <CardHeader>
+            <CardTitle className="text-lg">Assigned to T&E Rate</CardTitle>
+            <CardDescription>Assigned to T&E / (Total - Declined)</CardDescription>
+          </CardHeader>
+          <CardContent>
+            <div className="flex items-center space-x-4">
+              <div className="text-4xl font-bold text-purple-600">
+                {analytics?.assigned_to_te_rate || 0}%
+              </div>
+              <div className="flex-1">
+                <div className="w-full bg-gray-200 rounded-full h-4">
+                  <div 
+                    className="bg-purple-600 h-4 rounded-full transition-all duration-500" 
+                    style={{ width: `${Math.min(analytics?.assigned_to_te_rate || 0, 100)}%` }}
+                  />
+                </div>
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+      </div>
           <CardHeader>
             <CardTitle className="text-lg">Implementation Rate</CardTitle>
           </CardHeader>
