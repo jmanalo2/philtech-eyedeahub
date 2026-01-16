@@ -14,6 +14,7 @@ export default function CIEvaluationPanel({ idea, onEvaluationComplete }) {
   const [step, setStep] = useState(1);
   const [techPersons, setTechPersons] = useState([]);
   const [markingBest, setMarkingBest] = useState(false);
+  const [updatingStatus, setUpdatingStatus] = useState(false);
   const [evaluation, setEvaluation] = useState({
     is_quick_win: null,
     complexity_level: null,
