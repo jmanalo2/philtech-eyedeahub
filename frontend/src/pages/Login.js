@@ -13,14 +13,68 @@ export default function Login() {
   const { login, register } = useAuth();
   const navigate = useNavigate();
   const [loading, setLoading] = useState(false);
+  const [pillars, setPillars] = useState([]);
+  const [departments, setDepartments] = useState([]);
+  const [teams, setTeams] = useState([]);
+  const [managers, setManagers] = useState([]);
+  const [filteredDepartments, setFilteredDepartments] = useState([]);
+  const [filteredTeams, setFilteredTeams] = useState([]);
 
   const [loginForm, setLoginForm] = useState({ username: '', password: '' });
   const [registerForm, setRegisterForm] = useState({
     username: '',
     email: '',
+    first_name: '',
+    last_name: '',
     password: '',
-    confirmPassword: ''
+    confirmPassword: '',
+    role: 'user',
+    pillar: '',
+    department: '',
+    team: '',
+    manager: ''
   });
+
+  useEffect(() => {
+    fetchOrganizationalData();
+  }, []);
+
+  useEffect(() => {
+    // Filter departments based on selected pillar
+    if (registerForm.pillar) {
+      const filtered = departments.filter(dept => dept.pillar === registerForm.pillar);
+      setFilteredDepartments(filtered);
+    } else {
+      setFilteredDepartments([]);
+    }
+  }, [registerForm.pillar, departments]);
+
+  useEffect(() => {
+    // Filter teams based on selected department
+    if (registerForm.department) {
+      const filtered = teams.filter(team => team.department === registerForm.department);
+      setFilteredTeams(filtered);
+    } else {
+      setFilteredTeams([]);
+    }
+  }, [registerForm.department, teams]);
+
+  const fetchOrganizationalData = async () => {
+    try {
+      const [pillarsRes, deptsRes, teamsRes, usersRes] = await Promise.all([
+        axios.get(`${process.env.REACT_APP_BACKEND_URL}/api/admin/pillars`),
+        axios.get(`${process.env.REACT_APP_BACKEND_URL}/api/admin/departments`),
+        axios.get(`${process.env.REACT_APP_BACKEND_URL}/api/admin/teams`),
+        axios.get(`${process.env.REACT_APP_BACKEND_URL}/api/admin/users`)
+      ]);
+      setPillars(pillarsRes.data);
+      setDepartments(deptsRes.data);
+      setTeams(teamsRes.data);
+      setManagers(usersRes.data);
+    } catch (error) {
+      console.error('Failed to fetch organizational data:', error);
+    }
+  };
 
   const handleLogin = async (e) => {
     e.preventDefault();
