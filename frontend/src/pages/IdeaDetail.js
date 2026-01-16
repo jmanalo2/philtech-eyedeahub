@@ -24,6 +24,9 @@ export default function IdeaDetail() {
   const [newComment, setNewComment] = useState('');
   const [actionComment, setActionComment] = useState('');
   const [loading, setLoading] = useState(true);
+  const [showStatusDialog, setShowStatusDialog] = useState(false);
+  const [newStatus, setNewStatus] = useState('');
+  const [updatingStatus, setUpdatingStatus] = useState(false);
   
   // Preserve the previous filter state from where user came from
   const previousFilters = location.state?.filters || '';
