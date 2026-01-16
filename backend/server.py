@@ -1143,6 +1143,32 @@ async def delete_team(team_id: str, current_user: dict = Depends(get_admin_user)
         raise HTTPException(status_code=404, detail="Team not found")
     return {"message": "Team deleted successfully"}
 
+# ==================== TECH PERSONS ROUTES ====================
+
+@api_router.get("/admin/tech-persons", response_model=List[TechPerson])
+async def get_tech_persons(current_user: dict = Depends(get_current_user)):
+    tech_persons = await db.tech_persons.find({}, {"_id": 0}).to_list(1000)
+    return [TechPerson(**person) for person in tech_persons]
+
+@api_router.post("/admin/tech-persons", response_model=TechPerson)
+async def create_tech_person(person_data: TechPersonBase, current_user: dict = Depends(get_admin_user)):
+    person_id = f"tech_{datetime.now(timezone.utc).timestamp()}"
+    person_doc = {
+        "id": person_id,
+        "name": person_data.name,
+        "email": person_data.email,
+        "specialization": person_data.specialization
+    }
+    await db.tech_persons.insert_one(person_doc)
+    return TechPerson(**person_doc)
+
+@api_router.delete("/admin/tech-persons/{person_id}")
+async def delete_tech_person(person_id: str, current_user: dict = Depends(get_admin_user)):
+    result = await db.tech_persons.delete_one({"id": person_id})
+    if result.deleted_count == 0:
+        raise HTTPException(status_code=404, detail="Tech person not found")
+    return {"message": "Tech person deleted successfully"}
+
 # ==================== SEED DATA ====================
 
 @api_router.post("/admin/seed-data")
