@@ -63,22 +63,19 @@ export default function Login() {
 
   const fetchOrganizationalData = async () => {
     try {
+      // Use public endpoints that don't require authentication
       const [pillarsRes, deptsRes, teamsRes] = await Promise.all([
-        axios.get(`${process.env.REACT_APP_BACKEND_URL}/api/admin/pillars`).catch(() => ({ data: [] })),
-        axios.get(`${process.env.REACT_APP_BACKEND_URL}/api/admin/departments`).catch(() => ({ data: [] })),
-        axios.get(`${process.env.REACT_APP_BACKEND_URL}/api/admin/teams`).catch(() => ({ data: [] }))
+        axios.get(`${process.env.REACT_APP_BACKEND_URL}/api/public/pillars`).catch(() => ({ data: [] })),
+        axios.get(`${process.env.REACT_APP_BACKEND_URL}/api/public/departments`).catch(() => ({ data: [] })),
+        axios.get(`${process.env.REACT_APP_BACKEND_URL}/api/public/teams`).catch(() => ({ data: [] }))
       ]);
       setPillars(pillarsRes.data);
       setDepartments(deptsRes.data);
       setTeams(teamsRes.data);
       
-      // Fetch managers (users who can be managers)
-      try {
-        const usersRes = await axios.get(`${process.env.REACT_APP_BACKEND_URL}/api/admin/users`);
-        setManagers(usersRes.data.filter(u => u.role === 'approver' || u.role === 'admin'));
-      } catch {
-        setManagers([]);
-      }
+      // Managers can't be fetched without auth, so leave empty for now
+      // User can select their manager from a text input or after registration
+      setManagers([]);
     } catch (error) {
       console.error('Failed to fetch organizational data:', error);
     }
