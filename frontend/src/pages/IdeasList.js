@@ -215,9 +215,13 @@ export default function IdeasList() {
           ideas.map((idea) => {
             const needsRevision = idea.status === 'revision_requested' && idea.submitted_by === user?.id;
             return (
-              <Link key={idea.id} to={`/ideas/${idea.id}`}>
+              <div 
+                key={idea.id} 
+                onClick={() => navigate(`/ideas/${idea.id}`, { state: { filters: searchParams.toString() } })}
+                className="cursor-pointer"
+              >
                 <Card 
-                  className={`hover:shadow-lg transition-all duration-200 cursor-pointer ${
+                  className={`hover:shadow-lg transition-all duration-200 ${
                     needsRevision ? 'border-2 border-orange-400 bg-orange-50' : ''
                   }`} 
                   data-testid={`idea-card-${idea.id}`}
