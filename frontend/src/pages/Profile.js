@@ -372,9 +372,13 @@ export default function Profile() {
                         <span className="w-2 h-2 bg-green-700 rounded-full mr-2"></span>
                         Manage departments & pillars
                       </li>
+                      <li className="flex items-center text-green-700">
+                        <span className="w-2 h-2 bg-green-700 rounded-full mr-2"></span>
+                        Access C.I. Analytics Dashboard
+                      </li>
                     </>
                   )}
-                  {user.role === 'approver' && (
+                  {user.role === 'approver' && user.sub_role === 'approver' && (
                     <>
                       <li className="flex items-center text-blue-700">
                         <span className="w-2 h-2 bg-blue-700 rounded-full mr-2"></span>
@@ -388,33 +392,57 @@ export default function Profile() {
                         <span className="w-2 h-2 bg-blue-700 rounded-full mr-2"></span>
                         Decline submissions
                       </li>
-                      {user.approved_pillars && user.approved_pillars.length > 0 && (
-                        <li className="flex items-start text-blue-700 mt-3">
-                          <span className="w-2 h-2 bg-blue-700 rounded-full mr-2 mt-1.5"></span>
-                          <div>
-                            <span className="font-semibold">Approved Pillars:</span>
-                            <div className="flex flex-wrap gap-1 mt-1">
-                              {user.approved_pillars.map((p, i) => (
-                                <Badge key={i} variant="outline" className="text-xs">{p}</Badge>
-                              ))}
-                            </div>
-                          </div>
-                        </li>
-                      )}
-                      {user.approved_departments && user.approved_departments.length > 0 && (
-                        <li className="flex items-start text-blue-700 mt-3">
-                          <span className="w-2 h-2 bg-blue-700 rounded-full mr-2 mt-1.5"></span>
-                          <div>
-                            <span className="font-semibold">Approved Departments:</span>
-                            <div className="flex flex-wrap gap-1 mt-1">
-                              {user.approved_departments.map((d, i) => (
-                                <Badge key={i} variant="outline" className="text-xs">{d}</Badge>
-                              ))}
-                            </div>
-                          </div>
-                        </li>
-                      )}
                     </>
+                  )}
+                  {user.role === 'approver' && user.sub_role === 'ci_excellence' && (
+                    <>
+                      <li className="flex items-center text-green-700">
+                        <span className="w-2 h-2 bg-green-700 rounded-full mr-2"></span>
+                        Evaluate approved Eye-deas
+                      </li>
+                      <li className="flex items-center text-green-700">
+                        <span className="w-2 h-2 bg-green-700 rounded-full mr-2"></span>
+                        Assign complexity levels
+                      </li>
+                      <li className="flex items-center text-green-700">
+                        <span className="w-2 h-2 bg-green-700 rounded-full mr-2"></span>
+                        Track cost & time savings
+                      </li>
+                      <li className="flex items-center text-green-700">
+                        <span className="w-2 h-2 bg-green-700 rounded-full mr-2"></span>
+                        Assign ideas to Tech Team
+                      </li>
+                      <li className="flex items-center text-green-700">
+                        <span className="w-2 h-2 bg-green-700 rounded-full mr-2"></span>
+                        Access C.I. Analytics Dashboard
+                      </li>
+                    </>
+                  )}
+                  {user.role === 'approver' && user.approved_pillars && user.approved_pillars.length > 0 && (
+                    <li className="flex items-start text-blue-700 mt-3">
+                      <span className="w-2 h-2 bg-blue-700 rounded-full mr-2 mt-1.5"></span>
+                      <div>
+                        <span className="font-semibold">Approved Pillars:</span>
+                        <div className="flex flex-wrap gap-1 mt-1">
+                          {user.approved_pillars.map((p, i) => (
+                            <Badge key={i} variant="outline" className="text-xs">{p}</Badge>
+                          ))}
+                        </div>
+                      </div>
+                    </li>
+                  )}
+                  {user.role === 'approver' && user.approved_departments && user.approved_departments.length > 0 && (
+                    <li className="flex items-start text-blue-700 mt-3">
+                      <span className="w-2 h-2 bg-blue-700 rounded-full mr-2 mt-1.5"></span>
+                      <div>
+                        <span className="font-semibold">Approved Departments:</span>
+                        <div className="flex flex-wrap gap-1 mt-1">
+                          {user.approved_departments.map((d, i) => (
+                            <Badge key={i} variant="outline" className="text-xs">{d}</Badge>
+                          ))}
+                        </div>
+                      </div>
+                    </li>
                   )}
                   <li className="flex items-center text-gray-700">
                     <span className="w-2 h-2 bg-gray-700 rounded-full mr-2"></span>
