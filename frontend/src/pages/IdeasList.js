@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { Link, useSearchParams } from 'react-router-dom';
+import { Link, useSearchParams, useNavigate } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
 import axios from 'axios';
 import { Button } from '../components/ui/button';
@@ -11,6 +11,7 @@ import { format } from 'date-fns';
 
 export default function IdeasList() {
   const { user } = useAuth();
+  const navigate = useNavigate();
   const [searchParams, setSearchParams] = useSearchParams();
   const [ideas, setIdeas] = useState([]);
   const [loading, setLoading] = useState(true);
