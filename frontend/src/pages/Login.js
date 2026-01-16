@@ -101,6 +101,10 @@ export default function Login() {
       toast.error('Passwords do not match');
       return;
     }
+    if (!registerForm.manager.trim()) {
+      toast.error('Manager name is required');
+      return;
+    }
     setLoading(true);
     try {
       const userData = {
@@ -113,7 +117,7 @@ export default function Login() {
         pillar: registerForm.pillar || undefined,
         department: registerForm.department || undefined,
         team: registerForm.team || undefined,
-        manager: registerForm.manager || undefined
+        manager: registerForm.manager
       };
       
       await register(userData);
