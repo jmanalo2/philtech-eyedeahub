@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { useParams, useNavigate } from 'react-router-dom';
+import { useParams, useNavigate, useLocation } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
 import axios from 'axios';
 import { Button } from '../components/ui/button';
@@ -16,11 +16,15 @@ export default function IdeaDetail() {
   const { id } = useParams();
   const { user } = useAuth();
   const navigate = useNavigate();
+  const location = useLocation();
   const [idea, setIdea] = useState(null);
   const [comments, setComments] = useState([]);
   const [newComment, setNewComment] = useState('');
   const [actionComment, setActionComment] = useState('');
   const [loading, setLoading] = useState(true);
+  
+  // Preserve the previous filter state from where user came from
+  const previousFilters = location.state?.filters || '';
 
   useEffect(() => {
     fetchIdea();
