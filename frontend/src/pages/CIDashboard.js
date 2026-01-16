@@ -372,26 +372,6 @@ export default function CIDashboard() {
           </CardContent>
         </Card>
       </div>
-          <CardHeader>
-            <CardTitle className="text-lg">Implementation Rate</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className="flex items-center space-x-4">
-              <div className="text-5xl font-bold text-green-600">
-                {analytics?.implementation_rate || 0}%
-              </div>
-              <div className="flex-1">
-                <div className="w-full bg-gray-200 rounded-full h-4">
-                  <div 
-                    className="bg-green-600 h-4 rounded-full transition-all duration-500" 
-                    style={{ width: `${analytics?.implementation_rate || 0}%` }}
-                  />
-                </div>
-              </div>
-            </div>
-          </CardContent>
-        </Card>
-      </div>
 
       {/* Best Idea Section */}
       {analytics?.best_idea && (
