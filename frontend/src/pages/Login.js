@@ -42,20 +42,20 @@ export default function Login() {
   }, []);
 
   useEffect(() => {
-    // Filter departments based on selected pillar
     if (registerForm.pillar) {
       const filtered = departments.filter(dept => dept.pillar === registerForm.pillar);
       setFilteredDepartments(filtered);
+      setRegisterForm(prev => ({ ...prev, department: '', team: '' }));
     } else {
       setFilteredDepartments([]);
     }
   }, [registerForm.pillar, departments]);
 
   useEffect(() => {
-    // Filter teams based on selected department
     if (registerForm.department) {
       const filtered = teams.filter(team => team.department === registerForm.department);
       setFilteredTeams(filtered);
+      setRegisterForm(prev => ({ ...prev, team: '' }));
     } else {
       setFilteredTeams([]);
     }
@@ -63,16 +63,22 @@ export default function Login() {
 
   const fetchOrganizationalData = async () => {
     try {
-      const [pillarsRes, deptsRes, teamsRes, usersRes] = await Promise.all([
-        axios.get(`${process.env.REACT_APP_BACKEND_URL}/api/admin/pillars`),
-        axios.get(`${process.env.REACT_APP_BACKEND_URL}/api/admin/departments`),
-        axios.get(`${process.env.REACT_APP_BACKEND_URL}/api/admin/teams`),
-        axios.get(`${process.env.REACT_APP_BACKEND_URL}/api/admin/users`)
+      const [pillarsRes, deptsRes, teamsRes] = await Promise.all([
+        axios.get(`${process.env.REACT_APP_BACKEND_URL}/api/admin/pillars`).catch(() => ({ data: [] })),
+        axios.get(`${process.env.REACT_APP_BACKEND_URL}/api/admin/departments`).catch(() => ({ data: [] })),
+        axios.get(`${process.env.REACT_APP_BACKEND_URL}/api/admin/teams`).catch(() => ({ data: [] }))
       ]);
       setPillars(pillarsRes.data);
       setDepartments(deptsRes.data);
       setTeams(teamsRes.data);
-      setManagers(usersRes.data);
+      
+      // Fetch managers (users who can be managers)
+      try {
+        const usersRes = await axios.get(`${process.env.REACT_APP_BACKEND_URL}/api/admin/users`);
+        setManagers(usersRes.data.filter(u => u.role === 'approver' || u.role === 'admin'));
+      } catch {
+        setManagers([]);
+      }
     } catch (error) {
       console.error('Failed to fetch organizational data:', error);
     }
@@ -100,14 +106,34 @@ export default function Login() {
     }
     setLoading(true);
     try {
-      await register({
+      const userData = {
         username: registerForm.username,
         email: registerForm.email,
+        first_name: registerForm.first_name || undefined,
+        last_name: registerForm.last_name || undefined,
         password: registerForm.password,
-        role: 'user'
-      });
+        role: registerForm.role,
+        pillar: registerForm.pillar || undefined,
+        department: registerForm.department || undefined,
+        team: registerForm.team || undefined,
+        manager: registerForm.manager || undefined
+      };
+      
+      await register(userData);
       toast.success('Registration successful! Please login.');
-      setRegisterForm({ username: '', email: '', password: '', confirmPassword: '' });
+      setRegisterForm({ 
+        username: '', 
+        email: '', 
+        first_name: '',
+        last_name: '',
+        password: '', 
+        confirmPassword: '',
+        role: 'user',
+        pillar: '',
+        department: '',
+        team: '',
+        manager: ''
+      });
     } catch (error) {
       toast.error(error.response?.data?.detail || 'Registration failed');
     } finally {
@@ -117,7 +143,7 @@ export default function Login() {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-blue-50 flex items-center justify-center px-4">
-      <div className="w-full max-w-md">
+      <div className="w-full max-w-2xl">
         <div className="text-center mb-8">
           <div className="inline-flex items-center justify-center w-16 h-16 bg-blue-700 rounded-2xl mb-4">
             <Lightbulb className="w-10 h-10 text-white" />
@@ -178,9 +204,32 @@ export default function Login() {
               </TabsContent>
 
               <TabsContent value="register" data-testid="register-form">
-                <form onSubmit={handleRegister} className="space-y-4">
+                <form onSubmit={handleRegister} className="space-y-4 max-h-[60vh] overflow-y-auto pr-2">
+                  <div className="grid grid-cols-2 gap-4">
+                    <div>
+                      <Label htmlFor="register-first-name">First Name</Label>
+                      <Input
+                        id="register-first-name"
+                        data-testid="register-first-name-input"
+                        value={registerForm.first_name}
+                        onChange={(e) => setRegisterForm({ ...registerForm, first_name: e.target.value })}
+                        placeholder="First name"
+                      />
+                    </div>
+                    <div>
+                      <Label htmlFor="register-last-name">Last Name</Label>
+                      <Input
+                        id="register-last-name"
+                        data-testid="register-last-name-input"
+                        value={registerForm.last_name}
+                        onChange={(e) => setRegisterForm({ ...registerForm, last_name: e.target.value })}
+                        placeholder="Last name"
+                      />
+                    </div>
+                  </div>
+                  
                   <div>
-                    <Label htmlFor="register-username">Username</Label>
+                    <Label htmlFor="register-username">Username *</Label>
                     <Input
                       id="register-username"
                       data-testid="register-username-input"
@@ -190,7 +239,7 @@ export default function Login() {
                     />
                   </div>
                   <div>
-                    <Label htmlFor="register-email">Email</Label>
+                    <Label htmlFor="register-email">Email *</Label>
                     <Input
                       id="register-email"
                       data-testid="register-email-input"
@@ -200,8 +249,69 @@ export default function Login() {
                       required
                     />
                   </div>
+
                   <div>
-                    <Label htmlFor="register-password">Password</Label>
+                    <Label htmlFor="register-pillar">Pillar</Label>
+                    <Select value={registerForm.pillar} onValueChange={(value) => setRegisterForm({ ...registerForm, pillar: value })}>
+                      <SelectTrigger data-testid="register-pillar-select">
+                        <SelectValue placeholder="Select Pillar" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        {pillars.map((pillar) => (
+                          <SelectItem key={pillar.id} value={pillar.name}>{pillar.name}</SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                  </div>
+
+                  {registerForm.pillar && (
+                    <div>
+                      <Label htmlFor="register-department">Department</Label>
+                      <Select value={registerForm.department} onValueChange={(value) => setRegisterForm({ ...registerForm, department: value })}>
+                        <SelectTrigger data-testid="register-department-select">
+                          <SelectValue placeholder="Select Department" />
+                        </SelectTrigger>
+                        <SelectContent>
+                          {filteredDepartments.map((dept) => (
+                            <SelectItem key={dept.id} value={dept.name}>{dept.name}</SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
+                    </div>
+                  )}
+
+                  {registerForm.department && (
+                    <div>
+                      <Label htmlFor="register-team">Team</Label>
+                      <Select value={registerForm.team} onValueChange={(value) => setRegisterForm({ ...registerForm, team: value })}>
+                        <SelectTrigger data-testid="register-team-select">
+                          <SelectValue placeholder="Select Team" />
+                        </SelectTrigger>
+                        <SelectContent>
+                          {filteredTeams.map((team) => (
+                            <SelectItem key={team.id} value={team.name}>{team.name}</SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
+                    </div>
+                  )}
+
+                  <div>
+                    <Label htmlFor="register-manager">Manager</Label>
+                    <Select value={registerForm.manager} onValueChange={(value) => setRegisterForm({ ...registerForm, manager: value })}>
+                      <SelectTrigger data-testid="register-manager-select">
+                        <SelectValue placeholder="Select Manager" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        {managers.map((mgr) => (
+                          <SelectItem key={mgr.id} value={mgr.username}>{mgr.username}</SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                  </div>
+
+                  <div>
+                    <Label htmlFor="register-password">Password *</Label>
                     <Input
                       id="register-password"
                       data-testid="register-password-input"
@@ -212,7 +322,7 @@ export default function Login() {
                     />
                   </div>
                   <div>
-                    <Label htmlFor="register-confirm-password">Confirm Password</Label>
+                    <Label htmlFor="register-confirm-password">Confirm Password *</Label>
                     <Input
                       id="register-confirm-password"
                       data-testid="register-confirm-password-input"
