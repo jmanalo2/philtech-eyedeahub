@@ -335,6 +335,7 @@ export default function AdminPanel() {
                       <TableHead>Role</TableHead>
                       <TableHead>Pillar</TableHead>
                       <TableHead>Department</TableHead>
+                      <TableHead>Team</TableHead>
                       <TableHead>Manager</TableHead>
                       <TableHead className="text-right">Actions</TableHead>
                     </TableRow>
@@ -355,6 +356,7 @@ export default function AdminPanel() {
                         </TableCell>
                         <TableCell>{user.pillar || '-'}</TableCell>
                         <TableCell>{user.department || '-'}</TableCell>
+                        <TableCell>{user.team || '-'}</TableCell>
                         <TableCell>{user.manager || '-'}</TableCell>
                         <TableCell className="text-right space-x-2">
                           <Button
