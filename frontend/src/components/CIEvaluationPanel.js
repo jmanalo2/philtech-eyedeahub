@@ -383,14 +383,22 @@ export default function CIEvaluationPanel({ idea, onEvaluationComplete }) {
                     <span className="text-sm font-semibold text-purple-900">Assigning to T&E Team</span>
                   </div>
                   <div>
-                    <Label htmlFor="tech-person">Tech Person Name</Label>
-                    <Input
-                      id="tech-person"
-                      data-testid="tech-person-input"
-                      placeholder="Enter tech person name"
-                      value={evaluation.tech_person_name}
-                      onChange={(e) => setEvaluation({ ...evaluation, tech_person_name: e.target.value })}
-                    />
+                    <Label htmlFor="tech-person">Select Tech Person</Label>
+                    <Select 
+                      value={evaluation.tech_person_name} 
+                      onValueChange={(value) => setEvaluation({ ...evaluation, tech_person_name: value })}
+                    >
+                      <SelectTrigger data-testid="tech-person-select">
+                        <SelectValue placeholder="Select a tech person" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        {techPersons.map((person) => (
+                          <SelectItem key={person.id} value={person.name}>
+                            {person.name} {person.specialization ? `(${person.specialization})` : ''}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
                   </div>
                   <Button
                     onClick={() => setEvaluation({ ...evaluation, assigned_to_tech: false, tech_person_name: '' })}
