@@ -128,11 +128,11 @@ export default function AdminPanel() {
   };
 
   const handleAddDepartment = async () => {
-    if (!newDepartment.trim()) return;
+    if (!newDepartment.name.trim() || !newDepartment.pillar) return;
     try {
-      await axios.post(`${process.env.REACT_APP_BACKEND_URL}/api/admin/departments`, { name: newDepartment });
+      await axios.post(`${process.env.REACT_APP_BACKEND_URL}/api/admin/departments`, newDepartment);
       toast.success('Department added');
-      setNewDepartment('');
+      setNewDepartment({ name: '', pillar: '' });
       fetchAllData();
     } catch (error) {
       toast.error('Failed to add department');
