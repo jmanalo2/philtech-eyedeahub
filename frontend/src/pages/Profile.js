@@ -241,6 +241,110 @@ export default function Profile() {
               </CardContent>
             )}
           </Card>
+
+          {/* Sub-Role Selector for Approvers */}
+          {user.role === 'approver' && (
+            <Card>
+              <CardHeader>
+                <div className="flex justify-between items-center">
+                  <div>
+                    <CardTitle>Approver Sub-Role</CardTitle>
+                    <CardDescription>Change your approver sub-role and permissions</CardDescription>
+                  </div>
+                  {!changingSubRole && (
+                    <Button
+                      data-testid="change-subrole-btn"
+                      onClick={() => {
+                        setChangingSubRole(true);
+                        setSelectedSubRole(user.sub_role || '');
+                      }}
+                      variant="outline"
+                    >
+                      <Users className="w-4 h-4 mr-2" />
+                      Change Sub-Role
+                    </Button>
+                  )}
+                </div>
+              </CardHeader>
+              <CardContent>
+                {!changingSubRole ? (
+                  <div>
+                    <div className="flex items-center space-x-3 mb-4">
+                      <span className="text-sm font-semibold text-gray-700">Current Sub-Role:</span>
+                      <Badge className={user.sub_role === 'approver' ? 'bg-blue-600' : 'bg-green-600'}>
+                        {user.sub_role === 'approver' ? 'Approver' : user.sub_role === 'ci_excellence' ? 'C.I. Excellence Team' : 'Not Set'}
+                      </Badge>
+                    </div>
+                    {user.sub_role === 'approver' && (
+                      <p className="text-sm text-gray-600">You can approve, decline, and request revisions on Eye-deas.</p>
+                    )}
+                    {user.sub_role === 'ci_excellence' && (
+                      <p className="text-sm text-gray-600">You can evaluate approved Eye-deas, assign complexity, and track savings.</p>
+                    )}
+                  </div>
+                ) : (
+                  <div className="space-y-4">
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                      <button
+                        onClick={() => setSelectedSubRole('approver')}
+                        className={`p-6 border-2 rounded-lg text-left transition-all ${
+                          selectedSubRole === 'approver'
+                            ? 'border-blue-500 bg-blue-50'
+                            : 'border-gray-300 hover:border-blue-300'
+                        }`}
+                      >
+                        <CheckCircle className="w-8 h-8 text-blue-600 mb-3" />
+                        <h3 className="font-bold text-gray-900 mb-2">Approver</h3>
+                        <ul className="text-sm text-gray-600 space-y-1">
+                          <li>• Approve Eye-deas</li>
+                          <li>• Decline Eye-deas</li>
+                          <li>• Request Revisions</li>
+                        </ul>
+                      </button>
+
+                      <button
+                        onClick={() => setSelectedSubRole('ci_excellence')}
+                        className={`p-6 border-2 rounded-lg text-left transition-all ${
+                          selectedSubRole === 'ci_excellence'
+                            ? 'border-green-500 bg-green-50'
+                            : 'border-gray-300 hover:border-green-300'
+                        }`}
+                      >
+                        <Users className="w-8 h-8 text-green-600 mb-3" />
+                        <h3 className="font-bold text-gray-900 mb-2">C.I. Excellence Team</h3>
+                        <ul className="text-sm text-gray-600 space-y-1">
+                          <li>• Evaluate approved ideas</li>
+                          <li>• Assign complexity levels</li>
+                          <li>• Track cost & time savings</li>
+                          <li>• Assign to Tech Team</li>
+                        </ul>
+                      </button>
+                    </div>
+                    
+                    <div className="flex space-x-3">
+                      <Button
+                        type="button"
+                        variant="outline"
+                        onClick={() => {
+                          setChangingSubRole(false);
+                          setSelectedSubRole(user.sub_role || '');
+                        }}
+                      >
+                        Cancel
+                      </Button>
+                      <Button
+                        data-testid="save-subrole-btn"
+                        onClick={handleSubRoleChange}
+                        className="flex-1 bg-blue-700 hover:bg-blue-800"
+                      >
+                        Save Sub-Role
+                      </Button>
+                    </div>
+                  </div>
+                )}
+              </CardContent>
+            </Card>
+          )}
         </div>
 
         {/* Access & Security Card */}
