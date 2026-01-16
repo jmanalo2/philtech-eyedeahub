@@ -6,6 +6,7 @@ import ForgotPassword from './pages/ForgotPassword';
 import ResetPassword from './pages/ResetPassword';
 import RoleSelection from './pages/RoleSelection';
 import Dashboard from './pages/Dashboard';
+import CIDashboard from './pages/CIDashboard';
 import IdeasList from './pages/IdeasList';
 import IdeaDetail from './pages/IdeaDetail';
 import CreateIdea from './pages/CreateIdea';
