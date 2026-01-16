@@ -778,12 +778,20 @@ async def ci_evaluate_idea(idea_id: str, evaluation: CIEvaluation, current_user:
     if not idea:
         raise HTTPException(status_code=404, detail="Idea not found")
     
+    # Determine new status based on evaluation
+    new_status = idea.get("status", "approved")  # Keep current status by default
+    if evaluation.is_quick_win:
+        new_status = "implemented"  # Quick wins are immediately implemented
+    elif evaluation.assigned_to_tech and evaluation.tech_person_name:
+        new_status = "assigned_to_te"  # Assigned to Tech & Engineering
+    
     update_doc = {
         "is_quick_win": evaluation.is_quick_win,
         "evaluated_by": current_user["id"],
         "evaluated_by_username": current_user["username"],
         "evaluated_at": datetime.now(timezone.utc).isoformat(),
-        "updated_at": datetime.now(timezone.utc).isoformat()
+        "updated_at": datetime.now(timezone.utc).isoformat(),
+        "status": new_status
     }
     
     if not evaluation.is_quick_win:
