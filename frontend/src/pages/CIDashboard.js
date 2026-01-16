@@ -90,20 +90,20 @@ export default function CIDashboard() {
       description: 'Ideas implemented quickly'
     },
     {
-      title: 'Low Complexity',
-      value: analytics?.complexity_counts?.low || 0,
-      icon: TrendingUp,
+      title: 'Implemented',
+      value: analytics?.implemented_count || 0,
+      icon: CheckCircle,
       color: 'bg-emerald-500',
       textColor: 'text-emerald-600',
-      description: 'Simple implementations'
+      description: `Rate: ${analytics?.implementation_rate || 0}%`
     },
     {
-      title: 'Medium Complexity',
-      value: analytics?.complexity_counts?.medium || 0,
-      icon: BarChart3,
-      color: 'bg-yellow-500',
-      textColor: 'text-yellow-600',
-      description: 'Moderate effort required'
+      title: 'Assigned to T&E',
+      value: analytics?.assigned_to_te_count || 0,
+      icon: Wrench,
+      color: 'bg-purple-500',
+      textColor: 'text-purple-600',
+      description: `Rate: ${analytics?.assigned_to_te_rate || 0}%`
     },
     {
       title: 'High Complexity',
@@ -116,17 +116,47 @@ export default function CIDashboard() {
   ];
 
   const complexityData = analytics?.charts_data?.complexity_chart || [];
-  const approvalData = analytics?.charts_data?.approval_pie || [];
+  const statusData = analytics?.charts_data?.status_chart || [];
 
   return (
     <div data-testid="ci-dashboard-page">
       {/* Header */}
-      <div className="mb-8 flex justify-between items-start">
+      <div className="mb-8 flex flex-wrap justify-between items-start gap-4">
         <div>
           <h1 className="text-3xl font-bold text-gray-900 mb-2">C.I. Excellence Dashboard</h1>
           <p className="text-gray-600">Analytics and insights for continuous improvement</p>
         </div>
-        <Button
+        <div className="flex flex-wrap gap-3 items-center">
+          {/* Date Range Filter */}
+          <div className="flex items-center gap-2 bg-white border rounded-lg p-2">
+            <Popover>
+              <PopoverTrigger asChild>
+                <Button variant="outline" size="sm" className="w-[130px]">
+                  <CalendarIcon className="w-4 h-4 mr-2" />
+                  {startDate ? format(startDate, 'MMM d, yyyy') : 'Start Date'}
+                </Button>
+              </PopoverTrigger>
+              <PopoverContent className="w-auto p-0" align="start">
+                <Calendar mode="single" selected={startDate} onSelect={setStartDate} initialFocus />
+              </PopoverContent>
+            </Popover>
+            <span className="text-gray-500">to</span>
+            <Popover>
+              <PopoverTrigger asChild>
+                <Button variant="outline" size="sm" className="w-[130px]">
+                  <CalendarIcon className="w-4 h-4 mr-2" />
+                  {endDate ? format(endDate, 'MMM d, yyyy') : 'End Date'}
+                </Button>
+              </PopoverTrigger>
+              <PopoverContent className="w-auto p-0" align="start">
+                <Calendar mode="single" selected={endDate} onSelect={setEndDate} initialFocus />
+              </PopoverContent>
+            </Popover>
+            {(startDate || endDate) && (
+              <Button variant="ghost" size="sm" onClick={clearDateFilter}>Clear</Button>
+            )}
+          </div>
+          <Button
           data-testid="export-excel-btn"
           onClick={handleExportExcel}
           disabled={exporting}
