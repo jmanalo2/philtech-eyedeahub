@@ -8,7 +8,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '.
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from './ui/card';
 import { Badge } from './ui/badge';
 import { toast } from 'sonner';
-import { CheckCircle, XCircle, Users, DollarSign, Clock } from 'lucide-react';
+import { CheckCircle, XCircle, Users, DollarSign, Clock, Award, Star } from 'lucide-react';
 
 export default function CIEvaluationPanel({ idea, onEvaluationComplete }) {
   const [step, setStep] = useState(1);
