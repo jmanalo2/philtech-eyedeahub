@@ -171,8 +171,18 @@ class Pillar(PillarBase):
 class TeamBase(BaseModel):
     name: str
     pillar: str
+    department: str  # Add department association
 
 class Team(TeamBase):
+    model_config = ConfigDict(extra="ignore")
+    id: str
+
+class TechPersonBase(BaseModel):
+    name: str
+    email: Optional[str] = None
+    specialization: Optional[str] = None
+
+class TechPerson(TechPersonBase):
     model_config = ConfigDict(extra="ignore")
     id: str
 
