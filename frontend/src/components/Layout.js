@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { Outlet, Link, useNavigate, useLocation } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
 import { Button } from './ui/button';
-import { Menu, X, Home, Lightbulb, UserCog, User, LogOut } from 'lucide-react';
+import { Menu, X, Home, Lightbulb, UserCog, User, LogOut, BarChart3 } from 'lucide-react';
 
 export default function Layout() {
   const { user, logout } = useAuth();
