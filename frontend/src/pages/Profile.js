@@ -7,7 +7,7 @@ import { Button } from '../components/ui/button';
 import { Input } from '../components/ui/input';
 import { Label } from '../components/ui/label';
 import { toast } from 'sonner';
-import { User, Mail, Shield, Building, Users, Key, Briefcase } from 'lucide-react';
+import { User, Mail, Shield, Building, Users, Key, Briefcase, CheckCircle } from 'lucide-react';
 
 export default function Profile() {
   const { user } = useAuth();
