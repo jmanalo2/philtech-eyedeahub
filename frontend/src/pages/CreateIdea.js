@@ -101,9 +101,10 @@ export default function CreateIdea() {
         current_process: response.data.current_process,
         suggested_solution: response.data.suggested_solution,
         benefits: response.data.benefits,
-        target_completion: response.data.target_completion,
+        target_completion: response.data.target_completion ? new Date(response.data.target_completion) : null,
         department: response.data.department || '',
-        team: response.data.team || ''
+        team: response.data.team || '',
+        manager: response.data.manager || ''
       });
     } catch (error) {
       console.error('Failed to fetch idea:', error);
@@ -115,11 +116,16 @@ export default function CreateIdea() {
     e.preventDefault();
     setLoading(true);
     try {
+      const submitData = {
+        ...formData,
+        target_completion: formData.target_completion ? format(formData.target_completion, 'yyyy-MM-dd') : ''
+      };
+      
       if (id) {
-        await axios.put(`${process.env.REACT_APP_BACKEND_URL}/api/ideas/${id}`, formData);
+        await axios.put(`${process.env.REACT_APP_BACKEND_URL}/api/ideas/${id}`, submitData);
         toast.success('Eye-dea updated successfully!');
       } else {
-        await axios.post(`${process.env.REACT_APP_BACKEND_URL}/api/ideas`, formData);
+        await axios.post(`${process.env.REACT_APP_BACKEND_URL}/api/ideas`, submitData);
         toast.success('Eye-dea submitted successfully!');
       }
       navigate('/ideas');
