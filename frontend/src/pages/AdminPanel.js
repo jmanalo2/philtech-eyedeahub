@@ -395,39 +395,61 @@ export default function AdminPanel() {
           <Card>
             <CardHeader>
               <CardTitle>Manage Departments</CardTitle>
-              <CardDescription>Add or remove departments</CardDescription>
+              <CardDescription>Add or remove departments (linked to pillars)</CardDescription>
             </CardHeader>
             <CardContent className="space-y-6">
               <div className="flex space-x-3">
                 <Input
                   data-testid="new-department-input"
-                  value={newDepartment}
-                  onChange={(e) => setNewDepartment(e.target.value)}
+                  value={newDepartment.name}
+                  onChange={(e) => setNewDepartment({ ...newDepartment, name: e.target.value })}
                   placeholder="Department name"
+                  className="flex-1"
                 />
+                <Select value={newDepartment.pillar} onValueChange={(value) => setNewDepartment({ ...newDepartment, pillar: value })}>
+                  <SelectTrigger data-testid="new-department-pillar-select" className="w-[200px]">
+                    <SelectValue placeholder="Select Pillar" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {pillars.map((pillar) => (
+                      <SelectItem key={pillar.id} value={pillar.name}>{pillar.name}</SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
                 <Button data-testid="add-department-btn" onClick={handleAddDepartment}>
                   <Plus className="w-4 h-4 mr-2" />
                   Add
                 </Button>
               </div>
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                {departments.map((dept) => (
-                  <div
-                    key={dept.id}
-                    data-testid={`department-${dept.id}`}
-                    className="flex items-center justify-between p-4 bg-gray-50 rounded-lg border"
-                  >
-                    <span className="font-medium">{dept.name}</span>
-                    <Button
-                      data-testid={`delete-department-${dept.id}`}
-                      variant="ghost"
-                      size="sm"
-                      onClick={() => handleDeleteDepartment(dept.id)}
-                    >
-                      <Trash2 className="w-4 h-4 text-red-600" />
-                    </Button>
-                  </div>
-                ))}
+              <div className="space-y-4">
+                {pillars.map((pillar) => {
+                  const pillarDepts = departments.filter(d => d.pillar === pillar.name);
+                  if (pillarDepts.length === 0) return null;
+                  return (
+                    <div key={pillar.id}>
+                      <h3 className="font-semibold text-gray-900 mb-3">{pillar.name}</h3>
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                        {pillarDepts.map((dept) => (
+                          <div
+                            key={dept.id}
+                            data-testid={`department-${dept.id}`}
+                            className="flex items-center justify-between p-3 bg-gray-50 rounded-lg border"
+                          >
+                            <span>{dept.name}</span>
+                            <Button
+                              data-testid={`delete-department-${dept.id}`}
+                              variant="ghost"
+                              size="sm"
+                              onClick={() => handleDeleteDepartment(dept.id)}
+                            >
+                              <Trash2 className="w-4 h-4 text-red-600" />
+                            </Button>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  );
+                })}
               </div>
             </CardContent>
           </Card>
