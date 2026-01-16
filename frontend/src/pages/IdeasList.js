@@ -6,7 +6,7 @@ import { Button } from '../components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '../components/ui/card';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '../components/ui/select';
 import { Badge } from '../components/ui/badge';
-import { Plus, Filter, AlertCircle } from 'lucide-react';
+import { Plus, Filter, AlertCircle, Star } from 'lucide-react';
 import { format } from 'date-fns';
 
 export default function IdeasList() {
