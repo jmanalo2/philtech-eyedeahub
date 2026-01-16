@@ -864,6 +864,41 @@ async def mark_best_idea(idea_id: str, current_user: dict = Depends(get_current_
     
     return {"message": "Idea marked as best Eye-dea"}
 
+class CIStatusUpdate(BaseModel):
+    new_status: str  # implemented, revision_requested, declined
+
+@api_router.post("/ideas/{idea_id}/ci-update-status")
+async def ci_update_status(idea_id: str, status_update: CIStatusUpdate, current_user: dict = Depends(get_current_user)):
+    """C.I. Excellence Team can update status of ideas assigned to T&E"""
+    if current_user["role"] != "approver" or current_user.get("sub_role") != "ci_excellence":
+        if current_user["role"] != "admin":
+            raise HTTPException(status_code=403, detail="Only C.I. Excellence Team can update idea status")
+    
+    idea = await db.ideas.find_one({"id": idea_id}, {"_id": 0})
+    if not idea:
+        raise HTTPException(status_code=404, detail="Idea not found")
+    
+    # Only allow status change for ideas that are "assigned_to_te"
+    if idea.get("status") != "assigned_to_te":
+        raise HTTPException(status_code=400, detail="Can only change status of ideas assigned to T&E")
+    
+    # Validate new status
+    valid_statuses = ["implemented", "revision_requested", "declined"]
+    if status_update.new_status not in valid_statuses:
+        raise HTTPException(status_code=400, detail=f"Invalid status. Must be one of: {valid_statuses}")
+    
+    await db.ideas.update_one(
+        {"id": idea_id},
+        {"$set": {
+            "status": status_update.new_status,
+            "status_updated_by": current_user["id"],
+            "status_updated_by_username": current_user["username"],
+            "updated_at": datetime.now(timezone.utc).isoformat()
+        }}
+    )
+    
+    return {"message": f"Idea status updated to {status_update.new_status}"}
+
 # ==================== DASHBOARD ROUTES ====================
 
 @api_router.get("/dashboard/stats", response_model=DashboardStats)
