@@ -158,13 +158,22 @@ export default function IdeaDetail() {
   const isOwner = idea.submitted_by === user?.id;
   const canEdit = isOwner && (idea.status === 'revision_requested' || idea.status === 'pending');
 
+  const handleBackToIdeas = () => {
+    // Navigate back with preserved filters
+    if (previousFilters) {
+      navigate(`/ideas?${previousFilters}`);
+    } else {
+      navigate('/ideas');
+    }
+  };
+
   return (
     <div data-testid="idea-detail-page">
       <Button
         data-testid="back-btn"
         variant="ghost"
         className="mb-6"
-        onClick={() => navigate('/ideas')}
+        onClick={handleBackToIdeas}
       >
         <ArrowLeft className="w-4 h-4 mr-2" />
         Back to Eye-deas
