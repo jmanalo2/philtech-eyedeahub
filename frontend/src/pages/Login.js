@@ -298,13 +298,14 @@ export default function Login() {
                   )}
 
                   <div>
-                    <Label htmlFor="register-manager">Manager (optional)</Label>
+                    <Label htmlFor="register-manager">Manager's Full Name *</Label>
                     <Input
                       id="register-manager"
                       data-testid="register-manager-input"
                       value={registerForm.manager}
                       onChange={(e) => setRegisterForm({ ...registerForm, manager: e.target.value })}
-                      placeholder="Enter manager's name or username"
+                      placeholder="Enter manager's full name"
+                      required
                     />
                   </div>
 
