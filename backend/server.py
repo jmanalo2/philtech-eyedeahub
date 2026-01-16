@@ -291,10 +291,14 @@ async def register(user_data: UserCreate):
         "id": user_id,
         "username": user_data.username,
         "email": user_data.email,
+        "first_name": user_data.first_name,
+        "last_name": user_data.last_name,
         "password_hash": get_password_hash(user_data.password),
         "role": user_data.role,
         "department": user_data.department,
         "team": user_data.team,
+        "pillar": user_data.pillar,
+        "manager": user_data.manager,
         "created_at": datetime.now(timezone.utc).isoformat()
     }
     
