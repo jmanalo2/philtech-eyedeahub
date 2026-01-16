@@ -40,6 +40,19 @@ export default function CIEvaluationPanel({ idea, onEvaluationComplete }) {
     }
   };
 
+  const handleMarkAsBestIdea = async () => {
+    setMarkingBest(true);
+    try {
+      await axios.post(`${process.env.REACT_APP_BACKEND_URL}/api/ideas/${idea.id}/mark-best-idea`);
+      toast.success('This Eye-dea has been marked as the Best Eye-dea!');
+      onEvaluationComplete();
+    } catch (error) {
+      toast.error(error.response?.data?.detail || 'Failed to mark as best idea');
+    } finally {
+      setMarkingBest(false);
+    }
+  };
+
   const handleQuickWinSelection = (isQuickWin) => {
     setEvaluation({ ...evaluation, is_quick_win: isQuickWin });
     setStep(2);
