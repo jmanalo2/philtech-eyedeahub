@@ -12,6 +12,8 @@ import { User, Mail, Shield, Building, Users, Key, Briefcase } from 'lucide-reac
 export default function Profile() {
   const { user } = useAuth();
   const [changingPassword, setChangingPassword] = useState(false);
+  const [changingSubRole, setChangingSubRole] = useState(false);
+  const [selectedSubRole, setSelectedSubRole] = useState(user?.sub_role || '');
   const [passwordForm, setPasswordForm] = useState({
     current_password: '',
     new_password: '',
