@@ -157,14 +157,15 @@ export default function CIDashboard() {
             )}
           </div>
           <Button
-          data-testid="export-excel-btn"
-          onClick={handleExportExcel}
-          disabled={exporting}
-          className="bg-green-600 hover:bg-green-700"
-        >
-          <Download className="w-4 h-4 mr-2" />
-          {exporting ? 'Exporting...' : 'Export to Excel'}
-        </Button>
+            data-testid="export-excel-btn"
+            onClick={handleExportExcel}
+            disabled={exporting}
+            className="bg-green-600 hover:bg-green-700"
+          >
+            <Download className="w-4 h-4 mr-2" />
+            {exporting ? 'Exporting...' : 'Export to Excel'}
+          </Button>
+        </div>
       </div>
 
       {/* Stats Cards */}
