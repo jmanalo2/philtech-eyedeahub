@@ -187,6 +187,8 @@ export default function IdeaDetail() {
   const isApprover = user?.role === 'approver' || user?.role === 'admin';
   const isOwner = idea.submitted_by === user?.id;
   const canEdit = isOwner && (idea.status === 'revision_requested' || idea.status === 'pending');
+  const isCIExcellence = (user?.role === 'approver' && user?.sub_role === 'ci_excellence') || user?.role === 'admin';
+  const canChangeStatus = isCIExcellence && idea.status === 'assigned_to_te';
 
   const handleBackToIdeas = () => {
     // Navigate back with preserved filters
