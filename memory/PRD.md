@@ -62,11 +62,16 @@ Pillar (GBS, Tech, Finance, HR)
 - [x] Resubmit after revision
 - [x] Comments on ideas
 
-### C.I. Excellence Team
-- [x] CIEvaluationPanel component
+### C.I. Excellence Team (Jan 2026)
+- [x] CIEvaluationPanel component with Tech Person dropdown
 - [x] Quick Win / Complexity tagging
 - [x] Cost savings / Time saved fields
 - [x] Sub-role change in Profile page
+- [x] **C.I. Excellence Dashboard** with analytics charts
+- [x] **Excel Export** button for ideas data
+- [x] Complexity distribution pie chart
+- [x] Approval overview bar chart
+- [x] Cost savings & time saved summaries
 
 ### Public APIs (for Registration)
 - [x] `/api/public/pillars` - No auth required
@@ -81,19 +86,16 @@ Pillar (GBS, Tech, Finance, HR)
 - None currently
 
 ### P1 - High Priority
-- [ ] C.I. Excellence Dashboard with analytics charts
-- [ ] "Assign to T&E" dropdown in evaluation panel
-- [ ] Excel export button
+- [ ] "Best Idea" selection UI for C.I. team
+- [ ] Analytics filters by date range
 
 ### P2 - Medium Priority
-- [ ] Fix user1 demo account password hash
-- [ ] "Best Idea" selection and display
-- [ ] Cost/time savings input UI improvements
-
-### P3 - Low Priority / Future
 - [ ] Real email integration (Resend API)
 - [ ] Email notifications for approval workflow
-- [ ] Dashboard filters by date range
+
+### P3 - Low Priority / Future
+- [ ] Mobile-responsive improvements
+- [ ] Dashboard filters by pillar/department
 
 ---
 
