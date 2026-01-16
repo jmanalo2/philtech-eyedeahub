@@ -460,6 +460,43 @@ export default function IdeaDetail() {
           </CardContent>
         </Card>
       </div>
+
+      {/* Edit Status Dialog for C.I. Excellence Team */}
+      <Dialog open={showStatusDialog} onOpenChange={setShowStatusDialog}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Update Eye-dea Status</DialogTitle>
+            <DialogDescription>
+              Change the status of this Eye-dea assigned to Tech & Engineering
+            </DialogDescription>
+          </DialogHeader>
+          <div className="py-4">
+            <label className="text-sm font-medium text-gray-700 block mb-2">New Status</label>
+            <Select value={newStatus} onValueChange={setNewStatus}>
+              <SelectTrigger data-testid="status-select">
+                <SelectValue placeholder="Select new status" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="implemented">Implemented</SelectItem>
+                <SelectItem value="revision_requested">Revision Requested</SelectItem>
+                <SelectItem value="declined">Declined</SelectItem>
+              </SelectContent>
+            </Select>
+          </div>
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setShowStatusDialog(false)}>
+              Cancel
+            </Button>
+            <Button 
+              onClick={handleUpdateStatus} 
+              disabled={updatingStatus || !newStatus}
+              className="bg-purple-600 hover:bg-purple-700"
+            >
+              {updatingStatus ? 'Updating...' : 'Update Status'}
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }
