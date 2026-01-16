@@ -156,6 +156,7 @@ class IdeaAction(BaseModel):
 
 class DepartmentBase(BaseModel):
     name: str
+    pillar: str  # Add pillar association
 
 class Department(DepartmentBase):
     model_config = ConfigDict(extra="ignore")
