@@ -249,71 +249,76 @@ export default function AdminPanel() {
 
   return (
     <div data-testid="admin-panel-page">
-      <div className="mb-8">
-        <h1 className="text-3xl font-bold text-gray-900 mb-2">Admin Panel</h1>
-        <p className="text-gray-600">Manage users, departments, pillars, and teams</p>
+      <div className="mb-6 sm:mb-8">
+        <h1 className="text-2xl sm:text-3xl font-bold text-gray-900 mb-1 sm:mb-2">Admin Panel</h1>
+        <p className="text-sm sm:text-base text-gray-600">Manage users, departments, pillars, and teams</p>
       </div>
 
-      <div className="mb-6">
+      <div className="mb-4 sm:mb-6">
         <Button
           data-testid="seed-data-btn"
           onClick={handleSeedData}
-          className="bg-purple-600 hover:bg-purple-700"
+          className="bg-purple-600 hover:bg-purple-700 text-sm sm:text-base"
         >
           Seed Sample Data
         </Button>
       </div>
 
-      <Tabs defaultValue="users" className="space-y-6">
-        <TabsList className="grid w-full grid-cols-5">
-          <TabsTrigger value="users" data-testid="users-tab">
-            <Users className="w-4 h-4 mr-2" />
-            Users
-          </TabsTrigger>
-          <TabsTrigger value="pillars" data-testid="pillars-tab">
-            <Briefcase className="w-4 h-4 mr-2" />
-            Pillars
-          </TabsTrigger>
-          <TabsTrigger value="departments" data-testid="departments-tab">
-            <Building className="w-4 h-4 mr-2" />
-            Departments
-          </TabsTrigger>
-          <TabsTrigger value="teams" data-testid="teams-tab">
-            <UsersRound className="w-4 h-4 mr-2" />
-            Teams
-          </TabsTrigger>
-          <TabsTrigger value="tech" data-testid="tech-tab">
-            <Wrench className="w-4 h-4 mr-2" />
-            Tech & Eng
-          </TabsTrigger>
-        </TabsList>
+      <Tabs defaultValue="users" className="space-y-4 sm:space-y-6">
+        <div className="overflow-x-auto -mx-3 sm:mx-0 px-3 sm:px-0">
+          <TabsList className="grid grid-cols-5 min-w-[500px] sm:min-w-0 sm:w-full">
+            <TabsTrigger value="users" data-testid="users-tab" className="text-xs sm:text-sm px-2 sm:px-3">
+              <Users className="w-3 h-3 sm:w-4 sm:h-4 sm:mr-2" />
+              <span className="hidden sm:inline">Users</span>
+            </TabsTrigger>
+            <TabsTrigger value="pillars" data-testid="pillars-tab" className="text-xs sm:text-sm px-2 sm:px-3">
+              <Briefcase className="w-3 h-3 sm:w-4 sm:h-4 sm:mr-2" />
+              <span className="hidden sm:inline">Pillars</span>
+            </TabsTrigger>
+            <TabsTrigger value="departments" data-testid="departments-tab" className="text-xs sm:text-sm px-2 sm:px-3">
+              <Building className="w-3 h-3 sm:w-4 sm:h-4 sm:mr-2" />
+              <span className="hidden sm:inline">Depts</span>
+            </TabsTrigger>
+            <TabsTrigger value="teams" data-testid="teams-tab" className="text-xs sm:text-sm px-2 sm:px-3">
+              <UsersRound className="w-3 h-3 sm:w-4 sm:h-4 sm:mr-2" />
+              <span className="hidden sm:inline">Teams</span>
+            </TabsTrigger>
+            <TabsTrigger value="tech" data-testid="tech-tab" className="text-xs sm:text-sm px-2 sm:px-3">
+              <Wrench className="w-3 h-3 sm:w-4 sm:h-4 sm:mr-2" />
+              <span className="hidden sm:inline">T&E</span>
+            </TabsTrigger>
+          </TabsList>
+        </div>
 
         {/* Users Tab */}
         <TabsContent value="users">
           <Card>
-            <CardHeader>
-              <div className="flex justify-between items-center">
+            <CardHeader className="p-4 sm:p-6">
+              <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-3">
                 <div>
-                  <CardTitle>Manage Users</CardTitle>
-                  <CardDescription>View and edit user roles and assignments</CardDescription>
+                  <CardTitle className="text-lg sm:text-xl">Manage Users</CardTitle>
+                  <CardDescription className="text-sm">View and edit user roles and assignments</CardDescription>
                 </div>
-                <div className="flex gap-3">
+                <div className="flex flex-wrap gap-2 sm:gap-3">
                   <Button
                     data-testid="download-template-btn"
                     variant="outline"
                     onClick={downloadTemplate}
+                    size="sm"
+                    className="text-xs sm:text-sm"
                   >
-                    <Download className="w-4 h-4 mr-2" />
-                    Download Template
+                    <Download className="w-3 h-3 sm:w-4 sm:h-4 mr-1 sm:mr-2" />
+                    Template
                   </Button>
                   <Button
                     data-testid="bulk-upload-btn"
                     onClick={() => fileInputRef.current?.click()}
                     disabled={uploading}
-                    className="bg-blue-600 hover:bg-blue-700"
+                    className="bg-blue-600 hover:bg-blue-700 text-xs sm:text-sm"
+                    size="sm"
                   >
-                    <Upload className="w-4 h-4 mr-2" />
-                    {uploading ? 'Uploading...' : 'Bulk Upload'}
+                    <Upload className="w-3 h-3 sm:w-4 sm:h-4 mr-1 sm:mr-2" />
+                    {uploading ? 'Uploading...' : 'Upload'}
                   </Button>
                   <input
                     ref={fileInputRef}
@@ -325,68 +330,72 @@ export default function AdminPanel() {
                 </div>
               </div>
             </CardHeader>
-            <CardContent>
-              <div className="overflow-x-auto">
-                <Table>
-                  <TableHeader>
-                    <TableRow>
-                      <TableHead>Username</TableHead>
-                      <TableHead>Email</TableHead>
-                      <TableHead>Role</TableHead>
-                      <TableHead>Pillar</TableHead>
-                      <TableHead>Department</TableHead>
-                      <TableHead>Team</TableHead>
-                      <TableHead>Manager</TableHead>
-                      <TableHead className="text-right">Actions</TableHead>
-                    </TableRow>
-                  </TableHeader>
-                  <TableBody>
-                    {users.map((user) => (
-                      <TableRow key={user.id} data-testid={`user-row-${user.id}`}>
-                        <TableCell className="font-medium">{user.username}</TableCell>
-                        <TableCell>{user.email}</TableCell>
-                        <TableCell>
-                          <span className={`px-2 py-1 rounded text-xs font-semibold ${
-                            user.role === 'admin' ? 'bg-purple-100 text-purple-800' :
-                            user.role === 'approver' ? 'bg-blue-100 text-blue-800' :
-                            'bg-gray-100 text-gray-800'
-                          }`}>
-                            {user.role}
-                          </span>
-                        </TableCell>
-                        <TableCell>{user.pillar || '-'}</TableCell>
-                        <TableCell>{user.department || '-'}</TableCell>
-                        <TableCell>{user.team || '-'}</TableCell>
-                        <TableCell>{user.manager || '-'}</TableCell>
-                        <TableCell className="text-right space-x-2">
-                          <Button
-                            data-testid={`edit-user-${user.id}`}
-                            variant="outline"
-                            size="sm"
-                            onClick={() => {
-                              setEditingUser({
-                                ...user,
-                                approved_pillars: user.approved_pillars || [],
-                                approved_departments: user.approved_departments || []
-                              });
-                              setShowUserDialog(true);
-                            }}
-                          >
-                            <Edit className="w-4 h-4" />
-                          </Button>
-                          <Button
-                            data-testid={`delete-user-${user.id}`}
-                            variant="outline"
-                            size="sm"
-                            onClick={() => handleDeleteUser(user.id)}
-                          >
-                            <Trash2 className="w-4 h-4" />
-                          </Button>
-                        </TableCell>
+            <CardContent className="p-4 sm:p-6 pt-0">
+              <div className="overflow-x-auto -mx-4 sm:mx-0">
+                <div className="inline-block min-w-full align-middle">
+                  <Table>
+                    <TableHeader>
+                      <TableRow>
+                        <TableHead className="text-xs sm:text-sm whitespace-nowrap">Username</TableHead>
+                        <TableHead className="text-xs sm:text-sm whitespace-nowrap hidden md:table-cell">Email</TableHead>
+                        <TableHead className="text-xs sm:text-sm whitespace-nowrap">Role</TableHead>
+                        <TableHead className="text-xs sm:text-sm whitespace-nowrap hidden lg:table-cell">Pillar</TableHead>
+                        <TableHead className="text-xs sm:text-sm whitespace-nowrap hidden lg:table-cell">Department</TableHead>
+                        <TableHead className="text-xs sm:text-sm whitespace-nowrap hidden xl:table-cell">Team</TableHead>
+                        <TableHead className="text-xs sm:text-sm whitespace-nowrap hidden xl:table-cell">Manager</TableHead>
+                        <TableHead className="text-right text-xs sm:text-sm">Actions</TableHead>
                       </TableRow>
-                    ))}
-                  </TableBody>
-                </Table>
+                    </TableHeader>
+                    <TableBody>
+                      {users.map((user) => (
+                        <TableRow key={user.id} data-testid={`user-row-${user.id}`}>
+                          <TableCell className="font-medium text-xs sm:text-sm">{user.username}</TableCell>
+                          <TableCell className="text-xs sm:text-sm hidden md:table-cell">{user.email}</TableCell>
+                          <TableCell>
+                            <span className={`px-1.5 sm:px-2 py-0.5 sm:py-1 rounded text-[10px] sm:text-xs font-semibold ${
+                              user.role === 'admin' ? 'bg-purple-100 text-purple-800' :
+                              user.role === 'approver' ? 'bg-blue-100 text-blue-800' :
+                              'bg-gray-100 text-gray-800'
+                            }`}>
+                              {user.role}
+                            </span>
+                          </TableCell>
+                          <TableCell className="text-xs sm:text-sm hidden lg:table-cell">{user.pillar || '-'}</TableCell>
+                          <TableCell className="text-xs sm:text-sm hidden lg:table-cell">{user.department || '-'}</TableCell>
+                          <TableCell className="text-xs sm:text-sm hidden xl:table-cell">{user.team || '-'}</TableCell>
+                          <TableCell className="text-xs sm:text-sm hidden xl:table-cell">{user.manager || '-'}</TableCell>
+                          <TableCell className="text-right space-x-1 sm:space-x-2">
+                            <Button
+                              data-testid={`edit-user-${user.id}`}
+                              variant="outline"
+                              size="sm"
+                              className="h-7 w-7 sm:h-8 sm:w-8 p-0"
+                              onClick={() => {
+                                setEditingUser({
+                                  ...user,
+                                  approved_pillars: user.approved_pillars || [],
+                                  approved_departments: user.approved_departments || []
+                                });
+                                setShowUserDialog(true);
+                              }}
+                            >
+                              <Edit className="w-3 h-3 sm:w-4 sm:h-4" />
+                            </Button>
+                            <Button
+                              data-testid={`delete-user-${user.id}`}
+                              variant="outline"
+                              size="sm"
+                              className="h-7 w-7 sm:h-8 sm:w-8 p-0"
+                              onClick={() => handleDeleteUser(user.id)}
+                            >
+                              <Trash2 className="w-3 h-3 sm:w-4 sm:h-4" />
+                            </Button>
+                          </TableCell>
+                        </TableRow>
+                      ))}
+                    </TableBody>
+                  </Table>
+                </div>
               </div>
             </CardContent>
           </Card>
@@ -395,21 +404,21 @@ export default function AdminPanel() {
         {/* Departments Tab */}
         <TabsContent value="departments">
           <Card>
-            <CardHeader>
-              <CardTitle>Manage Departments</CardTitle>
-              <CardDescription>Add or remove departments (linked to pillars)</CardDescription>
+            <CardHeader className="p-4 sm:p-6">
+              <CardTitle className="text-lg sm:text-xl">Manage Departments</CardTitle>
+              <CardDescription className="text-sm">Add or remove departments (linked to pillars)</CardDescription>
             </CardHeader>
-            <CardContent className="space-y-6">
-              <div className="flex space-x-3">
+            <CardContent className="space-y-4 sm:space-y-6 p-4 sm:p-6 pt-0">
+              <div className="flex flex-col sm:flex-row gap-2 sm:gap-3">
                 <Input
                   data-testid="new-department-input"
                   value={newDepartment.name}
                   onChange={(e) => setNewDepartment({ ...newDepartment, name: e.target.value })}
                   placeholder="Department name"
-                  className="flex-1"
+                  className="flex-1 text-sm"
                 />
                 <Select value={newDepartment.pillar} onValueChange={(value) => setNewDepartment({ ...newDepartment, pillar: value })}>
-                  <SelectTrigger data-testid="new-department-pillar-select" className="w-[200px]">
+                  <SelectTrigger data-testid="new-department-pillar-select" className="w-full sm:w-[180px] text-sm">
                     <SelectValue placeholder="Select Pillar" />
                   </SelectTrigger>
                   <SelectContent>
@@ -418,8 +427,8 @@ export default function AdminPanel() {
                     ))}
                   </SelectContent>
                 </Select>
-                <Button data-testid="add-department-btn" onClick={handleAddDepartment}>
-                  <Plus className="w-4 h-4 mr-2" />
+                <Button data-testid="add-department-btn" onClick={handleAddDepartment} size="sm" className="w-full sm:w-auto">
+                  <Plus className="w-4 h-4 mr-1 sm:mr-2" />
                   Add
                 </Button>
               </div>
@@ -429,19 +438,20 @@ export default function AdminPanel() {
                   if (pillarDepts.length === 0) return null;
                   return (
                     <div key={pillar.id}>
-                      <h3 className="font-semibold text-gray-900 mb-3">{pillar.name}</h3>
-                      <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                      <h3 className="font-semibold text-gray-900 mb-2 sm:mb-3 text-sm sm:text-base">{pillar.name}</h3>
+                      <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 sm:gap-3">
                         {pillarDepts.map((dept) => (
                           <div
                             key={dept.id}
                             data-testid={`department-${dept.id}`}
-                            className="flex items-center justify-between p-3 bg-gray-50 rounded-lg border"
+                            className="flex items-center justify-between p-2 sm:p-3 bg-gray-50 rounded-lg border"
                           >
-                            <span>{dept.name}</span>
+                            <span className="text-sm">{dept.name}</span>
                             <Button
                               data-testid={`delete-department-${dept.id}`}
                               variant="ghost"
                               size="sm"
+                              className="h-7 w-7 p-0"
                               onClick={() => handleDeleteDepartment(dept.id)}
                             >
                               <Trash2 className="w-4 h-4 text-red-600" />
@@ -460,35 +470,37 @@ export default function AdminPanel() {
         {/* Pillars Tab */}
         <TabsContent value="pillars">
           <Card>
-            <CardHeader>
-              <CardTitle>Manage Pillars</CardTitle>
-              <CardDescription>Add or remove organizational pillars</CardDescription>
+            <CardHeader className="p-4 sm:p-6">
+              <CardTitle className="text-lg sm:text-xl">Manage Pillars</CardTitle>
+              <CardDescription className="text-sm">Add or remove organizational pillars</CardDescription>
             </CardHeader>
-            <CardContent className="space-y-6">
-              <div className="flex space-x-3">
+            <CardContent className="space-y-4 sm:space-y-6 p-4 sm:p-6 pt-0">
+              <div className="flex flex-col sm:flex-row gap-2 sm:gap-3">
                 <Input
                   data-testid="new-pillar-input"
                   value={newPillar}
                   onChange={(e) => setNewPillar(e.target.value)}
                   placeholder="Pillar name"
+                  className="flex-1 text-sm"
                 />
-                <Button data-testid="add-pillar-btn" onClick={handleAddPillar}>
-                  <Plus className="w-4 h-4 mr-2" />
+                <Button data-testid="add-pillar-btn" onClick={handleAddPillar} size="sm" className="w-full sm:w-auto">
+                  <Plus className="w-4 h-4 mr-1 sm:mr-2" />
                   Add
                 </Button>
               </div>
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
                 {pillars.map((pillar) => (
                   <div
                     key={pillar.id}
                     data-testid={`pillar-${pillar.id}`}
-                    className="flex items-center justify-between p-4 bg-gray-50 rounded-lg border"
+                    className="flex items-center justify-between p-3 sm:p-4 bg-gray-50 rounded-lg border"
                   >
-                    <span className="font-medium">{pillar.name}</span>
+                    <span className="font-medium text-sm sm:text-base">{pillar.name}</span>
                     <Button
                       data-testid={`delete-pillar-${pillar.id}`}
                       variant="ghost"
                       size="sm"
+                      className="h-7 w-7 p-0"
                       onClick={() => handleDeletePillar(pillar.id)}
                     >
                       <Trash2 className="w-4 h-4 text-red-600" />
@@ -503,22 +515,22 @@ export default function AdminPanel() {
         {/* Teams Tab */}
         <TabsContent value="teams">
           <Card>
-            <CardHeader>
-              <CardTitle>Manage Teams</CardTitle>
-              <CardDescription>Add or remove teams within departments</CardDescription>
+            <CardHeader className="p-4 sm:p-6">
+              <CardTitle className="text-lg sm:text-xl">Manage Teams</CardTitle>
+              <CardDescription className="text-sm">Add or remove teams within departments</CardDescription>
             </CardHeader>
-            <CardContent className="space-y-6">
-              <div className="flex space-x-3 flex-wrap gap-2">
+            <CardContent className="space-y-4 sm:space-y-6 p-4 sm:p-6 pt-0">
+              <div className="flex flex-col sm:flex-row gap-2 sm:gap-3 flex-wrap">
                 <Input
                   data-testid="new-team-name-input"
                   value={newTeam.name}
                   onChange={(e) => setNewTeam({ ...newTeam, name: e.target.value })}
                   placeholder="Team name"
-                  className="flex-1 min-w-[150px]"
+                  className="flex-1 min-w-[140px] text-sm"
                 />
                 <Select value={newTeam.pillar} onValueChange={(value) => setNewTeam({ ...newTeam, pillar: value, department: '' })}>
-                  <SelectTrigger data-testid="new-team-pillar-select" className="w-[150px]">
-                    <SelectValue placeholder="Select Pillar" />
+                  <SelectTrigger data-testid="new-team-pillar-select" className="w-full sm:w-[140px] text-sm">
+                    <SelectValue placeholder="Pillar" />
                   </SelectTrigger>
                   <SelectContent>
                     {pillars.map((pillar) => (
@@ -531,8 +543,8 @@ export default function AdminPanel() {
                   onValueChange={(value) => setNewTeam({ ...newTeam, department: value })}
                   disabled={!newTeam.pillar}
                 >
-                  <SelectTrigger data-testid="new-team-department-select" className="w-[180px]">
-                    <SelectValue placeholder="Select Department" />
+                  <SelectTrigger data-testid="new-team-department-select" className="w-full sm:w-[160px] text-sm">
+                    <SelectValue placeholder="Department" />
                   </SelectTrigger>
                   <SelectContent>
                     {departments
@@ -542,40 +554,41 @@ export default function AdminPanel() {
                       ))}
                   </SelectContent>
                 </Select>
-                <Button data-testid="add-team-btn" onClick={handleAddTeam}>
-                  <Plus className="w-4 h-4 mr-2" />
+                <Button data-testid="add-team-btn" onClick={handleAddTeam} size="sm" className="w-full sm:w-auto">
+                  <Plus className="w-4 h-4 mr-1 sm:mr-2" />
                   Add
                 </Button>
               </div>
-              <div className="space-y-6">
+              <div className="space-y-4 sm:space-y-6">
                 {pillars.map((pillar) => {
                   const pillarDepts = departments.filter(d => d.pillar === pillar.name);
                   const pillarTeams = teams.filter(t => t.pillar === pillar.name);
                   if (pillarTeams.length === 0) return null;
                   return (
-                    <div key={pillar.id} className="border rounded-lg p-4">
-                      <h3 className="font-bold text-blue-800 mb-4">{pillar.name}</h3>
+                    <div key={pillar.id} className="border rounded-lg p-3 sm:p-4">
+                      <h3 className="font-bold text-blue-800 mb-3 sm:mb-4 text-sm sm:text-base">{pillar.name}</h3>
                       {pillarDepts.map((dept) => {
                         const deptTeams = pillarTeams.filter(t => t.department === dept.name);
                         if (deptTeams.length === 0) return null;
                         return (
-                          <div key={dept.id} className="ml-4 mb-4">
-                            <h4 className="font-semibold text-gray-700 mb-2">{dept.name}</h4>
-                            <div className="grid grid-cols-1 md:grid-cols-2 gap-2 ml-4">
+                          <div key={dept.id} className="ml-2 sm:ml-4 mb-3 sm:mb-4">
+                            <h4 className="font-semibold text-gray-700 mb-2 text-xs sm:text-sm">{dept.name}</h4>
+                            <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 ml-2 sm:ml-4">
                               {deptTeams.map((team) => (
                                 <div
                                   key={team.id}
                                   data-testid={`team-${team.id}`}
                                   className="flex items-center justify-between p-2 bg-gray-50 rounded border"
                                 >
-                                  <span className="text-sm">{team.name}</span>
+                                  <span className="text-xs sm:text-sm">{team.name}</span>
                                   <Button
                                     data-testid={`delete-team-${team.id}`}
                                     variant="ghost"
                                     size="sm"
+                                    className="h-6 w-6 p-0"
                                     onClick={() => handleDeleteTeam(team.id)}
                                   >
-                                    <Trash2 className="w-4 h-4 text-red-600" />
+                                    <Trash2 className="w-3 h-3 sm:w-4 sm:h-4 text-red-600" />
                                   </Button>
                                 </div>
                               ))}
@@ -594,73 +607,76 @@ export default function AdminPanel() {
         {/* Tech & Engineering Tab */}
         <TabsContent value="tech">
           <Card>
-            <CardHeader>
-              <CardTitle>Tech & Engineering Personnel</CardTitle>
-              <CardDescription>Manage technical resources for complex idea implementation</CardDescription>
+            <CardHeader className="p-4 sm:p-6">
+              <CardTitle className="text-lg sm:text-xl">Tech & Engineering Personnel</CardTitle>
+              <CardDescription className="text-sm">Manage technical resources for complex idea implementation</CardDescription>
             </CardHeader>
-            <CardContent className="space-y-6">
-              <div className="flex space-x-3 flex-wrap gap-2">
+            <CardContent className="space-y-4 sm:space-y-6 p-4 sm:p-6 pt-0">
+              <div className="flex flex-col sm:flex-row gap-2 sm:gap-3 flex-wrap">
                 <Input
                   data-testid="new-tech-name-input"
                   value={newTechPerson.name}
                   onChange={(e) => setNewTechPerson({ ...newTechPerson, name: e.target.value })}
                   placeholder="Full name"
-                  className="flex-1 min-w-[150px]"
+                  className="flex-1 min-w-[140px] text-sm"
                 />
                 <Input
                   data-testid="new-tech-email-input"
                   type="email"
                   value={newTechPerson.email}
                   onChange={(e) => setNewTechPerson({ ...newTechPerson, email: e.target.value })}
-                  placeholder="Email address"
-                  className="flex-1 min-w-[150px]"
+                  placeholder="Email"
+                  className="flex-1 min-w-[140px] text-sm"
                 />
                 <Input
                   data-testid="new-tech-specialization-input"
                   value={newTechPerson.specialization}
                   onChange={(e) => setNewTechPerson({ ...newTechPerson, specialization: e.target.value })}
                   placeholder="Specialization"
-                  className="flex-1 min-w-[150px]"
+                  className="flex-1 min-w-[140px] text-sm"
                 />
-                <Button data-testid="add-tech-btn" onClick={handleAddTechPerson} className="bg-blue-700 hover:bg-blue-800">
-                  <Plus className="w-4 h-4 mr-2" />
+                <Button data-testid="add-tech-btn" onClick={handleAddTechPerson} className="bg-blue-700 hover:bg-blue-800 w-full sm:w-auto" size="sm">
+                  <Plus className="w-4 h-4 mr-1 sm:mr-2" />
                   Add
                 </Button>
               </div>
-              <div className="overflow-x-auto">
-                <Table>
-                  <TableHeader>
-                    <TableRow>
-                      <TableHead>Name</TableHead>
-                      <TableHead>Email</TableHead>
-                      <TableHead>Specialization</TableHead>
-                      <TableHead className="text-right">Actions</TableHead>
-                    </TableRow>
-                  </TableHeader>
-                  <TableBody>
-                    {techPersons.map((person) => (
-                      <TableRow key={person.id} data-testid={`tech-person-${person.id}`}>
-                        <TableCell className="font-medium">{person.name}</TableCell>
-                        <TableCell>{person.email || '-'}</TableCell>
-                        <TableCell>
-                          {person.specialization ? (
-                            <Badge variant="outline" className="bg-blue-50">{person.specialization}</Badge>
-                          ) : '-'}
-                        </TableCell>
-                        <TableCell className="text-right">
-                          <Button
-                            data-testid={`delete-tech-${person.id}`}
-                            variant="outline"
-                            size="sm"
-                            onClick={() => handleDeleteTechPerson(person.id)}
-                          >
-                            <Trash2 className="w-4 h-4" />
-                          </Button>
-                        </TableCell>
+              <div className="overflow-x-auto -mx-4 sm:mx-0">
+                <div className="inline-block min-w-full align-middle">
+                  <Table>
+                    <TableHeader>
+                      <TableRow>
+                        <TableHead className="text-xs sm:text-sm">Name</TableHead>
+                        <TableHead className="text-xs sm:text-sm hidden sm:table-cell">Email</TableHead>
+                        <TableHead className="text-xs sm:text-sm hidden sm:table-cell">Specialization</TableHead>
+                        <TableHead className="text-right text-xs sm:text-sm">Actions</TableHead>
                       </TableRow>
-                    ))}
-                  </TableBody>
-                </Table>
+                    </TableHeader>
+                    <TableBody>
+                      {techPersons.map((person) => (
+                        <TableRow key={person.id} data-testid={`tech-person-${person.id}`}>
+                          <TableCell className="font-medium text-xs sm:text-sm">{person.name}</TableCell>
+                          <TableCell className="text-xs sm:text-sm hidden sm:table-cell">{person.email || '-'}</TableCell>
+                          <TableCell className="hidden sm:table-cell">
+                            {person.specialization ? (
+                              <Badge variant="outline" className="bg-blue-50 text-xs">{person.specialization}</Badge>
+                            ) : '-'}
+                          </TableCell>
+                          <TableCell className="text-right">
+                            <Button
+                              data-testid={`delete-tech-${person.id}`}
+                              variant="outline"
+                              size="sm"
+                              className="h-7 w-7 p-0"
+                              onClick={() => handleDeleteTechPerson(person.id)}
+                            >
+                              <Trash2 className="w-3 h-3 sm:w-4 sm:h-4" />
+                            </Button>
+                          </TableCell>
+                        </TableRow>
+                      ))}
+                    </TableBody>
+                  </Table>
+                </div>
               </div>
             </CardContent>
           </Card>
@@ -669,38 +685,40 @@ export default function AdminPanel() {
 
       {/* Edit User Dialog */}
       <Dialog open={showUserDialog} onOpenChange={setShowUserDialog}>
-        <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto" data-testid="edit-user-dialog">
+        <DialogContent className="max-w-[95vw] sm:max-w-2xl max-h-[90vh] overflow-y-auto" data-testid="edit-user-dialog">
           <DialogHeader>
-            <DialogTitle>Edit User</DialogTitle>
-            <DialogDescription>Update user information and role assignments</DialogDescription>
+            <DialogTitle className="text-lg sm:text-xl">Edit User</DialogTitle>
+            <DialogDescription className="text-sm">Update user information and role assignments</DialogDescription>
           </DialogHeader>
           {editingUser && (
             <div className="space-y-4">
-              <div className="grid grid-cols-2 gap-4">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
                 <div>
-                  <Label>Username</Label>
+                  <Label className="text-sm">Username</Label>
                   <Input
                     data-testid="edit-username-input"
                     value={editingUser.username}
                     onChange={(e) => setEditingUser({ ...editingUser, username: e.target.value })}
+                    className="text-sm"
                   />
                 </div>
                 <div>
-                  <Label>Email</Label>
+                  <Label className="text-sm">Email</Label>
                   <Input
                     data-testid="edit-email-input"
                     type="email"
                     value={editingUser.email}
                     onChange={(e) => setEditingUser({ ...editingUser, email: e.target.value })}
+                    className="text-sm"
                   />
                 </div>
               </div>
               
-              <div className="grid grid-cols-2 gap-4">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
                 <div>
-                  <Label>Role</Label>
+                  <Label className="text-sm">Role</Label>
                   <Select value={editingUser.role} onValueChange={(value) => setEditingUser({ ...editingUser, role: value })}>
-                    <SelectTrigger data-testid="edit-role-select">
+                    <SelectTrigger data-testid="edit-role-select" className="text-sm">
                       <SelectValue />
                     </SelectTrigger>
                     <SelectContent>
@@ -711,9 +729,9 @@ export default function AdminPanel() {
                   </Select>
                 </div>
                 <div>
-                  <Label>Pillar</Label>
+                  <Label className="text-sm">Pillar</Label>
                   <Select value={editingUser.pillar || ''} onValueChange={(value) => setEditingUser({ ...editingUser, pillar: value })}>
-                    <SelectTrigger data-testid="edit-pillar-select">
+                    <SelectTrigger data-testid="edit-pillar-select" className="text-sm">
                       <SelectValue placeholder="Select Pillar" />
                     </SelectTrigger>
                     <SelectContent>
@@ -725,11 +743,11 @@ export default function AdminPanel() {
                 </div>
               </div>
 
-              <div className="grid grid-cols-2 gap-4">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
                 <div>
-                  <Label>Department</Label>
+                  <Label className="text-sm">Department</Label>
                   <Select value={editingUser.department || ''} onValueChange={(value) => setEditingUser({ ...editingUser, department: value })}>
-                    <SelectTrigger data-testid="edit-department-select">
+                    <SelectTrigger data-testid="edit-department-select" className="text-sm">
                       <SelectValue placeholder="Select Department" />
                     </SelectTrigger>
                     <SelectContent>
@@ -740,9 +758,9 @@ export default function AdminPanel() {
                   </Select>
                 </div>
                 <div>
-                  <Label>Team</Label>
+                  <Label className="text-sm">Team</Label>
                   <Select value={editingUser.team || ''} onValueChange={(value) => setEditingUser({ ...editingUser, team: value })}>
-                    <SelectTrigger data-testid="edit-team-select">
+                    <SelectTrigger data-testid="edit-team-select" className="text-sm">
                       <SelectValue placeholder="Select Team" />
                     </SelectTrigger>
                     <SelectContent>
@@ -755,25 +773,26 @@ export default function AdminPanel() {
               </div>
 
               <div>
-                <Label>Manager</Label>
+                <Label className="text-sm">Manager</Label>
                 <Input
                   data-testid="edit-manager-input"
                   value={editingUser.manager || ''}
                   onChange={(e) => setEditingUser({ ...editingUser, manager: e.target.value })}
                   placeholder="Manager username or name"
+                  className="text-sm"
                 />
               </div>
 
               {editingUser.role === 'approver' && (
                 <>
                   <div>
-                    <Label className="block mb-2">Approved Pillars (Select pillars this approver can approve)</Label>
-                    <div className="flex flex-wrap gap-2">
+                    <Label className="block mb-2 text-sm">Approved Pillars (Select pillars this approver can approve)</Label>
+                    <div className="flex flex-wrap gap-1.5 sm:gap-2">
                       {pillars.map((pillar) => (
                         <Badge
                           key={pillar.id}
                           variant="outline"
-                          className={`cursor-pointer ${
+                          className={`cursor-pointer text-xs ${
                             editingUser.approved_pillars?.includes(pillar.name)
                               ? 'bg-blue-100 border-blue-500'
                               : 'hover:bg-gray-100'
@@ -787,13 +806,13 @@ export default function AdminPanel() {
                   </div>
 
                   <div>
-                    <Label className="block mb-2">Approved Departments (Select departments this approver can approve)</Label>
-                    <div className="flex flex-wrap gap-2">
+                    <Label className="block mb-2 text-sm">Approved Departments (Select departments this approver can approve)</Label>
+                    <div className="flex flex-wrap gap-1.5 sm:gap-2">
                       {departments.map((dept) => (
                         <Badge
                           key={dept.id}
                           variant="outline"
-                          className={`cursor-pointer ${
+                          className={`cursor-pointer text-xs ${
                             editingUser.approved_departments?.includes(dept.name)
                               ? 'bg-green-100 border-green-500'
                               : 'hover:bg-gray-100'
@@ -808,9 +827,9 @@ export default function AdminPanel() {
                 </>
               )}
 
-              <div className="flex justify-end space-x-3 pt-4">
-                <Button variant="outline" onClick={() => setShowUserDialog(false)}>Cancel</Button>
-                <Button data-testid="save-user-btn" onClick={handleUpdateUser} className="bg-blue-700 hover:bg-blue-800">
+              <div className="flex flex-col sm:flex-row sm:justify-end gap-2 sm:gap-3 pt-4">
+                <Button variant="outline" onClick={() => setShowUserDialog(false)} className="order-2 sm:order-1">Cancel</Button>
+                <Button data-testid="save-user-btn" onClick={handleUpdateUser} className="bg-blue-700 hover:bg-blue-800 order-1 sm:order-2">
                   Save Changes
                 </Button>
               </div>
