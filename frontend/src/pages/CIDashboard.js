@@ -5,10 +5,11 @@ import { Button } from '../components/ui/button';
 import { Badge } from '../components/ui/badge';
 import { Calendar } from '../components/ui/calendar';
 import { Popover, PopoverContent, PopoverTrigger } from '../components/ui/popover';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '../components/ui/select';
 import { toast } from 'sonner';
 import { 
   Zap, Award, TrendingUp, DollarSign, Clock, Download, 
-  BarChart3, PieChart as PieChartIcon, Lightbulb, Users, CalendarIcon, CheckCircle, Wrench
+  BarChart3, PieChart as PieChartIcon, Lightbulb, Users, CalendarIcon, CheckCircle, Wrench, Filter, X
 } from 'lucide-react';
 import { PieChart, Pie, Cell, BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from 'recharts';
 import { format } from 'date-fns';
@@ -21,16 +22,46 @@ export default function CIDashboard() {
   const [exporting, setExporting] = useState(false);
   const [startDate, setStartDate] = useState(null);
   const [endDate, setEndDate] = useState(null);
+  const [pillars, setPillars] = useState([]);
+  const [departments, setDepartments] = useState([]);
+  const [teams, setTeams] = useState([]);
+  const [filters, setFilters] = useState({
+    pillar: '',
+    department: '',
+    team: ''
+  });
+
+  useEffect(() => {
+    fetchFilterData();
+  }, []);
 
   useEffect(() => {
     fetchAnalytics();
-  }, [startDate, endDate]);
+  }, [startDate, endDate, filters]);
+
+  const fetchFilterData = async () => {
+    try {
+      const [pillarsRes, deptsRes, teamsRes] = await Promise.all([
+        axios.get(`${process.env.REACT_APP_BACKEND_URL}/api/public/pillars`),
+        axios.get(`${process.env.REACT_APP_BACKEND_URL}/api/public/departments`),
+        axios.get(`${process.env.REACT_APP_BACKEND_URL}/api/public/teams`)
+      ]);
+      setPillars(pillarsRes.data);
+      setDepartments(deptsRes.data);
+      setTeams(teamsRes.data);
+    } catch (error) {
+      console.error('Failed to fetch filter data:', error);
+    }
+  };
 
   const fetchAnalytics = async () => {
     try {
       const params = {};
       if (startDate) params.start_date = format(startDate, 'yyyy-MM-dd');
       if (endDate) params.end_date = format(endDate, 'yyyy-MM-dd');
+      if (filters.pillar) params.pillar = filters.pillar;
+      if (filters.department) params.department = filters.department;
+      if (filters.team) params.team = filters.team;
       
       const response = await axios.get(`${process.env.REACT_APP_BACKEND_URL}/api/dashboard/analytics`, { params });
       setAnalytics(response.data);
@@ -46,6 +77,38 @@ export default function CIDashboard() {
     setStartDate(null);
     setEndDate(null);
   };
+
+  const handleFilterChange = (key, value) => {
+    const actualValue = value === ' ' ? '' : value;
+    const newFilters = { ...filters, [key]: actualValue };
+    
+    if (key === 'pillar') {
+      newFilters.department = '';
+      newFilters.team = '';
+    } else if (key === 'department') {
+      newFilters.team = '';
+    }
+    
+    setFilters(newFilters);
+  };
+
+  const clearAllFilters = () => {
+    setFilters({ pillar: '', department: '', team: '' });
+    setStartDate(null);
+    setEndDate(null);
+  };
+
+  const hasActiveFilters = filters.pillar || filters.department || filters.team || startDate || endDate;
+
+  const filteredDepartments = filters.pillar 
+    ? departments.filter(d => d.pillar === filters.pillar)
+    : departments;
+
+  const filteredTeams = filters.department
+    ? teams.filter(t => t.department === filters.department)
+    : filters.pillar
+    ? teams.filter(t => t.pillar === filters.pillar)
+    : teams;
 
   const handleExportExcel = async () => {
     setExporting(true);
