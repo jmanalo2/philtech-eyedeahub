@@ -408,14 +408,19 @@ async def forgot_password(request: ForgotPasswordRequest):
             </body>
         </html>
         """
+        # Try to send email but also return the link for testing
+        # (Resend test mode only sends to verified emails)
         asyncio.create_task(send_email_async(request.email, "Password Reset Request", html))
-        return {"message": "Password reset link has been sent to your email"}
+        return {
+            "message": "Password reset link has been sent to your email",
+            "note": "Using Resend test mode - emails only delivered to verified addresses",
+            "reset_link": reset_link
+        }
     else:
         # For testing without email configuration
         return {
             "message": "Password reset link generated (email service not configured)",
-            "reset_link": reset_link,
-            "token": reset_token
+            "reset_link": reset_link
         }
 
 @api_router.post("/auth/reset-password")
