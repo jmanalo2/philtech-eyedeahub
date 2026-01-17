@@ -536,6 +536,37 @@ export default function IdeaDetail() {
           </DialogFooter>
         </DialogContent>
       </Dialog>
+
+      {/* Delete Confirmation Dialog */}
+      <Dialog open={showDeleteDialog} onOpenChange={setShowDeleteDialog}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Delete Eye-dea</DialogTitle>
+            <DialogDescription>
+              Are you sure you want to delete this Eye-dea? This action cannot be undone and will also delete all associated comments.
+            </DialogDescription>
+          </DialogHeader>
+          <div className="py-4">
+            <div className="bg-red-50 p-4 rounded-lg border border-red-200">
+              <p className="font-semibold text-gray-900">{idea?.title}</p>
+              <p className="text-sm text-gray-600 mt-1">{idea?.idea_number} • {idea?.pillar}</p>
+            </div>
+          </div>
+          <DialogFooter className="flex-col sm:flex-row gap-2">
+            <Button variant="outline" onClick={() => setShowDeleteDialog(false)} disabled={deleting}>
+              Cancel
+            </Button>
+            <Button
+              variant="destructive"
+              onClick={handleDeleteIdea}
+              disabled={deleting}
+              data-testid="confirm-delete-idea-btn"
+            >
+              {deleting ? 'Deleting...' : 'Delete Eye-dea'}
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }
