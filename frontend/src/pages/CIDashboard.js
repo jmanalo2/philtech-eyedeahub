@@ -184,17 +184,79 @@ export default function CIDashboard() {
   return (
     <div data-testid="ci-dashboard-page">
       {/* Header */}
-      <div className="mb-8 flex flex-wrap justify-between items-start gap-4">
+      <div className="mb-6 flex flex-wrap justify-between items-start gap-4">
         <div>
-          <h1 className="text-3xl font-bold text-gray-900 mb-2">C.I. Excellence Dashboard</h1>
-          <p className="text-gray-600">Analytics and insights for continuous improvement</p>
+          <h1 className="text-2xl sm:text-3xl font-bold text-gray-900 mb-2">C.I. Excellence Dashboard</h1>
+          <p className="text-sm sm:text-base text-gray-600">Analytics and insights for continuous improvement</p>
         </div>
-        <div className="flex flex-wrap gap-3 items-center">
-          {/* Date Range Filter */}
-          <div className="flex items-center gap-2 bg-white border rounded-lg p-2">
+        <Button
+          data-testid="export-excel-btn"
+          onClick={handleExportExcel}
+          disabled={exporting}
+          className="bg-green-600 hover:bg-green-700"
+        >
+          <Download className="w-4 h-4 mr-2" />
+          {exporting ? 'Exporting...' : 'Export Excel'}
+        </Button>
+      </div>
+
+      {/* Filters Card */}
+      <Card className="mb-6" data-testid="ci-filters">
+        <CardContent className="p-4">
+          <div className="flex flex-wrap items-center gap-2 mb-3">
+            <Filter className="w-4 h-4 text-gray-600" />
+            <span className="font-medium text-sm text-gray-700">Filters</span>
+            {hasActiveFilters && (
+              <Button variant="ghost" size="sm" onClick={clearAllFilters} className="text-gray-500 h-6 px-2" data-testid="clear-all-filters">
+                <X className="w-3 h-3 mr-1" />
+                Clear All
+              </Button>
+            )}
+          </div>
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-6 gap-3">
+            {/* Pillar Filter */}
+            <Select value={filters.pillar} onValueChange={(v) => handleFilterChange('pillar', v)}>
+              <SelectTrigger data-testid="ci-filter-pillar" className="text-sm">
+                <SelectValue placeholder="All Pillars" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value=" ">All Pillars</SelectItem>
+                {pillars.map((p) => (
+                  <SelectItem key={p.id} value={p.name}>{p.name}</SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+            
+            {/* Department Filter */}
+            <Select value={filters.department} onValueChange={(v) => handleFilterChange('department', v)} disabled={!filters.pillar}>
+              <SelectTrigger data-testid="ci-filter-department" className="text-sm">
+                <SelectValue placeholder="All Departments" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value=" ">All Departments</SelectItem>
+                {filteredDepartments.map((d) => (
+                  <SelectItem key={d.id} value={d.name}>{d.name}</SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+            
+            {/* Team Filter */}
+            <Select value={filters.team} onValueChange={(v) => handleFilterChange('team', v)} disabled={!filters.department}>
+              <SelectTrigger data-testid="ci-filter-team" className="text-sm">
+                <SelectValue placeholder="All Teams" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value=" ">All Teams</SelectItem>
+                {filteredTeams.map((t) => (
+                  <SelectItem key={t.id} value={t.name}>{t.name}</SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+
+            {/* Date Range Filter */}
             <Popover>
               <PopoverTrigger asChild>
-                <Button variant="outline" size="sm" className="w-[130px]">
+                <Button variant="outline" size="sm" className="w-full justify-start text-sm">
                   <CalendarIcon className="w-4 h-4 mr-2" />
                   {startDate ? format(startDate, 'MMM d, yyyy') : 'Start Date'}
                 </Button>
@@ -203,10 +265,10 @@ export default function CIDashboard() {
                 <Calendar mode="single" selected={startDate} onSelect={setStartDate} initialFocus />
               </PopoverContent>
             </Popover>
-            <span className="text-gray-500">to</span>
+            
             <Popover>
               <PopoverTrigger asChild>
-                <Button variant="outline" size="sm" className="w-[130px]">
+                <Button variant="outline" size="sm" className="w-full justify-start text-sm">
                   <CalendarIcon className="w-4 h-4 mr-2" />
                   {endDate ? format(endDate, 'MMM d, yyyy') : 'End Date'}
                 </Button>
@@ -215,12 +277,24 @@ export default function CIDashboard() {
                 <Calendar mode="single" selected={endDate} onSelect={setEndDate} initialFocus />
               </PopoverContent>
             </Popover>
+            
             {(startDate || endDate) && (
-              <Button variant="ghost" size="sm" onClick={clearDateFilter}>Clear</Button>
+              <Button variant="ghost" size="sm" onClick={clearDateFilter} className="text-gray-500">
+                Clear Dates
+              </Button>
             )}
           </div>
-          <Button
-            data-testid="export-excel-btn"
+          {hasActiveFilters && (
+            <div className="mt-3 flex flex-wrap gap-2">
+              {filters.pillar && <Badge variant="secondary">{filters.pillar}</Badge>}
+              {filters.department && <Badge variant="secondary">{filters.department}</Badge>}
+              {filters.team && <Badge variant="secondary">{filters.team}</Badge>}
+              {startDate && <Badge variant="secondary">From: {format(startDate, 'MMM d')}</Badge>}
+              {endDate && <Badge variant="secondary">To: {format(endDate, 'MMM d')}</Badge>}
+            </div>
+          )}
+        </CardContent>
+      </Card>
             onClick={handleExportExcel}
             disabled={exporting}
             className="bg-green-600 hover:bg-green-700"
