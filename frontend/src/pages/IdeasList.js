@@ -331,6 +331,21 @@ export default function IdeasList() {
                         <span className="text-xs sm:text-sm">Revision requested - Click to view comments and resubmit</span>
                       </div>
                     )}
+                    {/* Admin Delete Button */}
+                    {user?.role === 'admin' && (
+                      <div className="mt-3 sm:mt-4 pt-3 border-t border-gray-200 flex justify-end">
+                        <Button
+                          variant="outline"
+                          size="sm"
+                          className="text-red-600 border-red-300 hover:bg-red-50 hover:border-red-400"
+                          onClick={(e) => handleDeleteClick(e, idea)}
+                          data-testid={`delete-idea-${idea.id}`}
+                        >
+                          <Trash2 className="w-4 h-4 mr-1" />
+                          Delete
+                        </Button>
+                      </div>
+                    )}
                   </CardContent>
                 </Card>
               </div>
@@ -338,6 +353,40 @@ export default function IdeasList() {
           })
         )}
       </div>
+
+      {/* Delete Confirmation Dialog */}
+      <Dialog open={deleteDialogOpen} onOpenChange={setDeleteDialogOpen}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Delete Eye-dea</DialogTitle>
+            <DialogDescription>
+              Are you sure you want to delete this Eye-dea? This action cannot be undone.
+            </DialogDescription>
+          </DialogHeader>
+          {ideaToDelete && (
+            <div className="py-4">
+              <div className="bg-gray-50 p-4 rounded-lg">
+                <p className="font-semibold text-gray-900">{ideaToDelete.title}</p>
+                <p className="text-sm text-gray-600 mt-1">{ideaToDelete.idea_number} • {ideaToDelete.pillar}</p>
+                <p className="text-sm text-gray-500 mt-1">Submitted by: {ideaToDelete.submitted_by_username}</p>
+              </div>
+            </div>
+          )}
+          <DialogFooter className="flex-col sm:flex-row gap-2">
+            <Button variant="outline" onClick={() => setDeleteDialogOpen(false)} disabled={deleting}>
+              Cancel
+            </Button>
+            <Button
+              variant="destructive"
+              onClick={handleDeleteConfirm}
+              disabled={deleting}
+              data-testid="confirm-delete-btn"
+            >
+              {deleting ? 'Deleting...' : 'Delete Eye-dea'}
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }
