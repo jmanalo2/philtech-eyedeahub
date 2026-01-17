@@ -19,6 +19,9 @@ export default function IdeasList() {
   const [pillars, setPillars] = useState([]);
   const [departments, setDepartments] = useState([]);
   const [teams, setTeams] = useState([]);
+  const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
+  const [ideaToDelete, setIdeaToDelete] = useState(null);
+  const [deleting, setDeleting] = useState(false);
 
   const [filters, setFilters] = useState({
     status: searchParams.get('status') || '',
