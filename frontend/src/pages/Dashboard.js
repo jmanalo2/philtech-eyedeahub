@@ -101,7 +101,7 @@ export default function Dashboard() {
     <div data-testid="dashboard-page">
       <div className="mb-6 sm:mb-8">
         <h1 className="text-2xl sm:text-3xl font-bold text-gray-900 mb-1 sm:mb-2">Welcome back, {user?.username}!</h1>
-        <p className="text-sm sm:text-base text-gray-600">Here's an overview of your Eye-dea management system</p>
+        <p className="text-sm sm:text-base text-gray-600">Here&apos;s an overview of your Eye-dea management system</p>
       </div>
 
       {/* Best Eye-dea Banner */}
