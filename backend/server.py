@@ -194,7 +194,10 @@ class DashboardStats(BaseModel):
     approved_ideas: int
     declined_ideas: int
     revision_requested_ideas: int
+    implemented_ideas: int
+    assigned_to_te_ideas: int
     my_ideas: int
+    best_idea: Optional[dict] = None
 
 # ==================== UTILITIES ====================
 
