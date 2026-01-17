@@ -108,11 +108,14 @@ Pillar (GBS, Tech, Finance, HR)
 - [ ] Microsoft 365 integration for auth and email (BLOCKED - awaiting credentials)
 
 ### P2 - Medium Priority
-- [ ] UI for C.I. team to input cost/time savings data
+- [x] Dashboard filters by pillar/department/team ✅
+- [x] C.I. Analytics filters ✅  
+- [x] Admin can delete ideas ✅
+- [x] T&E name display in Ideas list ✅
 - [ ] Refactor server.py into modular structure (routes, models, services)
 
 ### P3 - Low Priority / Future
-- [ ] Dashboard filters by pillar/department
+- [ ] UI for C.I. team to input/edit cost/time savings after evaluation
 - [ ] Additional notification channels
 
 ---
