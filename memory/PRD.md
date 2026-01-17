@@ -86,6 +86,12 @@ Pillar (GBS, Tech, Finance, HR)
 - [x] Fixed Dashboard stats not showing Implemented and Assigned to T&E counts (DashboardStats model missing fields)
 - [x] Fixed filter preservation when navigating back from idea detail
 
+### Dashboard & Analytics Filters (Jan 17, 2026)
+- [x] Dashboard filters by Pillar, Department, Team
+- [x] C.I. Analytics Dashboard filters by Pillar, Department, Team
+- [x] Ideas List shows T&E name after Approver name
+- [x] Admin can delete ideas from IdeasList and IdeaDetail pages
+
 ### Public APIs (for Registration)
 - [x] `/api/public/pillars` - No auth required
 - [x] `/api/public/departments` - With pillar filter
