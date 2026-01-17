@@ -154,6 +154,19 @@ export default function IdeaDetail() {
     }
   };
 
+  const handleDeleteIdea = async () => {
+    setDeleting(true);
+    try {
+      await axios.delete(`${process.env.REACT_APP_BACKEND_URL}/api/ideas/${id}`);
+      toast.success('Eye-dea deleted successfully');
+      navigate('/ideas');
+    } catch (error) {
+      toast.error(error.response?.data?.detail || 'Failed to delete Eye-dea');
+    } finally {
+      setDeleting(false);
+    }
+  };
+
   const getStatusBadge = (status) => {
     const variants = {
       pending: { className: 'bg-yellow-100 text-yellow-800 border-yellow-300' },
