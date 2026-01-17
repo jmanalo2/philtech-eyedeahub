@@ -958,20 +958,33 @@ async def get_dashboard_stats(
 async def get_dashboard_analytics(
     start_date: Optional[str] = None,
     end_date: Optional[str] = None,
+    pillar: Optional[str] = None,
+    department: Optional[str] = None,
+    team: Optional[str] = None,
     current_user: dict = Depends(get_current_user)
 ):
-    # Build date filter
-    date_filter = {}
-    if start_date:
-        date_filter["created_at"] = {"$gte": start_date}
-    if end_date:
-        if "created_at" in date_filter:
-            date_filter["created_at"]["$lte"] = end_date
-        else:
-            date_filter["created_at"] = {"$lte": end_date}
+    # Build base filter
+    base_filter = {}
     
-    # Base query with date filter
-    base_query = date_filter if date_filter else {}
+    # Add pillar/department/team filters
+    if pillar:
+        base_filter["pillar"] = pillar
+    if department:
+        base_filter["department"] = department
+    if team:
+        base_filter["team"] = team
+    
+    # Add date filter
+    if start_date:
+        base_filter["created_at"] = {"$gte": start_date}
+    if end_date:
+        if "created_at" in base_filter:
+            base_filter["created_at"]["$lte"] = end_date
+        else:
+            base_filter["created_at"] = {"$lte": end_date}
+    
+    # Base query with all filters
+    base_query = base_filter if base_filter else {}
     
     # Total counts
     total_ideas = await db.ideas.count_documents(base_query)
