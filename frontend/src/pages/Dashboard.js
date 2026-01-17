@@ -166,9 +166,89 @@ export default function Dashboard() {
   return (
     <div data-testid="dashboard-page">
       <div className="mb-6 sm:mb-8">
-        <h1 className="text-2xl sm:text-3xl font-bold text-gray-900 mb-1 sm:mb-2">Welcome back, {user?.username}!</h1>
-        <p className="text-sm sm:text-base text-gray-600">Here&apos;s an overview of your Eye-dea management system</p>
+        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
+          <div>
+            <h1 className="text-2xl sm:text-3xl font-bold text-gray-900 mb-1 sm:mb-2">Welcome back, {user?.username}!</h1>
+            <p className="text-sm sm:text-base text-gray-600">Here&apos;s an overview of your Eye-dea management system</p>
+          </div>
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={() => setShowFilters(!showFilters)}
+            className={hasActiveFilters ? 'border-blue-500 text-blue-600' : ''}
+            data-testid="toggle-filters-btn"
+          >
+            <Filter className="w-4 h-4 mr-2" />
+            Filters
+            {hasActiveFilters && <Badge className="ml-2 bg-blue-500 text-white text-xs px-1.5">Active</Badge>}
+          </Button>
+        </div>
       </div>
+
+      {/* Filters Section */}
+      {showFilters && (
+        <Card className="mb-6" data-testid="dashboard-filters">
+          <CardContent className="p-4">
+            <div className="flex flex-col sm:flex-row gap-3 sm:items-end">
+              <div className="flex-1 min-w-0">
+                <label className="text-xs font-medium text-gray-600 mb-1 block">Pillar</label>
+                <Select value={filters.pillar} onValueChange={(v) => handleFilterChange('pillar', v)}>
+                  <SelectTrigger data-testid="filter-pillar" className="text-sm">
+                    <SelectValue placeholder="All Pillars" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value=" ">All Pillars</SelectItem>
+                    {pillars.map((p) => (
+                      <SelectItem key={p.id} value={p.name}>{p.name}</SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
+              <div className="flex-1 min-w-0">
+                <label className="text-xs font-medium text-gray-600 mb-1 block">Department</label>
+                <Select value={filters.department} onValueChange={(v) => handleFilterChange('department', v)} disabled={!filters.pillar}>
+                  <SelectTrigger data-testid="filter-department" className="text-sm">
+                    <SelectValue placeholder="All Departments" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value=" ">All Departments</SelectItem>
+                    {filteredDepartments.map((d) => (
+                      <SelectItem key={d.id} value={d.name}>{d.name}</SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
+              <div className="flex-1 min-w-0">
+                <label className="text-xs font-medium text-gray-600 mb-1 block">Team</label>
+                <Select value={filters.team} onValueChange={(v) => handleFilterChange('team', v)} disabled={!filters.department}>
+                  <SelectTrigger data-testid="filter-team" className="text-sm">
+                    <SelectValue placeholder="All Teams" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value=" ">All Teams</SelectItem>
+                    {filteredTeams.map((t) => (
+                      <SelectItem key={t.id} value={t.name}>{t.name}</SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
+              {hasActiveFilters && (
+                <Button variant="ghost" size="sm" onClick={clearFilters} className="text-gray-500" data-testid="clear-filters-btn">
+                  <X className="w-4 h-4 mr-1" />
+                  Clear
+                </Button>
+              )}
+            </div>
+            {hasActiveFilters && (
+              <div className="mt-3 flex flex-wrap gap-2">
+                {filters.pillar && <Badge variant="secondary">{filters.pillar}</Badge>}
+                {filters.department && <Badge variant="secondary">{filters.department}</Badge>}
+                {filters.team && <Badge variant="secondary">{filters.team}</Badge>}
+              </div>
+            )}
+          </CardContent>
+        </Card>
+      )}
 
       {/* Best Eye-dea Banner */}
       {stats?.best_idea && (
