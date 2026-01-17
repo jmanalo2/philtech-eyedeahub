@@ -295,15 +295,6 @@ export default function CIDashboard() {
           )}
         </CardContent>
       </Card>
-            onClick={handleExportExcel}
-            disabled={exporting}
-            className="bg-green-600 hover:bg-green-700"
-          >
-            <Download className="w-4 h-4 mr-2" />
-            {exporting ? 'Exporting...' : 'Export to Excel'}
-          </Button>
-        </div>
-      </div>
 
       {/* Stats Cards */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
