@@ -24,7 +24,7 @@ export default function ForgotPassword() {
       });
       setSuccess(true);
       
-      // If email service is not configured, show the reset link
+      // Show reset link for testing (Resend test mode limitation)
       if (response.data.reset_link) {
         setResetLink(response.data.reset_link);
       }
