@@ -119,7 +119,7 @@ export default function Layout() {
 
           {/* Mobile Navigation */}
           {mobileMenuOpen && (
-            <nav className="md:hidden pb-4 space-y-2" data-testid="mobile-nav">
+            <nav className="md:hidden pb-4 space-y-1 border-t border-blue-600 pt-3" data-testid="mobile-nav">
               <Link to="/dashboard" onClick={() => setMobileMenuOpen(false)}>
                 <Button variant="ghost" className="w-full justify-start text-white hover:bg-blue-800">
                   <Home className="w-4 h-4 mr-2" />
@@ -137,6 +137,14 @@ export default function Layout() {
                   <Button variant="ghost" className="w-full justify-start text-white hover:bg-blue-800">
                     <UserCog className="w-4 h-4 mr-2" />
                     Admin
+                  </Button>
+                </Link>
+              )}
+              {(user?.role === 'admin' || (user?.role === 'approver' && user?.sub_role === 'ci_excellence')) && (
+                <Link to="/ci-dashboard" onClick={() => setMobileMenuOpen(false)}>
+                  <Button variant="ghost" className="w-full justify-start text-white hover:bg-blue-800">
+                    <BarChart3 className="w-4 h-4 mr-2" />
+                    C.I. Analytics
                   </Button>
                 </Link>
               )}
