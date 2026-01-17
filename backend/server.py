@@ -912,15 +912,29 @@ async def ci_update_status(idea_id: str, status_update: CIStatusUpdate, current_
 # ==================== DASHBOARD ROUTES ====================
 
 @api_router.get("/dashboard/stats", response_model=DashboardStats)
-async def get_dashboard_stats(current_user: dict = Depends(get_current_user)):
-    total = await db.ideas.count_documents({})
-    pending = await db.ideas.count_documents({"status": "pending"})
-    approved = await db.ideas.count_documents({"status": "approved"})
-    declined = await db.ideas.count_documents({"status": "declined"})
-    revision = await db.ideas.count_documents({"status": "revision_requested"})
-    implemented = await db.ideas.count_documents({"status": "implemented"})
-    assigned_to_te = await db.ideas.count_documents({"status": "assigned_to_te"})
-    my_ideas = await db.ideas.count_documents({"submitted_by": current_user["id"]})
+async def get_dashboard_stats(
+    pillar: Optional[str] = None,
+    department: Optional[str] = None,
+    team: Optional[str] = None,
+    current_user: dict = Depends(get_current_user)
+):
+    # Build filter query
+    base_filter = {}
+    if pillar:
+        base_filter["pillar"] = pillar
+    if department:
+        base_filter["department"] = department
+    if team:
+        base_filter["team"] = team
+    
+    total = await db.ideas.count_documents(base_filter)
+    pending = await db.ideas.count_documents({**base_filter, "status": "pending"})
+    approved = await db.ideas.count_documents({**base_filter, "status": "approved"})
+    declined = await db.ideas.count_documents({**base_filter, "status": "declined"})
+    revision = await db.ideas.count_documents({**base_filter, "status": "revision_requested"})
+    implemented = await db.ideas.count_documents({**base_filter, "status": "implemented"})
+    assigned_to_te = await db.ideas.count_documents({**base_filter, "status": "assigned_to_te"})
+    my_ideas = await db.ideas.count_documents({**base_filter, "submitted_by": current_user["id"]})
     
     # Get best idea for display
     best_idea_doc = await db.ideas.find_one({"is_best_idea": True}, {"_id": 0})
