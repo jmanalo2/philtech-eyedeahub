@@ -86,16 +86,15 @@ Pillar (GBS, Tech, Finance, HR)
 - None currently
 
 ### P1 - High Priority
-- [ ] "Best Idea" selection UI for C.I. team
-- [ ] Analytics filters by date range
+- [ ] Microsoft 365 integration for auth and email (BLOCKED - awaiting credentials)
 
 ### P2 - Medium Priority
-- [ ] Real email integration (Resend API)
-- [ ] Email notifications for approval workflow
+- [ ] UI for C.I. team to input cost/time savings data
+- [ ] Refactor server.py into modular structure (routes, models, services)
 
 ### P3 - Low Priority / Future
-- [ ] Mobile-responsive improvements
 - [ ] Dashboard filters by pillar/department
+- [ ] Additional notification channels
 
 ---
 
