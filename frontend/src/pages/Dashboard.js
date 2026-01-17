@@ -4,20 +4,55 @@ import { useAuth } from '../contexts/AuthContext';
 import axios from 'axios';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '../components/ui/card';
 import { Badge } from '../components/ui/badge';
-import { TrendingUp, CheckCircle2, XCircle, AlertCircle, Clock, Lightbulb, Award, Wrench, Star } from 'lucide-react';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '../components/ui/select';
+import { Button } from '../components/ui/button';
+import { TrendingUp, CheckCircle2, XCircle, AlertCircle, Clock, Lightbulb, Award, Wrench, Star, Filter, X } from 'lucide-react';
 
 export default function Dashboard() {
   const { user } = useAuth();
   const [stats, setStats] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [pillars, setPillars] = useState([]);
+  const [departments, setDepartments] = useState([]);
+  const [teams, setTeams] = useState([]);
+  const [filters, setFilters] = useState({
+    pillar: '',
+    department: '',
+    team: ''
+  });
+  const [showFilters, setShowFilters] = useState(false);
+
+  useEffect(() => {
+    fetchFilterData();
+  }, []);
 
   useEffect(() => {
     fetchStats();
-  }, []);
+  }, [filters]);
+
+  const fetchFilterData = async () => {
+    try {
+      const [pillarsRes, deptsRes, teamsRes] = await Promise.all([
+        axios.get(`${process.env.REACT_APP_BACKEND_URL}/api/public/pillars`),
+        axios.get(`${process.env.REACT_APP_BACKEND_URL}/api/public/departments`),
+        axios.get(`${process.env.REACT_APP_BACKEND_URL}/api/public/teams`)
+      ]);
+      setPillars(pillarsRes.data);
+      setDepartments(deptsRes.data);
+      setTeams(teamsRes.data);
+    } catch (error) {
+      console.error('Failed to fetch filter data:', error);
+    }
+  };
 
   const fetchStats = async () => {
     try {
-      const response = await axios.get(`${process.env.REACT_APP_BACKEND_URL}/api/dashboard/stats`);
+      const params = {};
+      if (filters.pillar) params.pillar = filters.pillar;
+      if (filters.department) params.department = filters.department;
+      if (filters.team) params.team = filters.team;
+      
+      const response = await axios.get(`${process.env.REACT_APP_BACKEND_URL}/api/dashboard/stats`, { params });
       setStats(response.data);
     } catch (error) {
       console.error('Failed to fetch stats:', error);
@@ -25,6 +60,37 @@ export default function Dashboard() {
       setLoading(false);
     }
   };
+
+  const handleFilterChange = (key, value) => {
+    const actualValue = value === ' ' ? '' : value;
+    const newFilters = { ...filters, [key]: actualValue };
+    
+    // Reset dependent filters
+    if (key === 'pillar') {
+      newFilters.department = '';
+      newFilters.team = '';
+    } else if (key === 'department') {
+      newFilters.team = '';
+    }
+    
+    setFilters(newFilters);
+  };
+
+  const clearFilters = () => {
+    setFilters({ pillar: '', department: '', team: '' });
+  };
+
+  const hasActiveFilters = filters.pillar || filters.department || filters.team;
+
+  const filteredDepartments = filters.pillar 
+    ? departments.filter(d => d.pillar === filters.pillar)
+    : departments;
+
+  const filteredTeams = filters.department
+    ? teams.filter(t => t.department === filters.department)
+    : filters.pillar
+    ? teams.filter(t => t.pillar === filters.pillar)
+    : teams;
 
   if (loading) {
     return <div className="flex items-center justify-center h-64">Loading...</div>;
