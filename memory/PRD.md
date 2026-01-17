@@ -72,6 +72,19 @@ Pillar (GBS, Tech, Finance, HR)
 - [x] Complexity distribution pie chart
 - [x] Approval overview bar chart
 - [x] Cost savings & time saved summaries
+- [x] **Best Idea** selection and display (badge on lists, banner on dashboard)
+- [x] Status update for T&E assigned ideas (Edit Status button)
+
+### Mobile Responsiveness (Jan 2026)
+- [x] Mobile navigation menu with hamburger icon
+- [x] Responsive Dashboard with adaptive stat cards
+- [x] Responsive IdeasList with stacking filters
+- [x] Responsive IdeaDetail with adaptive buttons
+- [x] Responsive AdminPanel with scrollable tabs
+
+### Bug Fixes (Jan 17, 2026)
+- [x] Fixed Dashboard stats not showing Implemented and Assigned to T&E counts (DashboardStats model missing fields)
+- [x] Fixed filter preservation when navigating back from idea detail
 
 ### Public APIs (for Registration)
 - [x] `/api/public/pillars` - No auth required
