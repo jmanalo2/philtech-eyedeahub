@@ -113,13 +113,13 @@ export default function IdeasList() {
 
   return (
     <div data-testid="ideas-list-page">
-      <div className="flex justify-between items-center mb-6">
+      <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-4 mb-6">
         <div>
-          <h1 className="text-3xl font-bold text-gray-900 mb-2">Eye-deas</h1>
-          <p className="text-gray-600">Browse and manage organizational ideas</p>
+          <h1 className="text-2xl sm:text-3xl font-bold text-gray-900 mb-1 sm:mb-2">Eye-deas</h1>
+          <p className="text-sm sm:text-base text-gray-600">Browse and manage organizational ideas</p>
         </div>
-        <Link to="/ideas/new">
-          <Button data-testid="create-idea-btn" className="bg-blue-700 hover:bg-blue-800">
+        <Link to="/ideas/new" className="self-start sm:self-auto">
+          <Button data-testid="create-idea-btn" className="bg-blue-700 hover:bg-blue-800 w-full sm:w-auto">
             <Plus className="w-4 h-4 mr-2" />
             New Eye-dea
           </Button>
@@ -128,24 +128,25 @@ export default function IdeasList() {
 
       {/* Filters */}
       <Card className="mb-6">
-        <CardHeader>
-          <div className="flex items-center justify-between">
+        <CardHeader className="p-4 sm:p-6">
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
             <div className="flex items-center space-x-2">
               <Filter className="w-5 h-5 text-gray-600" />
-              <CardTitle>Filters</CardTitle>
+              <CardTitle className="text-lg">Filters</CardTitle>
             </div>
             <Button
               data-testid="clear-filters-btn"
               variant="outline"
               size="sm"
               onClick={clearFilters}
+              className="self-start sm:self-auto"
             >
               Clear Filters
             </Button>
           </div>
         </CardHeader>
-        <CardContent>
-          <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+        <CardContent className="p-4 sm:p-6 pt-0">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4">
             <div>
               <label className="text-sm font-medium text-gray-700 mb-2 block">Status</label>
               <Select value={filters.status} onValueChange={(value) => handleFilterChange('status', value)}>
@@ -240,33 +241,33 @@ export default function IdeasList() {
                       <span className="font-bold">BEST EYE-DEA</span>
                     </div>
                   )}
-                  <CardHeader>
-                    <div className="flex justify-between items-start">
-                      <div className="flex-1">
-                        <div className="flex items-center space-x-3 mb-2">
-                          <CardTitle className="text-xl">{idea.title}</CardTitle>
-                          <Badge {...getStatusBadge(idea.status)} data-testid={`idea-status-${idea.id}`}>
+                  <CardHeader className="p-4 sm:p-6">
+                    <div className="flex flex-col sm:flex-row sm:justify-between sm:items-start gap-2">
+                      <div className="flex-1 min-w-0">
+                        <div className="flex flex-wrap items-center gap-2 mb-2">
+                          <CardTitle className="text-base sm:text-xl truncate">{idea.title}</CardTitle>
+                          <Badge {...getStatusBadge(idea.status)} data-testid={`idea-status-${idea.id}`} className="text-xs">
                             {getStatusLabel(idea.status)}
                           </Badge>
                           {needsRevision && (
-                            <Badge className="bg-orange-600 text-white animate-pulse">
+                            <Badge className="bg-orange-600 text-white animate-pulse text-xs">
                               Action Required
                             </Badge>
                           )}
                         </div>
-                        <CardDescription className="flex items-center space-x-4 text-sm">
+                        <CardDescription className="flex flex-wrap items-center gap-x-2 gap-y-1 text-xs sm:text-sm">
                           <span className="font-semibold">{idea.idea_number}</span>
-                          <span>•</span>
+                          <span className="hidden sm:inline">•</span>
                           <span>{idea.pillar}</span>
                           {idea.department && (
                             <>
-                              <span>•</span>
+                              <span className="hidden sm:inline">•</span>
                               <span>{idea.department}</span>
                             </>
                           )}
                           {idea.team && (
                             <>
-                              <span>•</span>
+                              <span className="hidden sm:inline">•</span>
                               <span>{idea.team}</span>
                             </>
                           )}
@@ -274,8 +275,8 @@ export default function IdeasList() {
                       </div>
                     </div>
                   </CardHeader>
-                  <CardContent>
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm">
+                  <CardContent className="p-4 sm:p-6 pt-0">
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 sm:gap-4 text-xs sm:text-sm">
                       <div>
                         <span className="font-medium text-gray-700">Improvement Type:</span>
                         <span className="ml-2 text-gray-600">{idea.improvement_type}</span>
@@ -295,13 +296,13 @@ export default function IdeasList() {
                         </div>
                       )}
                     </div>
-                    <div className="mt-4">
-                      <p className="text-gray-700 line-clamp-2">{idea.suggested_solution}</p>
+                    <div className="mt-3 sm:mt-4">
+                      <p className="text-gray-700 line-clamp-2 text-xs sm:text-sm">{idea.suggested_solution}</p>
                     </div>
                     {needsRevision && (
-                      <div className="mt-4 flex items-center space-x-2 text-orange-700 font-medium">
-                        <AlertCircle className="w-4 h-4" />
-                        <span className="text-sm">Revision requested - Click to view comments and resubmit</span>
+                      <div className="mt-3 sm:mt-4 flex items-center space-x-2 text-orange-700 font-medium">
+                        <AlertCircle className="w-4 h-4 flex-shrink-0" />
+                        <span className="text-xs sm:text-sm">Revision requested - Click to view comments and resubmit</span>
                       </div>
                     )}
                   </CardContent>
