@@ -321,10 +321,10 @@ export default function IdeasList() {
                           <span className="ml-2 text-gray-600">{idea.assigned_approver_username}</span>
                         </div>
                       )}
-                      {idea.assigned_tech_name && (
+                      {idea.tech_person_name && (
                         <div>
                           <span className="font-medium text-gray-700">T&E:</span>
-                          <span className="ml-2 text-gray-600">{idea.assigned_tech_name}</span>
+                          <span className="ml-2 text-gray-600">{idea.tech_person_name}</span>
                         </div>
                       )}
                     </div>
