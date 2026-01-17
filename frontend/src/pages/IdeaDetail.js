@@ -271,6 +271,18 @@ export default function IdeaDetail() {
                     Edit
                   </Button>
                 )}
+                {user?.role === 'admin' && (
+                  <Button
+                    data-testid="delete-idea-btn"
+                    onClick={() => setShowDeleteDialog(true)}
+                    variant="outline"
+                    className="text-red-600 border-red-300 hover:bg-red-50 text-sm"
+                    size="sm"
+                  >
+                    <Trash2 className="w-4 h-4 mr-1 sm:mr-2" />
+                    Delete
+                  </Button>
+                )}
               </div>
             </div>
           </CardHeader>
