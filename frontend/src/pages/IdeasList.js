@@ -87,6 +87,28 @@ export default function IdeasList() {
     setSearchParams({});
   };
 
+  const handleDeleteClick = (e, idea) => {
+    e.stopPropagation();
+    setIdeaToDelete(idea);
+    setDeleteDialogOpen(true);
+  };
+
+  const handleDeleteConfirm = async () => {
+    if (!ideaToDelete) return;
+    setDeleting(true);
+    try {
+      await axios.delete(`${process.env.REACT_APP_BACKEND_URL}/api/ideas/${ideaToDelete.id}`);
+      toast.success(`Eye-dea "${ideaToDelete.title}" has been deleted`);
+      setDeleteDialogOpen(false);
+      setIdeaToDelete(null);
+      fetchIdeas();
+    } catch (error) {
+      toast.error(error.response?.data?.detail || 'Failed to delete Eye-dea');
+    } finally {
+      setDeleting(false);
+    }
+  };
+
   const getStatusBadge = (status) => {
     const variants = {
       pending: { variant: 'default', className: 'bg-yellow-100 text-yellow-800 border-yellow-300' },
