@@ -214,42 +214,45 @@ export default function IdeaDetail() {
       <div className="space-y-6">
         {/* Header */}
         <Card>
-          <CardHeader>
-            <div className="flex justify-between items-start">
-              <div className="flex-1">
-                <div className="flex items-center space-x-3 mb-2">
-                  <CardTitle className="text-3xl">{idea.title}</CardTitle>
-                  <Badge {...getStatusBadge(idea.status)} data-testid="idea-status">
+          <CardHeader className="p-4 sm:p-6">
+            <div className="flex flex-col sm:flex-row sm:justify-between sm:items-start gap-4">
+              <div className="flex-1 min-w-0">
+                <div className="flex flex-wrap items-center gap-2 mb-2">
+                  <CardTitle className="text-xl sm:text-3xl">{idea.title}</CardTitle>
+                  <Badge {...getStatusBadge(idea.status)} data-testid="idea-status" className="text-xs sm:text-sm">
                     {getStatusLabel(idea.status)}
                   </Badge>
                 </div>
-                <CardDescription className="text-base">
+                <CardDescription className="text-sm sm:text-base">
                   {idea.idea_number} • Submitted by {idea.submitted_by_username}
                   {idea.is_best_idea && (
-                    <Badge className="ml-3 bg-yellow-500 text-white">
+                    <Badge className="ml-2 sm:ml-3 bg-yellow-500 text-white text-xs">
                       <Star className="w-3 h-3 mr-1" /> Best Eye-dea
                     </Badge>
                   )}
                 </CardDescription>
               </div>
-              <div className="flex space-x-2">
+              <div className="flex flex-wrap gap-2">
                 {canChangeStatus && (
                   <Button
                     data-testid="edit-status-btn"
                     onClick={() => setShowStatusDialog(true)}
-                    className="bg-purple-600 hover:bg-purple-700"
+                    className="bg-purple-600 hover:bg-purple-700 text-sm"
+                    size="sm"
                   >
-                    <Settings className="w-4 h-4 mr-2" />
-                    Edit Status
+                    <Settings className="w-4 h-4 mr-1 sm:mr-2" />
+                    <span className="hidden xs:inline">Edit Status</span>
+                    <span className="xs:hidden">Status</span>
                   </Button>
                 )}
                 {canEdit && (
                   <Button
                     data-testid="edit-idea-btn"
                     onClick={() => navigate(`/ideas/edit/${idea.id}`)}
-                    className="bg-blue-700 hover:bg-blue-800"
+                    className="bg-blue-700 hover:bg-blue-800 text-sm"
+                    size="sm"
                   >
-                    <Edit className="w-4 h-4 mr-2" />
+                    <Edit className="w-4 h-4 mr-1 sm:mr-2" />
                     Edit
                   </Button>
                 )}
@@ -260,11 +263,11 @@ export default function IdeaDetail() {
 
         {/* Details */}
         <Card>
-          <CardHeader>
-            <CardTitle>Eye-dea Details</CardTitle>
+          <CardHeader className="p-4 sm:p-6">
+            <CardTitle className="text-lg sm:text-xl">Eye-dea Details</CardTitle>
           </CardHeader>
-          <CardContent className="space-y-6">
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <CardContent className="space-y-4 sm:space-y-6 p-4 sm:p-6 pt-0">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-6">
               <div>
                 <label className="text-sm font-semibold text-gray-700 block mb-1">Pillar</label>
                 <p className="text-gray-900">{idea.pillar}</p>
@@ -313,32 +316,33 @@ export default function IdeaDetail() {
         {/* Resubmit Button for Revision Requested */}
         {isOwner && idea.status === 'revision_requested' && (
           <Card className="bg-orange-50 border-orange-300 border-2 shadow-md">
-            <CardContent className="py-6">
-              <div className="flex flex-col md:flex-row items-center justify-between gap-4">
+            <CardContent className="py-4 sm:py-6 px-4 sm:px-6">
+              <div className="flex flex-col gap-4">
                 <div className="flex items-start space-x-3">
-                  <AlertCircle className="w-6 h-6 text-orange-700 flex-shrink-0 mt-1" />
+                  <AlertCircle className="w-5 h-5 sm:w-6 sm:h-6 text-orange-700 flex-shrink-0 mt-0.5" />
                   <div>
-                    <h3 className="font-bold text-orange-900 text-lg mb-1">Revision Requested</h3>
-                    <p className="text-sm text-orange-800 mb-2">
+                    <h3 className="font-bold text-orange-900 text-base sm:text-lg mb-1">Revision Requested</h3>
+                    <p className="text-xs sm:text-sm text-orange-800 mb-2">
                       The approver has requested changes to your Eye-dea. Please review the comments below, 
                       make necessary updates using the Edit button, and then resubmit for review.
                     </p>
-                    <div className="flex items-center space-x-2 text-sm text-orange-700">
+                    <div className="flex flex-wrap items-center gap-1 text-xs sm:text-sm text-orange-700">
                       <span className="font-semibold">Steps:</span>
-                      <span>1. Review comments</span>
+                      <span>1. Review</span>
                       <span>→</span>
-                      <span>2. Edit Eye-dea</span>
+                      <span>2. Edit</span>
                       <span>→</span>
                       <span>3. Resubmit</span>
                     </div>
                   </div>
                 </div>
-                <div className="flex flex-col sm:flex-row gap-3">
+                <div className="flex flex-col sm:flex-row gap-2 sm:gap-3 sm:self-end">
                   <Button
                     data-testid="edit-idea-from-revision-btn"
                     onClick={() => navigate(`/ideas/edit/${idea.id}`)}
                     variant="outline"
-                    className="border-orange-600 text-orange-700 hover:bg-orange-100"
+                    className="border-orange-600 text-orange-700 hover:bg-orange-100 text-sm"
+                    size="sm"
                   >
                     <Edit className="w-4 h-4 mr-2" />
                     Edit Eye-dea
@@ -346,7 +350,8 @@ export default function IdeaDetail() {
                   <Button
                     data-testid="resubmit-btn"
                     onClick={handleResubmit}
-                    className="bg-orange-600 hover:bg-orange-700 text-white shadow-md"
+                    className="bg-orange-600 hover:bg-orange-700 text-white shadow-md text-sm"
+                    size="sm"
                   >
                     <Send className="w-4 h-4 mr-2" />
                     Resubmit for Review
@@ -360,11 +365,11 @@ export default function IdeaDetail() {
         {/* Approver Actions */}
         {isApprover && idea.status === 'pending' && user.sub_role === 'approver' && (
           <Card>
-            <CardHeader>
-              <CardTitle>Approver Actions</CardTitle>
-              <CardDescription>Review and take action on this Eye-dea</CardDescription>
+            <CardHeader className="p-4 sm:p-6">
+              <CardTitle className="text-lg sm:text-xl">Approver Actions</CardTitle>
+              <CardDescription className="text-sm">Review and take action on this Eye-dea</CardDescription>
             </CardHeader>
-            <CardContent className="space-y-4">
+            <CardContent className="space-y-4 p-4 sm:p-6 pt-0">
               <div>
                 <label className="text-sm font-medium text-gray-700 block mb-2">Comment (optional for approval)</label>
                 <Textarea
@@ -372,33 +377,38 @@ export default function IdeaDetail() {
                   value={actionComment}
                   onChange={(e) => setActionComment(e.target.value)}
                   placeholder="Add your feedback or comments..."
-                  rows={4}
+                  rows={3}
+                  className="text-sm"
                 />
               </div>
-              <div className="flex flex-wrap gap-3">
+              <div className="flex flex-wrap gap-2 sm:gap-3">
                 <Button
                   data-testid="approve-btn"
                   onClick={handleApprove}
-                  className="bg-green-600 hover:bg-green-700"
+                  className="bg-green-600 hover:bg-green-700 text-sm"
+                  size="sm"
                 >
-                  <CheckCircle className="w-4 h-4 mr-2" />
+                  <CheckCircle className="w-4 h-4 mr-1 sm:mr-2" />
                   Approve
                 </Button>
                 <Button
                   data-testid="decline-btn"
                   onClick={handleDecline}
-                  className="bg-red-600 hover:bg-red-700"
+                  className="bg-red-600 hover:bg-red-700 text-sm"
+                  size="sm"
                 >
-                  <XCircle className="w-4 h-4 mr-2" />
+                  <XCircle className="w-4 h-4 mr-1 sm:mr-2" />
                   Decline
                 </Button>
                 <Button
                   data-testid="request-revision-btn"
                   onClick={handleRequestRevision}
-                  className="bg-orange-600 hover:bg-orange-700"
+                  className="bg-orange-600 hover:bg-orange-700 text-sm"
+                  size="sm"
                 >
-                  <AlertCircle className="w-4 h-4 mr-2" />
-                  Request Revision
+                  <AlertCircle className="w-4 h-4 mr-1 sm:mr-2" />
+                  <span className="hidden xs:inline">Request Revision</span>
+                  <span className="xs:hidden">Revision</span>
                 </Button>
               </div>
             </CardContent>
@@ -415,23 +425,23 @@ export default function IdeaDetail() {
 
         {/* Comments */}
         <Card>
-          <CardHeader>
-            <CardTitle>Comments & Discussion</CardTitle>
+          <CardHeader className="p-4 sm:p-6">
+            <CardTitle className="text-lg sm:text-xl">Comments & Discussion</CardTitle>
           </CardHeader>
-          <CardContent className="space-y-4">
+          <CardContent className="space-y-4 p-4 sm:p-6 pt-0">
             {comments.length === 0 ? (
-              <p className="text-gray-500 text-center py-4">No comments yet</p>
+              <p className="text-gray-500 text-center py-4 text-sm">No comments yet</p>
             ) : (
-              <div className="space-y-4">
+              <div className="space-y-3 sm:space-y-4">
                 {comments.map((comment) => (
-                  <div key={comment.id} className="bg-gray-50 rounded-lg p-4" data-testid={`comment-${comment.id}`}>
-                    <div className="flex justify-between items-start mb-2">
-                      <span className="font-semibold text-gray-900">{comment.username}</span>
-                      <span className="text-sm text-gray-500">
+                  <div key={comment.id} className="bg-gray-50 rounded-lg p-3 sm:p-4" data-testid={`comment-${comment.id}`}>
+                    <div className="flex flex-col sm:flex-row sm:justify-between sm:items-start gap-1 mb-2">
+                      <span className="font-semibold text-gray-900 text-sm sm:text-base">{comment.username}</span>
+                      <span className="text-xs sm:text-sm text-gray-500">
                         {format(new Date(comment.created_at), 'MMM dd, yyyy HH:mm')}
                       </span>
                     </div>
-                    <p className="text-gray-700 whitespace-pre-wrap">{comment.comment_text}</p>
+                    <p className="text-gray-700 whitespace-pre-wrap text-sm">{comment.comment_text}</p>
                   </div>
                 ))}
               </div>
@@ -447,11 +457,13 @@ export default function IdeaDetail() {
                 onChange={(e) => setNewComment(e.target.value)}
                 placeholder="Share your thoughts..."
                 rows={3}
+                className="text-sm"
               />
               <Button
                 data-testid="add-comment-btn"
                 onClick={handleAddComment}
                 className="mt-3 bg-blue-700 hover:bg-blue-800"
+                size="sm"
                 disabled={!newComment.trim()}
               >
                 Add Comment
