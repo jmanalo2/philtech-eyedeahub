@@ -249,7 +249,7 @@ async def get_admin_user(current_user: dict = Depends(get_current_user)) -> dict
 async def send_email_async(recipient_email: str, subject: str, html_content: str):
     if not RESEND_API_KEY:
         logging.warning(f"Email not sent (no API key): {subject} to {recipient_email}")
-        return
+        return False
     
     params = {
         "from": SENDER_EMAIL,
@@ -259,10 +259,12 @@ async def send_email_async(recipient_email: str, subject: str, html_content: str
     }
     
     try:
-        await asyncio.to_thread(resend.Emails.send, params)
-        logging.info(f"Email sent: {subject} to {recipient_email}")
+        result = await asyncio.to_thread(resend.Emails.send, params)
+        logging.info(f"Email sent successfully: {subject} to {recipient_email}, ID: {result}")
+        return True
     except Exception as e:
-        logging.error(f"Failed to send email: {str(e)}")
+        logging.error(f"Failed to send email to {recipient_email}: {str(e)}")
+        return False
 
 async def generate_idea_number() -> str:
     count = await db.ideas.count_documents({})
