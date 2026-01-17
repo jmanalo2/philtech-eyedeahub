@@ -321,6 +321,12 @@ export default function IdeasList() {
                           <span className="ml-2 text-gray-600">{idea.assigned_approver_username}</span>
                         </div>
                       )}
+                      {idea.assigned_tech_name && (
+                        <div>
+                          <span className="font-medium text-gray-700">T&E:</span>
+                          <span className="ml-2 text-gray-600">{idea.assigned_tech_name}</span>
+                        </div>
+                      )}
                     </div>
                     <div className="mt-3 sm:mt-4">
                       <p className="text-gray-700 line-clamp-2 text-xs sm:text-sm">{idea.suggested_solution}</p>
