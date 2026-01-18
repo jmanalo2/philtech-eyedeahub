@@ -229,6 +229,124 @@ export default function AdminPanel() {
     }
   };
 
+  // Manager handlers
+  const handleAddManager = async () => {
+    if (!newManager.name.trim() || !newManager.team) return;
+    try {
+      await axios.post(`${process.env.REACT_APP_BACKEND_URL}/api/admin/managers`, newManager);
+      toast.success('Manager added');
+      setNewManager({ name: '', pillar: '', department: '', team: '' });
+      fetchAllData();
+    } catch (error) {
+      toast.error('Failed to add manager');
+    }
+  };
+
+  const handleDeleteManager = async (managerId) => {
+    if (!window.confirm('Are you sure?')) return;
+    try {
+      await axios.delete(`${process.env.REACT_APP_BACKEND_URL}/api/admin/managers/${managerId}`);
+      toast.success('Manager deleted');
+      fetchAllData();
+    } catch (error) {
+      toast.error('Failed to delete manager');
+    }
+  };
+
+  // Bulk upload handlers
+  const handleBulkUploadDepts = async (e) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    setUploadingDepts(true);
+    try {
+      const formData = new FormData();
+      formData.append('file', file);
+      const response = await axios.post(
+        `${process.env.REACT_APP_BACKEND_URL}/api/admin/bulk-upload/departments`,
+        formData,
+        { headers: { 'Content-Type': 'multipart/form-data' } }
+      );
+      toast.success(response.data.message);
+      if (response.data.errors?.length > 0) {
+        toast.warning(`${response.data.errors.length} rows had errors`);
+      }
+      fetchAllData();
+    } catch (error) {
+      toast.error(error.response?.data?.detail || 'Upload failed');
+    } finally {
+      setUploadingDepts(false);
+      e.target.value = '';
+    }
+  };
+
+  const handleBulkUploadTeams = async (e) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    setUploadingTeams(true);
+    try {
+      const formData = new FormData();
+      formData.append('file', file);
+      const response = await axios.post(
+        `${process.env.REACT_APP_BACKEND_URL}/api/admin/bulk-upload/teams`,
+        formData,
+        { headers: { 'Content-Type': 'multipart/form-data' } }
+      );
+      toast.success(response.data.message);
+      if (response.data.errors?.length > 0) {
+        toast.warning(`${response.data.errors.length} rows had errors`);
+      }
+      fetchAllData();
+    } catch (error) {
+      toast.error(error.response?.data?.detail || 'Upload failed');
+    } finally {
+      setUploadingTeams(false);
+      e.target.value = '';
+    }
+  };
+
+  const handleBulkUploadManagers = async (e) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    setUploadingManagers(true);
+    try {
+      const formData = new FormData();
+      formData.append('file', file);
+      const response = await axios.post(
+        `${process.env.REACT_APP_BACKEND_URL}/api/admin/bulk-upload/managers`,
+        formData,
+        { headers: { 'Content-Type': 'multipart/form-data' } }
+      );
+      toast.success(response.data.message);
+      if (response.data.errors?.length > 0) {
+        toast.warning(`${response.data.errors.length} rows had errors`);
+      }
+      fetchAllData();
+    } catch (error) {
+      toast.error(error.response?.data?.detail || 'Upload failed');
+    } finally {
+      setUploadingManagers(false);
+      e.target.value = '';
+    }
+  };
+
+  const downloadTemplate = async (type) => {
+    try {
+      const response = await axios.get(
+        `${process.env.REACT_APP_BACKEND_URL}/api/admin/templates/${type}`,
+        { responseType: 'blob' }
+      );
+      const url = window.URL.createObjectURL(new Blob([response.data]));
+      const link = document.createElement('a');
+      link.href = url;
+      link.setAttribute('download', `${type}_template.xlsx`);
+      document.body.appendChild(link);
+      link.click();
+      link.remove();
+    } catch (error) {
+      toast.error('Failed to download template');
+    }
+  };
+
   const handleSeedData = async () => {
     try {
       await axios.post(`${process.env.REACT_APP_BACKEND_URL}/api/admin/seed-data`);
