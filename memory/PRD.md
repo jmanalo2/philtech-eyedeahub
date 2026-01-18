@@ -75,8 +75,9 @@ Pillar (GBS, Tech, Finance, HR)
 - [x] Complexity distribution pie chart
 - [x] Approval overview bar chart
 - [x] Cost savings & time saved summaries
-- [x] **Best Idea** selection and display (badge on lists, banner on dashboard)
+- [x] **Best Idea** selection and display - **Expanded to 5 Best Eye-deas** (badge on lists, banner on dashboard)
 - [x] Status update for T&E assigned ideas (Edit Status button)
+- [x] **Edit cost/time savings** after evaluation (UI added)
 
 ### Mobile Responsiveness (Jan 2026)
 - [x] Mobile navigation menu with hamburger icon
