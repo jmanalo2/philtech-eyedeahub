@@ -123,7 +123,7 @@ Pillar (GBS, Tech, Finance, HR)
 - [ ] Refactor server.py into modular structure (routes, models, services)
 
 ### P3 - Low Priority / Future
-- [ ] UI for C.I. team to input/edit cost/time savings after evaluation
+- [x] UI for C.I. team to input/edit cost/time savings after evaluation ✅
 - [ ] Additional notification channels
 
 ---
