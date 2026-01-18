@@ -302,7 +302,6 @@ export default function Dashboard() {
           );
         })}
       </div>
-      </Card>
 
       <div className="mt-6 sm:mt-8">
         <Card>
