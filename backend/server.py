@@ -910,6 +910,47 @@ async def ci_update_status(idea_id: str, status_update: CIStatusUpdate, current_
     
     return {"message": f"Idea status updated to {status_update.new_status}"}
 
+
+class SavingsUpdate(BaseModel):
+    savings_type: Optional[str] = None  # cost_savings or time_saved
+    cost_savings: Optional[float] = None
+    time_saved_hours: Optional[int] = None
+    time_saved_minutes: Optional[int] = None
+
+
+@api_router.put("/ideas/{idea_id}/update-savings")
+async def update_idea_savings(idea_id: str, savings: SavingsUpdate, current_user: dict = Depends(get_current_user)):
+    """C.I. Excellence Team can update cost/time savings for evaluated ideas"""
+    if current_user["role"] != "approver" or current_user.get("sub_role") != "ci_excellence":
+        if current_user["role"] != "admin":
+            raise HTTPException(status_code=403, detail="Only C.I. Excellence Team can update savings")
+    
+    idea = await db.ideas.find_one({"id": idea_id}, {"_id": 0})
+    if not idea:
+        raise HTTPException(status_code=404, detail="Idea not found")
+    
+    # Only allow updating savings for evaluated ideas
+    if not idea.get("is_quick_win") and not idea.get("complexity_level"):
+        raise HTTPException(status_code=400, detail="Can only update savings for evaluated ideas")
+    
+    update_doc = {"updated_at": datetime.now(timezone.utc).isoformat()}
+    
+    if savings.savings_type:
+        update_doc["savings_type"] = savings.savings_type
+    
+    if savings.savings_type == "cost_savings":
+        update_doc["cost_savings"] = savings.cost_savings
+        update_doc["time_saved_hours"] = None
+        update_doc["time_saved_minutes"] = None
+    elif savings.savings_type == "time_saved":
+        update_doc["time_saved_hours"] = savings.time_saved_hours
+        update_doc["time_saved_minutes"] = savings.time_saved_minutes
+        update_doc["cost_savings"] = None
+    
+    await db.ideas.update_one({"id": idea_id}, {"$set": update_doc})
+    
+    return {"message": "Savings updated successfully"}
+
 # ==================== DASHBOARD ROUTES ====================
 
 @api_router.get("/dashboard/stats", response_model=DashboardStats)
