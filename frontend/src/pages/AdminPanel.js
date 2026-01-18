@@ -537,8 +537,26 @@ export default function AdminPanel() {
         <TabsContent value="departments">
           <Card>
             <CardHeader className="p-4 sm:p-6">
-              <CardTitle className="text-lg sm:text-xl">Manage Departments</CardTitle>
-              <CardDescription className="text-sm">Add or remove departments (linked to pillars)</CardDescription>
+              <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-3">
+                <div>
+                  <CardTitle className="text-lg sm:text-xl">Manage Departments</CardTitle>
+                  <CardDescription className="text-sm">Add or remove departments (linked to pillars)</CardDescription>
+                </div>
+                <div className="flex gap-2">
+                  <Button variant="outline" size="sm" onClick={() => downloadTemplate('departments')}>
+                    <Download className="w-4 h-4 mr-1" /> Template
+                  </Button>
+                  <Button 
+                    size="sm" 
+                    onClick={() => deptsFileRef.current?.click()}
+                    disabled={uploadingDepts}
+                    className="bg-blue-600 hover:bg-blue-700"
+                  >
+                    <Upload className="w-4 h-4 mr-1" /> {uploadingDepts ? 'Uploading...' : 'Upload List'}
+                  </Button>
+                  <input ref={deptsFileRef} type="file" accept=".xlsx,.xls" onChange={handleBulkUploadDepts} className="hidden" />
+                </div>
+              </div>
             </CardHeader>
             <CardContent className="space-y-4 sm:space-y-6 p-4 sm:p-6 pt-0">
               <div className="flex flex-col sm:flex-row gap-2 sm:gap-3">
