@@ -123,7 +123,7 @@ export default function AdminPanel() {
     }
   };
 
-  const downloadTemplate = () => {
+  const downloadUserTemplate = () => {
     const csvContent = 'username,email,password,role,department,team,pillar,manager,approved_pillars,approved_departments\n' +
       'johndoe,john@philtech.com,password123,user,Operations,Allowance Billing,GBS,manager1,,\n' +
       'janesmith,jane@philtech.com,password123,approver,Technology,,Tech,admin,Tech;Finance,Technology;Finance';
