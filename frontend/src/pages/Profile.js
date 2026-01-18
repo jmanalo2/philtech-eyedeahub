@@ -249,9 +249,14 @@ export default function Profile() {
                 <div className="flex justify-between items-center">
                   <div>
                     <CardTitle>Approver Sub-Role</CardTitle>
-                    <CardDescription>Change your approver sub-role and permissions</CardDescription>
+                    <CardDescription>
+                      {user.can_change_subrole === false 
+                        ? 'Your sub-role is managed by an administrator'
+                        : 'Change your approver sub-role and permissions'
+                      }
+                    </CardDescription>
                   </div>
-                  {!changingSubRole && (
+                  {!changingSubRole && user.can_change_subrole !== false && (
                     <Button
                       data-testid="change-subrole-btn"
                       onClick={() => {
