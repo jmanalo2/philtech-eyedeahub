@@ -1229,6 +1229,48 @@ async def delete_tech_person(person_id: str, current_user: dict = Depends(get_ad
         raise HTTPException(status_code=404, detail="Tech person not found")
     return {"message": "Tech person deleted successfully"}
 
+
+# ==================== MANAGER ROUTES ====================
+
+@api_router.get("/admin/managers", response_model=List[Manager])
+async def get_managers(current_user: dict = Depends(get_admin_user)):
+    managers = await db.managers.find({}, {"_id": 0}).to_list(1000)
+    return managers
+
+
+@api_router.post("/admin/managers", response_model=Manager)
+async def create_manager(manager: ManagerBase, current_user: dict = Depends(get_admin_user)):
+    manager_id = f"manager_{datetime.now(timezone.utc).timestamp()}"
+    manager_doc = {
+        "id": manager_id,
+        **manager.model_dump()
+    }
+    await db.managers.insert_one(manager_doc)
+    return {**manager_doc}
+
+
+@api_router.delete("/admin/managers/{manager_id}")
+async def delete_manager(manager_id: str, current_user: dict = Depends(get_admin_user)):
+    result = await db.managers.delete_one({"id": manager_id})
+    if result.deleted_count == 0:
+        raise HTTPException(status_code=404, detail="Manager not found")
+    return {"message": "Manager deleted successfully"}
+
+
+@api_router.get("/public/managers")
+async def get_public_managers():
+    """Get managers filtered by team for registration"""
+    managers = await db.managers.find({"is_active": True}, {"_id": 0}).to_list(1000)
+    return managers
+
+
+@api_router.get("/public/managers/by-team/{team_name}")
+async def get_managers_by_team(team_name: str):
+    """Get managers for a specific team"""
+    managers = await db.managers.find({"team": team_name, "is_active": True}, {"_id": 0}).to_list(100)
+    return managers
+
+
 # ==================== SEED DATA ====================
 
 @api_router.post("/admin/seed-data")
