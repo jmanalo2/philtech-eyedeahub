@@ -250,33 +250,7 @@ export default function Dashboard() {
         </Card>
       )}
 
-      {/* Best Eye-dea Banner */}
-      {stats?.best_idea && (
-        <Link to={`/ideas/${stats.best_idea.id}`}>
-          <Card className="mb-6 sm:mb-8 bg-gradient-to-r from-yellow-50 to-amber-50 border-yellow-300 hover:shadow-lg transition-shadow cursor-pointer">
-            <CardContent className="py-3 sm:py-4 px-3 sm:px-6">
-              <div className="flex items-center justify-between">
-                <div className="flex items-center space-x-3 sm:space-x-4">
-                  <div className="bg-yellow-500 p-2 sm:p-3 rounded-full flex-shrink-0">
-                    <Star className="w-5 h-5 sm:w-6 sm:h-6 text-white" />
-                  </div>
-                  <div className="min-w-0">
-                    <div className="flex flex-wrap items-center gap-1 sm:gap-2">
-                      <Badge className="bg-yellow-500 text-white text-xs">Best Eye-dea</Badge>
-                      <span className="text-xs sm:text-sm text-gray-600">{stats.best_idea.idea_number}</span>
-                    </div>
-                    <h3 className="text-sm sm:text-lg font-bold text-gray-900 mt-1 truncate">{stats.best_idea.title}</h3>
-                    <p className="text-xs sm:text-sm text-gray-600 truncate">Submitted by {stats.best_idea.submitted_by_username} • {stats.best_idea.pillar}</p>
-                  </div>
-                </div>
-                <div className="text-right hidden md:block flex-shrink-0">
-                  <p className="text-sm text-gray-500">Click to view details</p>
-                </div>
-              </div>
-            </CardContent>
-          </Card>
-        </Link>
-      )}
+      {/* Best Eye-dea Banner - REMOVED FROM HERE, MOVED TO BOTTOM */}
 
       <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3 sm:gap-4 mb-6 sm:mb-8">
         {statCards.map((stat, index) => {
