@@ -228,3 +228,4 @@ class DashboardStats(BaseModel):
     assigned_to_te_ideas: int
     my_ideas: int
     best_idea: Optional[dict] = None
+    best_ideas: Optional[List[dict]] = []
