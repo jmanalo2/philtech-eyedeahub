@@ -287,7 +287,7 @@ async def reset_password(request: ResetPasswordRequest):
 
 @api_router.get("/ideas", response_model=List[Idea])
 async def get_ideas(
-    status: Optional[str] = Query(None, alias="status"),
+    status: Optional[str] = None,
     pillar: Optional[str] = None,
     department: Optional[str] = None,
     team: Optional[str] = None,
