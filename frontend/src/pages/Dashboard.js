@@ -316,6 +316,42 @@ export default function Dashboard() {
           </CardContent>
         </Card>
       </div>
+
+      {/* Best Eye-deas Section - Moved to bottom */}
+      {stats?.best_ideas && stats.best_ideas.length > 0 && (
+        <div className="mt-6 sm:mt-8">
+          <Card className="bg-gradient-to-r from-yellow-50 to-amber-50 border-yellow-300">
+            <CardHeader className="p-4 sm:p-6">
+              <div className="flex items-center space-x-3">
+                <div className="bg-yellow-500 p-2 rounded-full">
+                  <Star className="w-5 h-5 text-white" />
+                </div>
+                <div>
+                  <CardTitle className="text-lg sm:text-xl text-yellow-800">Best Eye-deas</CardTitle>
+                  <CardDescription className="text-yellow-700">Top ideas recognized by C.I. Excellence Team ({stats.best_ideas.length}/5)</CardDescription>
+                </div>
+              </div>
+            </CardHeader>
+            <CardContent className="p-4 sm:p-6 pt-0">
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
+                {stats.best_ideas.map((idea) => (
+                  <Link key={idea.id} to={`/ideas/${idea.id}`}>
+                    <div className="bg-white rounded-lg border border-yellow-200 p-4 hover:shadow-lg transition-shadow cursor-pointer">
+                      <div className="flex items-center gap-2 mb-2">
+                        <Badge className="bg-yellow-500 text-white text-xs">Best Eye-dea</Badge>
+                        <span className="text-xs text-gray-500">{idea.idea_number}</span>
+                      </div>
+                      <h4 className="font-semibold text-gray-900 text-sm mb-1 line-clamp-2">{idea.title}</h4>
+                      <p className="text-xs text-gray-600">By {idea.submitted_by_username}</p>
+                      <p className="text-xs text-gray-500 mt-1">{idea.pillar}</p>
+                    </div>
+                  </Link>
+                ))}
+              </div>
+            </CardContent>
+          </Card>
+        </div>
+      )}
     </div>
   );
 }
