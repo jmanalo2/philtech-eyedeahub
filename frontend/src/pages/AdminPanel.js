@@ -824,6 +824,30 @@ export default function AdminPanel() {
                       ))}
                     </div>
                   </div>
+
+                  <div className="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
+                    <div>
+                      <Label className="text-sm font-medium">Allow Sub-role Change</Label>
+                      <p className="text-xs text-gray-500 mt-0.5">When disabled, user cannot change their sub-role in Profile</p>
+                    </div>
+                    <button
+                      type="button"
+                      data-testid="toggle-can-change-subrole"
+                      onClick={() => setEditingUser({ 
+                        ...editingUser, 
+                        can_change_subrole: editingUser.can_change_subrole === false ? true : false 
+                      })}
+                      className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors ${
+                        editingUser.can_change_subrole !== false ? 'bg-blue-600' : 'bg-gray-300'
+                      }`}
+                    >
+                      <span
+                        className={`inline-block h-4 w-4 transform rounded-full bg-white transition-transform ${
+                          editingUser.can_change_subrole !== false ? 'translate-x-6' : 'translate-x-1'
+                        }`}
+                      />
+                    </button>
+                  </div>
                 </>
               )}
 
