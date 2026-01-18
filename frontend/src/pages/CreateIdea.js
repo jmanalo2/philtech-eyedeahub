@@ -205,17 +205,27 @@ export default function CreateIdea() {
               </div>
 
               <div>
-                <Label htmlFor="team">Team</Label>
-                <Select value={formData.team} onValueChange={(value) => handleChange('team', value)} disabled={!formData.pillar}>
-                  <SelectTrigger data-testid="team-select">
-                    <SelectValue placeholder={formData.pillar ? 'Select Team' : 'Select Pillar first'} />
-                  </SelectTrigger>
-                  <SelectContent>
-                    {filteredTeams.map((team) => (
-                      <SelectItem key={team.id} value={team.name}>{team.name}</SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
+                <Label htmlFor="team">Team {user?.team ? '(Auto-derived from profile)' : ''}</Label>
+                {user?.team ? (
+                  <Input
+                    id="team"
+                    data-testid="team-input-readonly"
+                    value={formData.team}
+                    disabled
+                    className="bg-gray-50"
+                  />
+                ) : (
+                  <Select value={formData.team} onValueChange={(value) => handleChange('team', value)} disabled={!formData.pillar}>
+                    <SelectTrigger data-testid="team-select">
+                      <SelectValue placeholder={formData.pillar ? 'Select Team' : 'Select Pillar first'} />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {filteredTeams.map((team) => (
+                        <SelectItem key={team.id} value={team.name}>{team.name}</SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                )}
               </div>
 
               <div className="md:col-span-2">
