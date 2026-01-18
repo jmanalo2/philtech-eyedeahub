@@ -323,6 +323,9 @@ async def create_idea(idea_data: IdeaCreate, current_user: dict = Depends(get_cu
     idea_number = await generate_idea_number()
     idea_id = f"idea_{datetime.now(timezone.utc).timestamp()}"
     
+    # Auto-derive team from user's profile (takes precedence over submitted value)
+    team_value = current_user.get("team") or idea_data.team
+    
     # Find approver for this pillar/department
     # First try to find an approver assigned to this specific pillar or department
     approver = await db.users.find_one({
@@ -345,7 +348,7 @@ async def create_idea(idea_data: IdeaCreate, current_user: dict = Depends(get_cu
         "benefits": idea_data.benefits,
         "target_completion": idea_data.target_completion,
         "department": idea_data.department,
-        "team": idea_data.team,
+        "team": team_value,  # Auto-derived from user's profile
         "status": "pending",
         "submitted_by": current_user["id"],
         "submitted_by_username": current_user["username"],
