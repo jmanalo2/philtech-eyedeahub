@@ -41,7 +41,7 @@ def create_reset_token(email: str) -> str:
 
 
 def add_is_evaluated(idea: dict) -> dict:
-    """Add is_evaluated computed field to idea."""
+    """Add computed is_evaluated field based on evaluated_by presence."""
     if idea:
-        idea["is_evaluated"] = bool(idea.get("is_quick_win") is not None or idea.get("complexity_level"))
+        idea["is_evaluated"] = idea.get("evaluated_by") is not None
     return idea
