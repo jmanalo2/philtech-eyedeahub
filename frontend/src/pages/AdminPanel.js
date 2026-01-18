@@ -772,6 +772,137 @@ export default function AdminPanel() {
           </Card>
         </TabsContent>
 
+        {/* Managers Tab */}
+        <TabsContent value="managers">
+          <Card>
+            <CardHeader className="p-4 sm:p-6">
+              <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-3">
+                <div>
+                  <CardTitle className="text-lg sm:text-xl">Manage Managers</CardTitle>
+                  <CardDescription className="text-sm">Add or remove managers mapped to teams (Pillar → Department → Team → Manager)</CardDescription>
+                </div>
+                <div className="flex gap-2">
+                  <Button variant="outline" size="sm" onClick={() => downloadTemplate('managers')}>
+                    <Download className="w-4 h-4 mr-1" /> Template
+                  </Button>
+                  <Button 
+                    size="sm" 
+                    onClick={() => managersFileRef.current?.click()}
+                    disabled={uploadingManagers}
+                    className="bg-blue-600 hover:bg-blue-700"
+                  >
+                    <Upload className="w-4 h-4 mr-1" /> {uploadingManagers ? 'Uploading...' : 'Upload List'}
+                  </Button>
+                  <input ref={managersFileRef} type="file" accept=".xlsx,.xls" onChange={handleBulkUploadManagers} className="hidden" />
+                </div>
+              </div>
+            </CardHeader>
+            <CardContent className="space-y-4 sm:space-y-6 p-4 sm:p-6 pt-0">
+              <div className="flex flex-col sm:flex-row gap-2 sm:gap-3 flex-wrap">
+                <Input
+                  data-testid="new-manager-name-input"
+                  value={newManager.name}
+                  onChange={(e) => setNewManager({ ...newManager, name: e.target.value })}
+                  placeholder="Manager name"
+                  className="flex-1 min-w-[140px] text-sm"
+                />
+                <Select value={newManager.pillar} onValueChange={(value) => setNewManager({ ...newManager, pillar: value, department: '', team: '' })}>
+                  <SelectTrigger className="w-full sm:w-[140px] text-sm">
+                    <SelectValue placeholder="Pillar" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {pillars.map((pillar) => (
+                      <SelectItem key={pillar.id} value={pillar.name}>{pillar.name}</SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+                <Select 
+                  value={newManager.department} 
+                  onValueChange={(value) => setNewManager({ ...newManager, department: value, team: '' })}
+                  disabled={!newManager.pillar}
+                >
+                  <SelectTrigger className="w-full sm:w-[140px] text-sm">
+                    <SelectValue placeholder="Department" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {departments.filter(d => d.pillar === newManager.pillar).map((dept) => (
+                      <SelectItem key={dept.id} value={dept.name}>{dept.name}</SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+                <Select 
+                  value={newManager.team} 
+                  onValueChange={(value) => setNewManager({ ...newManager, team: value })}
+                  disabled={!newManager.department}
+                >
+                  <SelectTrigger className="w-full sm:w-[140px] text-sm">
+                    <SelectValue placeholder="Team" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {teams.filter(t => t.department === newManager.department).map((team) => (
+                      <SelectItem key={team.id} value={team.name}>{team.name}</SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+                <Button data-testid="add-manager-btn" onClick={handleAddManager} size="sm" className="w-full sm:w-auto">
+                  <Plus className="w-4 h-4 mr-1 sm:mr-2" />
+                  Add
+                </Button>
+              </div>
+              {/* Display managers grouped by hierarchy */}
+              <div className="space-y-4 sm:space-y-6">
+                {pillars.map((pillar) => {
+                  const pillarManagers = managers.filter(m => m.pillar === pillar.name);
+                  if (pillarManagers.length === 0) return null;
+                  return (
+                    <div key={pillar.id} className="border rounded-lg p-3 sm:p-4">
+                      <h3 className="font-bold text-blue-800 mb-3 sm:mb-4 text-sm sm:text-base">{pillar.name}</h3>
+                      {departments.filter(d => d.pillar === pillar.name).map((dept) => {
+                        const deptManagers = pillarManagers.filter(m => m.department === dept.name);
+                        if (deptManagers.length === 0) return null;
+                        return (
+                          <div key={dept.id} className="ml-2 sm:ml-4 mb-3 sm:mb-4">
+                            <h4 className="font-semibold text-gray-700 mb-2 text-xs sm:text-sm">{dept.name}</h4>
+                            {teams.filter(t => t.department === dept.name).map((team) => {
+                              const teamManagers = deptManagers.filter(m => m.team === team.name);
+                              if (teamManagers.length === 0) return null;
+                              return (
+                                <div key={team.id} className="ml-2 sm:ml-4 mb-2">
+                                  <h5 className="text-gray-600 text-xs mb-1">{team.name}</h5>
+                                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 ml-2 sm:ml-4">
+                                    {teamManagers.map((manager) => (
+                                      <div
+                                        key={manager.id}
+                                        data-testid={`manager-${manager.id}`}
+                                        className="flex items-center justify-between p-2 bg-gray-50 rounded border"
+                                      >
+                                        <span className="text-xs sm:text-sm">{manager.name}</span>
+                                        <Button
+                                          data-testid={`delete-manager-${manager.id}`}
+                                          variant="ghost"
+                                          size="sm"
+                                          className="h-6 w-6 p-0"
+                                          onClick={() => handleDeleteManager(manager.id)}
+                                        >
+                                          <Trash2 className="w-3 h-3 sm:w-4 sm:h-4 text-red-600" />
+                                        </Button>
+                                      </div>
+                                    ))}
+                                  </div>
+                                </div>
+                              );
+                            })}
+                          </div>
+                        );
+                      })}
+                    </div>
+                  );
+                })}
+              </div>
+            </CardContent>
+          </Card>
+        </TabsContent>
+
         {/* Tech & Engineering Tab */}
         <TabsContent value="tech">
           <Card>
