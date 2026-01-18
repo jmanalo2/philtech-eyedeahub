@@ -200,6 +200,22 @@ class TechPerson(TechPersonBase):
     id: str
 
 
+# ==================== MANAGER MODELS ====================
+
+class ManagerBase(BaseModel):
+    name: str
+    email: Optional[str] = None
+    pillar: str
+    department: str
+    team: str
+    is_active: Optional[bool] = True
+
+
+class Manager(ManagerBase):
+    model_config = ConfigDict(extra="ignore")
+    id: str
+
+
 # ==================== DASHBOARD MODELS ====================
 
 class DashboardStats(BaseModel):
