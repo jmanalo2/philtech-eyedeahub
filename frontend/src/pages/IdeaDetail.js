@@ -443,7 +443,8 @@ export default function IdeaDetail() {
         )}
 
         {/* C.I. Excellence Team Evaluation */}
-        {user?.role === 'approver' && user?.sub_role === 'ci_excellence' && idea.status === 'approved' && (
+        {user?.role === 'approver' && user?.sub_role === 'ci_excellence' && 
+         (idea.status === 'approved' || idea.status === 'assigned_to_te' || idea.status === 'implemented' || idea.is_evaluated) && (
           <CIEvaluationPanel 
             idea={idea}
             onEvaluationComplete={fetchIdea}
