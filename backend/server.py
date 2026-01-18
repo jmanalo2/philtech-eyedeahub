@@ -726,13 +726,6 @@ async def mark_best_idea(idea_id: str, current_user: dict = Depends(get_current_
     return {"message": "Idea marked as best Eye-dea"}
 
 
-@api_router.get("/ideas/best-ideas")
-async def get_best_ideas(current_user: dict = Depends(get_current_user)):
-    """Get all best ideas (up to 5)"""
-    best_ideas = await db.ideas.find({"is_best_idea": True}, {"_id": 0}).to_list(5)
-    return [add_is_evaluated(idea) for idea in best_ideas]
-
-
 @api_router.post("/ideas/{idea_id}/ci-update-status")
 async def ci_update_status(idea_id: str, status_update: CIStatusUpdate, current_user: dict = Depends(get_current_user)):
     """C.I. Excellence Team can update status of ideas assigned to T&E"""
