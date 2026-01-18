@@ -110,6 +110,31 @@ export default function IdeasList() {
     }
   };
 
+  const handleExportExcel = async () => {
+    setExporting(true);
+    try {
+      const response = await axios.get(
+        `${process.env.REACT_APP_BACKEND_URL}/api/dashboard/export-excel`,
+        { responseType: 'blob' }
+      );
+      
+      const url = window.URL.createObjectURL(new Blob([response.data]));
+      const link = document.createElement('a');
+      link.href = url;
+      link.setAttribute('download', 'philtech_eyedeas.xlsx');
+      document.body.appendChild(link);
+      link.click();
+      link.remove();
+      window.URL.revokeObjectURL(url);
+      
+      toast.success('Excel file downloaded successfully!');
+    } catch (error) {
+      toast.error('Failed to export Excel file');
+    } finally {
+      setExporting(false);
+    }
+  };
+
   const getStatusBadge = (status) => {
     const variants = {
       pending: { variant: 'default', className: 'bg-yellow-100 text-yellow-800 border-yellow-300' },
