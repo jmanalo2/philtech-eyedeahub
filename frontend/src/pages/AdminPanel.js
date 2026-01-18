@@ -435,7 +435,7 @@ export default function AdminPanel() {
                   <Button
                     data-testid="download-template-btn"
                     variant="outline"
-                    onClick={downloadTemplate}
+                    onClick={downloadUserTemplate}
                     size="sm"
                     className="text-xs sm:text-sm"
                   >
