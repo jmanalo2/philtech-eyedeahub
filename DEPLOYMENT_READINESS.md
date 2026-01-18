@@ -81,7 +81,7 @@ SENDER_EMAIL="onboarding@resend.dev"
 
 ### Frontend Environment (`/app/frontend/.env`)
 ```env
-REACT_APP_BACKEND_URL=https://philtech-eyedea.preview.emergentagent.com
+REACT_APP_BACKEND_URL=https://ideahub-297.preview.emergentagent.com
 WDS_SOCKET_PORT=443
 ENABLE_HEALTH_CHECK=false
 ```
@@ -208,7 +208,7 @@ The Philtech Eye-dea application meets all critical requirements for production 
 - Dashboard Stats: `GET /api/dashboard/stats`
 - Ideas: `GET /api/ideas`
 
-**Application URL:** https://philtech-eyedea.preview.emergentagent.com
+**Application URL:** https://ideahub-297.preview.emergentagent.com
 
 ---
 

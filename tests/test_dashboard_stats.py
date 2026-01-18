@@ -5,7 +5,7 @@ import pytest
 import requests
 import os
 
-BASE_URL = os.environ.get('REACT_APP_BACKEND_URL', 'https://philtech-eyedea.preview.emergentagent.com')
+BASE_URL = os.environ.get('REACT_APP_BACKEND_URL', 'https://ideahub-297.preview.emergentagent.com')
 
 class TestDashboardStats:
     """Dashboard stats endpoint tests - Priority 1 testing"""
