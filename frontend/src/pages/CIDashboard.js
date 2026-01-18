@@ -25,6 +25,7 @@ export default function CIDashboard() {
   const [pillars, setPillars] = useState([]);
   const [departments, setDepartments] = useState([]);
   const [teams, setTeams] = useState([]);
+  const [bestIdeas, setBestIdeas] = useState([]);
   const [filters, setFilters] = useState({
     pillar: '',
     department: '',
@@ -33,6 +34,7 @@ export default function CIDashboard() {
 
   useEffect(() => {
     fetchFilterData();
+    fetchBestIdeas();
   }, []);
 
   useEffect(() => {
@@ -51,6 +53,15 @@ export default function CIDashboard() {
       setTeams(teamsRes.data);
     } catch (error) {
       console.error('Failed to fetch filter data:', error);
+    }
+  };
+
+  const fetchBestIdeas = async () => {
+    try {
+      const response = await axios.get(`${process.env.REACT_APP_BACKEND_URL}/api/ideas/best-ideas`);
+      setBestIdeas(response.data);
+    } catch (error) {
+      console.error('Failed to fetch best ideas:', error);
     }
   };
 
