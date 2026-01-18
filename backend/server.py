@@ -286,7 +286,7 @@ async def reset_password(request: ResetPasswordRequest):
 
 @api_router.get("/ideas", response_model=List[Idea])
 async def get_ideas(
-    idea_status: Optional[str] = None,
+    status: Optional[str] = Query(None, alias="status"),
     pillar: Optional[str] = None,
     department: Optional[str] = None,
     team: Optional[str] = None,
@@ -295,8 +295,8 @@ async def get_ideas(
     current_user: dict = Depends(get_current_user)
 ):
     query = {}
-    if idea_status:
-        query["status"] = idea_status
+    if status:
+        query["status"] = status
     if pillar:
         query["pillar"] = pillar
     if department:
