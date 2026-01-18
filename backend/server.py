@@ -740,13 +740,6 @@ async def ci_update_status(idea_id: str, status_update: CIStatusUpdate, current_
     return {"message": f"Idea status updated to {status_update.new_status}"}
 
 
-class SavingsUpdate(BaseModel):
-    savings_type: Optional[str] = None  # cost_savings or time_saved
-    cost_savings: Optional[float] = None
-    time_saved_hours: Optional[int] = None
-    time_saved_minutes: Optional[int] = None
-
-
 @api_router.put("/ideas/{idea_id}/update-savings")
 async def update_idea_savings(idea_id: str, savings: SavingsUpdate, current_user: dict = Depends(get_current_user)):
     """C.I. Excellence Team can update cost/time savings for evaluated ideas"""
