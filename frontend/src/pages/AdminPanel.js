@@ -10,7 +10,7 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '.
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from '../components/ui/dialog';
 import { Badge } from '../components/ui/badge';
 import { toast } from 'sonner';
-import { Plus, Trash2, Edit, Users, Briefcase, Building, UsersRound, Upload, Download, Wrench } from 'lucide-react';
+import { Plus, Trash2, Edit, Users, Briefcase, Building, UsersRound, Upload, Download, Wrench, UserCog } from 'lucide-react';
 
 export default function AdminPanel() {
   const [users, setUsers] = useState([]);
@@ -18,14 +18,22 @@ export default function AdminPanel() {
   const [pillars, setPillars] = useState([]);
   const [teams, setTeams] = useState([]);
   const [techPersons, setTechPersons] = useState([]);
+  const [managers, setManagers] = useState([]);
   const [editingUser, setEditingUser] = useState(null);
   const [showUserDialog, setShowUserDialog] = useState(false);
   const [newDepartment, setNewDepartment] = useState({ name: '', pillar: '' });
   const [newPillar, setNewPillar] = useState('');
   const [newTeam, setNewTeam] = useState({ name: '', pillar: '', department: '' });
   const [newTechPerson, setNewTechPerson] = useState({ name: '', email: '', specialization: '' });
+  const [newManager, setNewManager] = useState({ name: '', pillar: '', department: '', team: '' });
   const [uploading, setUploading] = useState(false);
+  const [uploadingDepts, setUploadingDepts] = useState(false);
+  const [uploadingTeams, setUploadingTeams] = useState(false);
+  const [uploadingManagers, setUploadingManagers] = useState(false);
   const fileInputRef = useRef(null);
+  const deptsFileRef = useRef(null);
+  const teamsFileRef = useRef(null);
+  const managersFileRef = useRef(null);
 
   useEffect(() => {
     fetchAllData();
@@ -33,18 +41,20 @@ export default function AdminPanel() {
 
   const fetchAllData = async () => {
     try {
-      const [usersRes, deptsRes, pillarsRes, teamsRes, techRes] = await Promise.all([
+      const [usersRes, deptsRes, pillarsRes, teamsRes, techRes, managersRes] = await Promise.all([
         axios.get(`${process.env.REACT_APP_BACKEND_URL}/api/admin/users`),
         axios.get(`${process.env.REACT_APP_BACKEND_URL}/api/admin/departments`),
         axios.get(`${process.env.REACT_APP_BACKEND_URL}/api/admin/pillars`),
         axios.get(`${process.env.REACT_APP_BACKEND_URL}/api/admin/teams`),
-        axios.get(`${process.env.REACT_APP_BACKEND_URL}/api/admin/tech-persons`)
+        axios.get(`${process.env.REACT_APP_BACKEND_URL}/api/admin/tech-persons`),
+        axios.get(`${process.env.REACT_APP_BACKEND_URL}/api/admin/managers`).catch(() => ({ data: [] }))
       ]);
       setUsers(usersRes.data);
       setDepartments(deptsRes.data);
       setPillars(pillarsRes.data);
       setTeams(teamsRes.data);
       setTechPersons(techRes.data);
+      setManagers(managersRes.data);
     } catch (error) {
       console.error('Failed to fetch data:', error);
     }
