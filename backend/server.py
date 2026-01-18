@@ -47,6 +47,7 @@ class UserBase(BaseModel):
     last_name: Optional[str] = None
     role: str = "user"  # user, approver, admin
     sub_role: Optional[str] = None  # For approver: "approver" or "ci_excellence"
+    can_change_subrole: Optional[bool] = True  # Admin toggle to hide sub-role change control
     department: Optional[str] = None
     team: Optional[str] = None
     pillar: Optional[str] = None
