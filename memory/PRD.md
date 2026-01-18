@@ -48,11 +48,13 @@ Pillar (GBS, Tech, Finance, HR)
 ### Admin Panel (Jan 2026)
 - [x] Users tab - CRUD with Team column
 - [x] Pillars tab - Add/delete organizational pillars
-- [x] Departments tab - Add/delete with pillar association
-- [x] Teams tab - Add/delete with pillar/department association
+- [x] Departments tab - Add/delete with pillar association (Bulk Upload ✅)
+- [x] Teams tab - Add/delete with pillar/department association (Bulk Upload ✅)
 - [x] Tech & Engineering tab - Manage T&E personnel
+- [x] **Managers tab** - CRUD for managers mapped to Teams (Bulk Upload ✅)
 - [x] Bulk user upload via CSV
 - [x] Seed sample data button
+- [x] Admin toggle for approver sub-role change permission
 
 ### Idea Management
 - [x] Idea submission form
