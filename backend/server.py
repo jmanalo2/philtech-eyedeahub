@@ -820,11 +820,11 @@ async def get_dashboard_stats(
     assigned_to_te = await db.ideas.count_documents({**base_filter, "status": "assigned_to_te"})
     my_ideas = await db.ideas.count_documents({**base_filter, "submitted_by": current_user["id"]})
     
-    # Get best idea for display
-    best_idea_doc = await db.ideas.find_one({"is_best_idea": True}, {"_id": 0})
-    best_idea_data = None
-    if best_idea_doc:
-        best_idea_data = add_is_evaluated(best_idea_doc)
+    # Get all best ideas (up to 5)
+    best_ideas_docs = await db.ideas.find({"is_best_idea": True}, {"_id": 0}).to_list(5)
+    best_ideas_list = [add_is_evaluated(doc) for doc in best_ideas_docs]
+    # For backwards compatibility, also return first best idea
+    best_idea_data = best_ideas_list[0] if best_ideas_list else None
     
     return {
         "total_ideas": total,
@@ -835,7 +835,8 @@ async def get_dashboard_stats(
         "implemented_ideas": implemented,
         "assigned_to_te_ideas": assigned_to_te,
         "my_ideas": my_ideas,
-        "best_idea": best_idea_data
+        "best_idea": best_idea_data,
+        "best_ideas": best_ideas_list
     }
 
 @api_router.get("/dashboard/analytics")
