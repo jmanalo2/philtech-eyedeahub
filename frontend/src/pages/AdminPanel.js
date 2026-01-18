@@ -394,7 +394,7 @@ export default function AdminPanel() {
 
       <Tabs defaultValue="users" className="space-y-4 sm:space-y-6">
         <div className="overflow-x-auto -mx-3 sm:mx-0 px-3 sm:px-0">
-          <TabsList className="grid grid-cols-5 min-w-[500px] sm:min-w-0 sm:w-full">
+          <TabsList className="grid grid-cols-6 min-w-[600px] sm:min-w-0 sm:w-full">
             <TabsTrigger value="users" data-testid="users-tab" className="text-xs sm:text-sm px-2 sm:px-3">
               <Users className="w-3 h-3 sm:w-4 sm:h-4 sm:mr-2" />
               <span className="hidden sm:inline">Users</span>
@@ -410,6 +410,10 @@ export default function AdminPanel() {
             <TabsTrigger value="teams" data-testid="teams-tab" className="text-xs sm:text-sm px-2 sm:px-3">
               <UsersRound className="w-3 h-3 sm:w-4 sm:h-4 sm:mr-2" />
               <span className="hidden sm:inline">Teams</span>
+            </TabsTrigger>
+            <TabsTrigger value="managers" data-testid="managers-tab" className="text-xs sm:text-sm px-2 sm:px-3">
+              <UserCog className="w-3 h-3 sm:w-4 sm:h-4 sm:mr-2" />
+              <span className="hidden sm:inline">Managers</span>
             </TabsTrigger>
             <TabsTrigger value="tech" data-testid="tech-tab" className="text-xs sm:text-sm px-2 sm:px-3">
               <Wrench className="w-3 h-3 sm:w-4 sm:h-4 sm:mr-2" />
