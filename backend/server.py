@@ -284,11 +284,6 @@ async def reset_password(request: ResetPasswordRequest):
 
 # ==================== IDEAS ROUTES ====================
 
-def add_is_evaluated(idea_doc: dict) -> dict:
-    """Add computed is_evaluated field based on evaluated_by presence"""
-    idea_doc["is_evaluated"] = idea_doc.get("evaluated_by") is not None
-    return idea_doc
-
 @api_router.get("/ideas", response_model=List[Idea])
 async def get_ideas(
     status: Optional[str] = None,
