@@ -674,9 +674,11 @@ async def set_best_idea(idea_id: str, selection: BestIdeaSelection, current_user
         if current_user["role"] != "admin":
             raise HTTPException(status_code=403, detail="Only C.I. Excellence Team can select best ideas")
     
-    # Unset previous best idea if exists
     if selection.is_best_idea:
-        await db.ideas.update_many({}, {"$set": {"is_best_idea": False}})
+        # Check how many best ideas already exist
+        best_count = await db.ideas.count_documents({"is_best_idea": True})
+        if best_count >= 5:
+            raise HTTPException(status_code=400, detail="Maximum 5 Best Eye-deas can be selected. Please unselect one first.")
     
     await db.ideas.update_one(
         {"id": idea_id},
@@ -696,8 +698,18 @@ async def mark_best_idea(idea_id: str, current_user: dict = Depends(get_current_
     if not idea:
         raise HTTPException(status_code=404, detail="Idea not found")
     
-    # Unset previous best idea if exists
-    await db.ideas.update_many({}, {"$set": {"is_best_idea": False}})
+    # Toggle: if already best, unmark it; otherwise mark it
+    if idea.get("is_best_idea"):
+        await db.ideas.update_one(
+            {"id": idea_id},
+            {"$set": {"is_best_idea": False, "updated_at": datetime.now(timezone.utc).isoformat()}}
+        )
+        return {"message": "Idea unmarked as best Eye-dea"}
+    
+    # Check how many best ideas already exist
+    best_count = await db.ideas.count_documents({"is_best_idea": True})
+    if best_count >= 5:
+        raise HTTPException(status_code=400, detail="Maximum 5 Best Eye-deas can be selected. Please unselect one first.")
     
     # Set this idea as best
     await db.ideas.update_one(
@@ -706,6 +718,13 @@ async def mark_best_idea(idea_id: str, current_user: dict = Depends(get_current_
     )
     
     return {"message": "Idea marked as best Eye-dea"}
+
+
+@api_router.get("/ideas/best-ideas")
+async def get_best_ideas(current_user: dict = Depends(get_current_user)):
+    """Get all best ideas (up to 5)"""
+    best_ideas = await db.ideas.find({"is_best_idea": True}, {"_id": 0}).to_list(5)
+    return [add_is_evaluated(idea) for idea in best_ideas]
 
 
 @api_router.post("/ideas/{idea_id}/ci-update-status")
