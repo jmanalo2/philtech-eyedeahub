@@ -14,6 +14,21 @@ from typing import List, Optional
 from datetime import datetime, timezone, timedelta
 import resend
 
+# Import models (also available locally for backwards compatibility)
+from models import (
+    UserBase, UserCreate, UserPasswordChange, ForgotPasswordRequest, ResetPasswordRequest,
+    SubRoleSelection, UserLogin, User, TokenResponse, IdeaBase, IdeaCreate, CIEvaluation,
+    BestIdeaSelection, Idea, IdeaAction, CommentBase, Comment, DepartmentBase, Department,
+    PillarBase, Pillar, TeamBase, Team, TechPersonBase, TechPerson, DashboardStats,
+    CIStatusUpdate, SavingsUpdate
+)
+
+# Import services
+from services import (
+    get_password_hash, verify_password, create_access_token, create_reset_token,
+    add_is_evaluated, SECRET_KEY, ALGORITHM
+)
+
 ROOT_DIR = Path(__file__).parent
 load_dotenv(ROOT_DIR / '.env')
 
@@ -25,8 +40,6 @@ db = client[os.environ['DB_NAME']]
 # Security
 pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 security = HTTPBearer()
-SECRET_KEY = os.environ.get('JWT_SECRET_KEY', 'your-secret-key-change-in-production')
-ALGORITHM = "HS256"
 ACCESS_TOKEN_EXPIRE_MINUTES = 30 * 24 * 60  # 30 days
 
 # Resend Email
