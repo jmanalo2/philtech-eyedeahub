@@ -62,6 +62,30 @@ export default function CIEvaluationPanel({ idea, onEvaluationComplete }) {
     }
   };
 
+  const handleStartEditSavings = () => {
+    setSavingsUpdate({
+      savings_type: idea.savings_type || null,
+      cost_savings: idea.cost_savings || null,
+      time_saved_hours: idea.time_saved_hours || null,
+      time_saved_minutes: idea.time_saved_minutes || null
+    });
+    setEditingSavings(true);
+  };
+
+  const handleUpdateSavings = async () => {
+    setSavingUpdating(true);
+    try {
+      await axios.put(`${process.env.REACT_APP_BACKEND_URL}/api/ideas/${idea.id}/update-savings`, savingsUpdate);
+      toast.success('Savings updated successfully!');
+      setEditingSavings(false);
+      onEvaluationComplete();
+    } catch (error) {
+      toast.error(error.response?.data?.detail || 'Failed to update savings');
+    } finally {
+      setSavingUpdating(false);
+    }
+  };
+
   const handleQuickWinSelection = (isQuickWin) => {
     setEvaluation({ ...evaluation, is_quick_win: isQuickWin });
     setStep(2);
