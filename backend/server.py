@@ -312,6 +312,12 @@ async def get_ideas(
     ideas = await db.ideas.find(query, {"_id": 0}).sort("created_at", -1).to_list(1000)
     return [Idea(**add_is_evaluated(idea)) for idea in ideas]
 
+@api_router.get("/ideas/best-ideas")
+async def get_best_ideas(current_user: dict = Depends(get_current_user)):
+    """Get all best ideas (up to 5)"""
+    best_ideas = await db.ideas.find({"is_best_idea": True}, {"_id": 0}).to_list(5)
+    return [add_is_evaluated(idea) for idea in best_ideas]
+
 @api_router.post("/ideas", response_model=Idea)
 async def create_idea(idea_data: IdeaCreate, current_user: dict = Depends(get_current_user)):
     idea_number = await generate_idea_number()
