@@ -1069,12 +1069,18 @@ async def get_users(current_user: dict = Depends(get_admin_user)):
 
 @api_router.put("/admin/users/{user_id}", response_model=User)
 async def update_user(user_id: str, user_data: UserBase, current_user: dict = Depends(get_admin_user)):
+    # Determine sub_role: if not part of C.I. team (can_change_subrole=false), force to "approver"
+    sub_role_value = user_data.sub_role
+    if user_data.role == "approver" and user_data.can_change_subrole == False:
+        sub_role_value = "approver"
+    
     result = await db.users.update_one(
         {"id": user_id},
         {"$set": {
             "username": user_data.username,
             "email": user_data.email,
             "role": user_data.role,
+            "sub_role": sub_role_value if user_data.role == "approver" else None,
             "department": user_data.department,
             "team": user_data.team,
             "pillar": user_data.pillar,
