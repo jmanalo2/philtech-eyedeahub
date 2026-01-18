@@ -308,14 +308,27 @@ export default function Login() {
 
                   <div>
                     <Label htmlFor="register-manager">Manager's Full Name *</Label>
-                    <Input
-                      id="register-manager"
-                      data-testid="register-manager-input"
-                      value={registerForm.manager}
-                      onChange={(e) => setRegisterForm({ ...registerForm, manager: e.target.value })}
-                      placeholder="Enter manager's full name"
-                      required
-                    />
+                    {registerForm.team && filteredManagers.length > 0 ? (
+                      <Select value={registerForm.manager} onValueChange={(value) => setRegisterForm({ ...registerForm, manager: value })}>
+                        <SelectTrigger data-testid="register-manager-select">
+                          <SelectValue placeholder="Select Manager" />
+                        </SelectTrigger>
+                        <SelectContent>
+                          {filteredManagers.map((manager) => (
+                            <SelectItem key={manager.id} value={manager.name}>{manager.name}</SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
+                    ) : (
+                      <Input
+                        id="register-manager"
+                        data-testid="register-manager-input"
+                        value={registerForm.manager}
+                        onChange={(e) => setRegisterForm({ ...registerForm, manager: e.target.value })}
+                        placeholder={registerForm.team ? "No managers found - enter name manually" : "Select a team first or enter manager's name"}
+                        required
+                      />
+                    )}
                   </div>
 
                   <div>
