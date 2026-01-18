@@ -10,7 +10,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '.
 import { toast } from 'sonner';
 import { 
   Zap, Award, TrendingUp, DollarSign, Clock, Download, 
-  BarChart3, PieChart as PieChartIcon, Lightbulb, Users, CalendarIcon, CheckCircle, Wrench, Filter, X
+  BarChart3, PieChart as PieChartIcon, Lightbulb, Users, CalendarIcon, CheckCircle, Wrench, Filter, X, Star, Eye
 } from 'lucide-react';
 import { PieChart, Pie, Cell, BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from 'recharts';
 import { format } from 'date-fns';
