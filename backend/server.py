@@ -1271,6 +1271,417 @@ async def get_managers_by_team(team_name: str):
     return managers
 
 
+# ==================== BULK UPLOAD ROUTES ====================
+
+from fastapi.responses import StreamingResponse
+from io import BytesIO
+
+@api_router.get("/admin/templates/departments")
+async def download_departments_template(current_user: dict = Depends(get_admin_user)):
+    """Download Excel template for departments bulk upload"""
+    from openpyxl import Workbook
+    from openpyxl.styles import Font, PatternFill
+    
+    wb = Workbook()
+    ws = wb.active
+    ws.title = "Departments"
+    
+    # Headers
+    headers = ["Pillar", "Department"]
+    header_fill = PatternFill(start_color="4472C4", end_color="4472C4", fill_type="solid")
+    header_font = Font(color="FFFFFF", bold=True)
+    
+    for col, header in enumerate(headers, 1):
+        cell = ws.cell(row=1, column=col, value=header)
+        cell.fill = header_fill
+        cell.font = header_font
+        ws.column_dimensions[chr(64 + col)].width = 25
+    
+    # Sample rows
+    ws.cell(row=2, column=1, value="GBS")
+    ws.cell(row=2, column=2, value="Operations")
+    ws.cell(row=3, column=1, value="Tech")
+    ws.cell(row=3, column=2, value="Engineering")
+    
+    output = BytesIO()
+    wb.save(output)
+    output.seek(0)
+    
+    return StreamingResponse(
+        output,
+        media_type="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+        headers={"Content-Disposition": "attachment; filename=departments_template.xlsx"}
+    )
+
+
+@api_router.get("/admin/templates/teams")
+async def download_teams_template(current_user: dict = Depends(get_admin_user)):
+    """Download Excel template for teams bulk upload"""
+    from openpyxl import Workbook
+    from openpyxl.styles import Font, PatternFill
+    
+    wb = Workbook()
+    ws = wb.active
+    ws.title = "Teams"
+    
+    headers = ["Pillar", "Department", "Team"]
+    header_fill = PatternFill(start_color="4472C4", end_color="4472C4", fill_type="solid")
+    header_font = Font(color="FFFFFF", bold=True)
+    
+    for col, header in enumerate(headers, 1):
+        cell = ws.cell(row=1, column=col, value=header)
+        cell.fill = header_fill
+        cell.font = header_font
+        ws.column_dimensions[chr(64 + col)].width = 25
+    
+    # Sample rows
+    ws.cell(row=2, column=1, value="GBS")
+    ws.cell(row=2, column=2, value="Operations")
+    ws.cell(row=2, column=3, value="Allowance Billing")
+    ws.cell(row=3, column=1, value="Tech")
+    ws.cell(row=3, column=2, value="Engineering")
+    ws.cell(row=3, column=3, value="Platform Team")
+    
+    output = BytesIO()
+    wb.save(output)
+    output.seek(0)
+    
+    return StreamingResponse(
+        output,
+        media_type="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+        headers={"Content-Disposition": "attachment; filename=teams_template.xlsx"}
+    )
+
+
+@api_router.get("/admin/templates/managers")
+async def download_managers_template(current_user: dict = Depends(get_admin_user)):
+    """Download Excel template for managers bulk upload"""
+    from openpyxl import Workbook
+    from openpyxl.styles import Font, PatternFill
+    
+    wb = Workbook()
+    ws = wb.active
+    ws.title = "Managers"
+    
+    headers = ["Pillar", "Department", "Team", "Manager"]
+    header_fill = PatternFill(start_color="4472C4", end_color="4472C4", fill_type="solid")
+    header_font = Font(color="FFFFFF", bold=True)
+    
+    for col, header in enumerate(headers, 1):
+        cell = ws.cell(row=1, column=col, value=header)
+        cell.fill = header_fill
+        cell.font = header_font
+        ws.column_dimensions[chr(64 + col)].width = 25
+    
+    # Sample rows
+    ws.cell(row=2, column=1, value="GBS")
+    ws.cell(row=2, column=2, value="Operations")
+    ws.cell(row=2, column=3, value="Allowance Billing")
+    ws.cell(row=2, column=4, value="John Smith")
+    ws.cell(row=3, column=1, value="Tech")
+    ws.cell(row=3, column=2, value="Engineering")
+    ws.cell(row=3, column=3, value="Platform Team")
+    ws.cell(row=3, column=4, value="Jane Doe")
+    
+    output = BytesIO()
+    wb.save(output)
+    output.seek(0)
+    
+    return StreamingResponse(
+        output,
+        media_type="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+        headers={"Content-Disposition": "attachment; filename=managers_template.xlsx"}
+    )
+
+
+@api_router.post("/admin/bulk-upload/departments")
+async def bulk_upload_departments(file: UploadFile = File(...), current_user: dict = Depends(get_admin_user)):
+    """Bulk upload departments from Excel file"""
+    from openpyxl import load_workbook
+    
+    if not file.filename.endswith(('.xlsx', '.xls')):
+        raise HTTPException(status_code=400, detail="Invalid file format. Please upload an Excel file (.xlsx)")
+    
+    try:
+        contents = await file.read()
+        wb = load_workbook(BytesIO(contents))
+        ws = wb.active
+        
+        # Validate headers
+        headers = [cell.value for cell in ws[1]]
+        expected_headers = ["Pillar", "Department"]
+        if headers[:2] != expected_headers:
+            raise HTTPException(status_code=400, detail=f"Invalid headers. Expected: {expected_headers}")
+        
+        created = 0
+        updated = 0
+        errors = []
+        seen = set()
+        
+        for row_num, row in enumerate(ws.iter_rows(min_row=2, values_only=True), start=2):
+            pillar_name, dept_name = row[:2]
+            
+            if not pillar_name or not dept_name:
+                errors.append({"row": row_num, "error": "Required column empty"})
+                continue
+            
+            pillar_name = str(pillar_name).strip()
+            dept_name = str(dept_name).strip()
+            
+            if len(dept_name) > 255:
+                errors.append({"row": row_num, "error": "Department name exceeds max length (255)"})
+                continue
+            
+            key = (pillar_name.lower(), dept_name.lower())
+            if key in seen:
+                errors.append({"row": row_num, "error": "Duplicate in upload"})
+                continue
+            seen.add(key)
+            
+            # Auto-create pillar if not exists
+            existing_pillar = await db.pillars.find_one({"name": {"$regex": f"^{pillar_name}$", "$options": "i"}})
+            if not existing_pillar:
+                pillar_id = f"pillar_{datetime.now(timezone.utc).timestamp()}_{len(pillar_name)}"
+                await db.pillars.insert_one({"id": pillar_id, "name": pillar_name})
+            
+            # Upsert department
+            existing = await db.departments.find_one({
+                "pillar": {"$regex": f"^{pillar_name}$", "$options": "i"},
+                "name": {"$regex": f"^{dept_name}$", "$options": "i"}
+            })
+            
+            if existing:
+                await db.departments.update_one(
+                    {"id": existing["id"]},
+                    {"$set": {"name": dept_name, "pillar": pillar_name}}
+                )
+                updated += 1
+            else:
+                dept_id = f"dept_{datetime.now(timezone.utc).timestamp()}_{row_num}"
+                await db.departments.insert_one({
+                    "id": dept_id,
+                    "name": dept_name,
+                    "pillar": pillar_name
+                })
+                created += 1
+        
+        return {
+            "message": f"Upload complete: {created} created, {updated} updated",
+            "created": created,
+            "updated": updated,
+            "errors": errors
+        }
+        
+    except Exception as e:
+        raise HTTPException(status_code=400, detail=f"Failed to process file: {str(e)}")
+
+
+@api_router.post("/admin/bulk-upload/teams")
+async def bulk_upload_teams(file: UploadFile = File(...), current_user: dict = Depends(get_admin_user)):
+    """Bulk upload teams from Excel file"""
+    from openpyxl import load_workbook
+    
+    if not file.filename.endswith(('.xlsx', '.xls')):
+        raise HTTPException(status_code=400, detail="Invalid file format. Please upload an Excel file (.xlsx)")
+    
+    try:
+        contents = await file.read()
+        wb = load_workbook(BytesIO(contents))
+        ws = wb.active
+        
+        # Validate headers
+        headers = [cell.value for cell in ws[1]]
+        expected_headers = ["Pillar", "Department", "Team"]
+        if headers[:3] != expected_headers:
+            raise HTTPException(status_code=400, detail=f"Invalid headers. Expected: {expected_headers}")
+        
+        created = 0
+        updated = 0
+        errors = []
+        seen = set()
+        
+        for row_num, row in enumerate(ws.iter_rows(min_row=2, values_only=True), start=2):
+            pillar_name, dept_name, team_name = row[:3]
+            
+            if not pillar_name or not dept_name or not team_name:
+                errors.append({"row": row_num, "error": "Required column empty"})
+                continue
+            
+            pillar_name = str(pillar_name).strip()
+            dept_name = str(dept_name).strip()
+            team_name = str(team_name).strip()
+            
+            if len(team_name) > 255:
+                errors.append({"row": row_num, "error": "Team name exceeds max length (255)"})
+                continue
+            
+            key = (pillar_name.lower(), dept_name.lower(), team_name.lower())
+            if key in seen:
+                errors.append({"row": row_num, "error": "Duplicate in upload"})
+                continue
+            seen.add(key)
+            
+            # Auto-create pillar if not exists
+            existing_pillar = await db.pillars.find_one({"name": {"$regex": f"^{pillar_name}$", "$options": "i"}})
+            if not existing_pillar:
+                pillar_id = f"pillar_{datetime.now(timezone.utc).timestamp()}_{len(pillar_name)}"
+                await db.pillars.insert_one({"id": pillar_id, "name": pillar_name})
+            
+            # Auto-create department if not exists
+            existing_dept = await db.departments.find_one({
+                "pillar": {"$regex": f"^{pillar_name}$", "$options": "i"},
+                "name": {"$regex": f"^{dept_name}$", "$options": "i"}
+            })
+            if not existing_dept:
+                dept_id = f"dept_{datetime.now(timezone.utc).timestamp()}_{row_num}"
+                await db.departments.insert_one({"id": dept_id, "name": dept_name, "pillar": pillar_name})
+            
+            # Upsert team
+            existing = await db.teams.find_one({
+                "pillar": {"$regex": f"^{pillar_name}$", "$options": "i"},
+                "department": {"$regex": f"^{dept_name}$", "$options": "i"},
+                "name": {"$regex": f"^{team_name}$", "$options": "i"}
+            })
+            
+            if existing:
+                await db.teams.update_one(
+                    {"id": existing["id"]},
+                    {"$set": {"name": team_name, "pillar": pillar_name, "department": dept_name}}
+                )
+                updated += 1
+            else:
+                team_id = f"team_{datetime.now(timezone.utc).timestamp()}_{row_num}"
+                await db.teams.insert_one({
+                    "id": team_id,
+                    "name": team_name,
+                    "pillar": pillar_name,
+                    "department": dept_name
+                })
+                created += 1
+        
+        return {
+            "message": f"Upload complete: {created} created, {updated} updated",
+            "created": created,
+            "updated": updated,
+            "errors": errors
+        }
+        
+    except Exception as e:
+        raise HTTPException(status_code=400, detail=f"Failed to process file: {str(e)}")
+
+
+@api_router.post("/admin/bulk-upload/managers")
+async def bulk_upload_managers(file: UploadFile = File(...), current_user: dict = Depends(get_admin_user)):
+    """Bulk upload managers from Excel file"""
+    from openpyxl import load_workbook
+    
+    if not file.filename.endswith(('.xlsx', '.xls')):
+        raise HTTPException(status_code=400, detail="Invalid file format. Please upload an Excel file (.xlsx)")
+    
+    try:
+        contents = await file.read()
+        wb = load_workbook(BytesIO(contents))
+        ws = wb.active
+        
+        # Validate headers
+        headers = [cell.value for cell in ws[1]]
+        expected_headers = ["Pillar", "Department", "Team", "Manager"]
+        if headers[:4] != expected_headers:
+            raise HTTPException(status_code=400, detail=f"Invalid headers. Expected: {expected_headers}")
+        
+        created = 0
+        updated = 0
+        errors = []
+        seen = set()
+        
+        for row_num, row in enumerate(ws.iter_rows(min_row=2, values_only=True), start=2):
+            pillar_name, dept_name, team_name, manager_name = row[:4]
+            
+            if not pillar_name or not dept_name or not team_name or not manager_name:
+                errors.append({"row": row_num, "error": "Required column empty"})
+                continue
+            
+            pillar_name = str(pillar_name).strip()
+            dept_name = str(dept_name).strip()
+            team_name = str(team_name).strip()
+            manager_name = str(manager_name).strip()
+            
+            if len(manager_name) > 255:
+                errors.append({"row": row_num, "error": "Manager name exceeds max length (255)"})
+                continue
+            
+            key = (team_name.lower(), manager_name.lower())
+            if key in seen:
+                errors.append({"row": row_num, "error": "Duplicate in upload"})
+                continue
+            seen.add(key)
+            
+            # Auto-create pillar if not exists
+            existing_pillar = await db.pillars.find_one({"name": {"$regex": f"^{pillar_name}$", "$options": "i"}})
+            if not existing_pillar:
+                pillar_id = f"pillar_{datetime.now(timezone.utc).timestamp()}_{len(pillar_name)}"
+                await db.pillars.insert_one({"id": pillar_id, "name": pillar_name})
+            
+            # Auto-create department if not exists
+            existing_dept = await db.departments.find_one({
+                "pillar": {"$regex": f"^{pillar_name}$", "$options": "i"},
+                "name": {"$regex": f"^{dept_name}$", "$options": "i"}
+            })
+            if not existing_dept:
+                dept_id = f"dept_{datetime.now(timezone.utc).timestamp()}_{row_num}"
+                await db.departments.insert_one({"id": dept_id, "name": dept_name, "pillar": pillar_name})
+            
+            # Auto-create team if not exists
+            existing_team = await db.teams.find_one({
+                "pillar": {"$regex": f"^{pillar_name}$", "$options": "i"},
+                "department": {"$regex": f"^{dept_name}$", "$options": "i"},
+                "name": {"$regex": f"^{team_name}$", "$options": "i"}
+            })
+            if not existing_team:
+                team_id = f"team_{datetime.now(timezone.utc).timestamp()}_{row_num}"
+                await db.teams.insert_one({
+                    "id": team_id,
+                    "name": team_name,
+                    "pillar": pillar_name,
+                    "department": dept_name
+                })
+            
+            # Upsert manager
+            existing = await db.managers.find_one({
+                "team": {"$regex": f"^{team_name}$", "$options": "i"},
+                "name": {"$regex": f"^{manager_name}$", "$options": "i"}
+            })
+            
+            if existing:
+                await db.managers.update_one(
+                    {"id": existing["id"]},
+                    {"$set": {"name": manager_name, "pillar": pillar_name, "department": dept_name, "team": team_name}}
+                )
+                updated += 1
+            else:
+                manager_id = f"manager_{datetime.now(timezone.utc).timestamp()}_{row_num}"
+                await db.managers.insert_one({
+                    "id": manager_id,
+                    "name": manager_name,
+                    "email": None,
+                    "pillar": pillar_name,
+                    "department": dept_name,
+                    "team": team_name,
+                    "is_active": True
+                })
+                created += 1
+        
+        return {
+            "message": f"Upload complete: {created} created, {updated} updated",
+            "created": created,
+            "updated": updated,
+            "errors": errors
+        }
+        
+    except Exception as e:
+        raise HTTPException(status_code=400, detail=f"Failed to process file: {str(e)}")
+
+
 # ==================== SEED DATA ====================
 
 @api_router.post("/admin/seed-data")
