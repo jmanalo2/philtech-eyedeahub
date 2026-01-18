@@ -514,35 +514,43 @@ export default function CIDashboard() {
         </Card>
       </div>
 
-      {/* Best Idea Section */}
-      {analytics?.best_idea && (
+      {/* Best Eye-deas Section - Shows up to 5 */}
+      {bestIdeas.length > 0 && (
         <Card className="bg-gradient-to-r from-yellow-50 to-amber-50 border-yellow-300">
           <CardHeader>
-            <div className="flex items-center space-x-3">
-              <div className="bg-yellow-500 p-3 rounded-lg">
-                <Award className="w-6 h-6 text-white" />
-              </div>
-              <div>
-                <CardTitle className="text-yellow-900">Best Eye-dea</CardTitle>
-                <CardDescription>Selected by the C.I. Excellence Team</CardDescription>
+            <div className="flex items-center justify-between">
+              <div className="flex items-center space-x-3">
+                <div className="bg-yellow-500 p-3 rounded-lg">
+                  <Star className="w-6 h-6 text-white" />
+                </div>
+                <div>
+                  <CardTitle className="text-yellow-900">Best Eye-deas ({bestIdeas.length}/5)</CardTitle>
+                  <CardDescription className="text-yellow-700">Top ideas selected by the C.I. Excellence Team</CardDescription>
+                </div>
               </div>
             </div>
           </CardHeader>
           <CardContent>
-            <div className="bg-white p-6 rounded-lg border border-yellow-200">
-              <div className="flex items-start justify-between">
-                <div>
-                  <Badge className="bg-yellow-500 mb-2">{analytics.best_idea.idea_number}</Badge>
-                  <h3 className="text-xl font-bold text-gray-900">{analytics.best_idea.title}</h3>
-                  <p className="text-gray-600 mt-2">{analytics.best_idea.benefits}</p>
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+              {bestIdeas.map((idea) => (
+                <div key={idea.id} className="bg-white p-4 rounded-lg border border-yellow-200 hover:shadow-md transition-shadow">
+                  <div className="flex items-start justify-between mb-2">
+                    <Badge className="bg-yellow-500 text-white">{idea.idea_number}</Badge>
+                    <Award className="w-5 h-5 text-yellow-500" />
+                  </div>
+                  <h4 className="font-bold text-gray-900 text-sm mb-2 line-clamp-2">{idea.title}</h4>
+                  <p className="text-xs text-gray-600 mb-3 line-clamp-2">{idea.benefits}</p>
+                  <div className="flex items-center justify-between text-xs text-gray-500 pt-2 border-t border-yellow-100">
+                    <span>By {idea.submitted_by_username}</span>
+                    <Link to={`/ideas/${idea.id}`}>
+                      <Button variant="ghost" size="sm" className="text-yellow-700 hover:text-yellow-800 h-7 px-2">
+                        <Eye className="w-3 h-3 mr-1" /> View
+                      </Button>
+                    </Link>
+                  </div>
+                  <div className="text-xs text-gray-400 mt-1">{idea.pillar}</div>
                 </div>
-                <Lightbulb className="w-12 h-12 text-yellow-500" />
-              </div>
-              <div className="mt-4 pt-4 border-t border-yellow-200 flex items-center space-x-4 text-sm text-gray-600">
-                <span>Submitted by: {analytics.best_idea.submitted_by_username}</span>
-                <span>•</span>
-                <span>Pillar: {analytics.best_idea.pillar}</span>
-              </div>
+              ))}
             </div>
           </CardContent>
         </Card>
