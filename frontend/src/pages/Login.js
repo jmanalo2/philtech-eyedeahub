@@ -36,6 +36,7 @@ export default function Login() {
     team: '',
     manager: ''
   });
+  const [filteredManagers, setFilteredManagers] = useState([]);
 
   useEffect(() => {
     fetchOrganizationalData();
@@ -45,7 +46,7 @@ export default function Login() {
     if (registerForm.pillar) {
       const filtered = departments.filter(dept => dept.pillar === registerForm.pillar);
       setFilteredDepartments(filtered);
-      setRegisterForm(prev => ({ ...prev, department: '', team: '' }));
+      setRegisterForm(prev => ({ ...prev, department: '', team: '', manager: '' }));
     } else {
       setFilteredDepartments([]);
     }
@@ -55,27 +56,35 @@ export default function Login() {
     if (registerForm.department) {
       const filtered = teams.filter(team => team.department === registerForm.department);
       setFilteredTeams(filtered);
-      setRegisterForm(prev => ({ ...prev, team: '' }));
+      setRegisterForm(prev => ({ ...prev, team: '', manager: '' }));
     } else {
       setFilteredTeams([]);
     }
   }, [registerForm.department, teams]);
 
+  useEffect(() => {
+    if (registerForm.team) {
+      const filtered = managers.filter(m => m.team === registerForm.team);
+      setFilteredManagers(filtered);
+      setRegisterForm(prev => ({ ...prev, manager: '' }));
+    } else {
+      setFilteredManagers([]);
+    }
+  }, [registerForm.team, managers]);
+
   const fetchOrganizationalData = async () => {
     try {
       // Use public endpoints that don't require authentication
-      const [pillarsRes, deptsRes, teamsRes] = await Promise.all([
+      const [pillarsRes, deptsRes, teamsRes, managersRes] = await Promise.all([
         axios.get(`${process.env.REACT_APP_BACKEND_URL}/api/public/pillars`).catch(() => ({ data: [] })),
         axios.get(`${process.env.REACT_APP_BACKEND_URL}/api/public/departments`).catch(() => ({ data: [] })),
-        axios.get(`${process.env.REACT_APP_BACKEND_URL}/api/public/teams`).catch(() => ({ data: [] }))
+        axios.get(`${process.env.REACT_APP_BACKEND_URL}/api/public/teams`).catch(() => ({ data: [] })),
+        axios.get(`${process.env.REACT_APP_BACKEND_URL}/api/public/managers`).catch(() => ({ data: [] }))
       ]);
       setPillars(pillarsRes.data);
       setDepartments(deptsRes.data);
       setTeams(teamsRes.data);
-      
-      // Managers can't be fetched without auth, so leave empty for now
-      // User can select their manager from a text input or after registration
-      setManagers([]);
+      setManagers(managersRes.data);
     } catch (error) {
       console.error('Failed to fetch organizational data:', error);
     }
