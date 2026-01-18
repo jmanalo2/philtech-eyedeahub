@@ -706,8 +706,6 @@ async def mark_best_idea(idea_id: str, current_user: dict = Depends(get_current_
     
     return {"message": "Idea marked as best Eye-dea"}
 
-class CIStatusUpdate(BaseModel):
-    new_status: str  # implemented, revision_requested, declined
 
 @api_router.post("/ideas/{idea_id}/ci-update-status")
 async def ci_update_status(idea_id: str, status_update: CIStatusUpdate, current_user: dict = Depends(get_current_user)):
