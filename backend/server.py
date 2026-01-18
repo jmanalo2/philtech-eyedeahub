@@ -52,29 +52,8 @@ app = FastAPI()
 api_router = APIRouter(prefix="/api")
 
 # Note: Models are imported from models/__init__.py
-# Keeping CIStatusUpdate here as it was defined inline
-# (Already imported above)
-
-# ==================== UTILITIES ====================
 # Note: Basic utilities imported from services/__init__.py
 # Database-dependent utilities defined below
-
-def get_password_hash(password: str) -> str:
-    return pwd_context.hash(password)
-
-def verify_password(plain_password: str, hashed_password: str) -> bool:
-    return pwd_context.verify(plain_password, hashed_password)
-
-def create_access_token(data: dict) -> str:
-    to_encode = data.copy()
-    expire = datetime.now(timezone.utc) + timedelta(minutes=ACCESS_TOKEN_EXPIRE_MINUTES)
-    to_encode.update({"exp": expire})
-    return jwt.encode(to_encode, SECRET_KEY, algorithm=ALGORITHM)
-
-def create_reset_token(email: str) -> str:
-    expire = datetime.now(timezone.utc) + timedelta(hours=1)  # Token valid for 1 hour
-    to_encode = {"email": email, "exp": expire, "type": "password_reset"}
-    return jwt.encode(to_encode, SECRET_KEY, algorithm=ALGORITHM)
 
 def verify_reset_token(token: str) -> str:
     try:
