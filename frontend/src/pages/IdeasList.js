@@ -170,12 +170,24 @@ export default function IdeasList() {
           <h1 className="text-2xl sm:text-3xl font-bold text-gray-900 mb-1 sm:mb-2">Eye-deas</h1>
           <p className="text-sm sm:text-base text-gray-600">Browse and manage organizational ideas</p>
         </div>
-        <Link to="/ideas/new" className="self-start sm:self-auto">
-          <Button data-testid="create-idea-btn" className="bg-blue-700 hover:bg-blue-800 w-full sm:w-auto">
-            <Plus className="w-4 h-4 mr-2" />
-            New Eye-dea
+        <div className="flex flex-wrap gap-2 self-start sm:self-auto">
+          <Button
+            data-testid="export-excel-btn"
+            variant="outline"
+            onClick={handleExportExcel}
+            disabled={exporting}
+            className="border-green-600 text-green-600 hover:bg-green-50"
+          >
+            <Download className="w-4 h-4 mr-2" />
+            {exporting ? 'Exporting...' : 'Export Excel'}
           </Button>
-        </Link>
+          <Link to="/ideas/new">
+            <Button data-testid="create-idea-btn" className="bg-blue-700 hover:bg-blue-800 w-full sm:w-auto">
+              <Plus className="w-4 h-4 mr-2" />
+              New Eye-dea
+            </Button>
+          </Link>
+        </div>
       </div>
 
       {/* Filters */}
