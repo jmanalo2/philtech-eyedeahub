@@ -72,7 +72,8 @@ export default function AdminPanel() {
         pillar: editingUser.pillar,
         manager: editingUser.manager,
         approved_pillars: editingUser.approved_pillars || [],
-        approved_departments: editingUser.approved_departments || []
+        approved_departments: editingUser.approved_departments || [],
+        can_change_subrole: editingUser.can_change_subrole
       });
       toast.success('User updated successfully');
       setShowUserDialog(false);
