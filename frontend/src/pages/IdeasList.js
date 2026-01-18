@@ -8,7 +8,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '.
 import { Badge } from '../components/ui/badge';
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogFooter } from '../components/ui/dialog';
 import { toast } from 'sonner';
-import { Plus, Filter, AlertCircle, Star, Trash2 } from 'lucide-react';
+import { Plus, Filter, AlertCircle, Star, Trash2, Download } from 'lucide-react';
 
 export default function IdeasList() {
   const { user } = useAuth();
@@ -22,6 +22,7 @@ export default function IdeasList() {
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
   const [ideaToDelete, setIdeaToDelete] = useState(null);
   const [deleting, setDeleting] = useState(false);
+  const [exporting, setExporting] = useState(false);
 
   const [filters, setFilters] = useState({
     status: searchParams.get('status') || '',
