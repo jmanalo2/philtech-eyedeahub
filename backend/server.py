@@ -21,7 +21,7 @@ from models import (
     SubRoleSelection, UserLogin, User, TokenResponse, IdeaBase, IdeaCreate, CIEvaluation,
     BestIdeaSelection, Idea, IdeaAction, CommentBase, Comment, DepartmentBase, Department,
     PillarBase, Pillar, TeamBase, Team, TechPersonBase, TechPerson, DashboardStats,
-    CIStatusUpdate, SavingsUpdate
+    CIStatusUpdate, SavingsUpdate, ManagerBase, Manager
 )
 
 # Import services
