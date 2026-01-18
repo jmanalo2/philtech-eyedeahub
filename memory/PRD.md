@@ -63,6 +63,7 @@ Pillar (GBS, Tech, Finance, HR)
 - [x] Approval workflow (Approve/Decline/Request Revision)
 - [x] Resubmit after revision
 - [x] Comments on ideas
+- [x] **Auto-derive Team** from submitter's profile (team field read-only if user has team)
 
 ### C.I. Excellence Team (Jan 2026)
 - [x] CIEvaluationPanel component with Tech Person dropdown
