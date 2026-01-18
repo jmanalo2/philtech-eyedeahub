@@ -215,6 +215,95 @@ export default function CIEvaluationPanel({ idea, onEvaluationComplete }) {
                     <span className="ml-2 text-gray-900">{idea.tech_person_name} (T&E Team)</span>
                   </div>
                 )}
+
+                {/* Edit Savings Section */}
+                {!editingSavings ? (
+                  <div className="pt-3 border-t border-green-300 mt-3">
+                    <Button
+                      data-testid="edit-savings-btn"
+                      variant="outline"
+                      size="sm"
+                      onClick={handleStartEditSavings}
+                      className="text-blue-600 border-blue-300 hover:bg-blue-50"
+                    >
+                      <DollarSign className="w-4 h-4 mr-1" />
+                      Edit Savings
+                    </Button>
+                  </div>
+                ) : (
+                  <div className="pt-3 border-t border-green-300 mt-3 space-y-3 bg-white p-4 rounded-lg">
+                    <h4 className="font-semibold text-gray-900">Update Savings</h4>
+                    <div>
+                      <Label>Savings Type</Label>
+                      <Select
+                        value={savingsUpdate.savings_type || ''}
+                        onValueChange={(value) => setSavingsUpdate({ ...savingsUpdate, savings_type: value })}
+                      >
+                        <SelectTrigger data-testid="edit-savings-type">
+                          <SelectValue placeholder="Select savings type" />
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="cost_savings">Cost Savings ($)</SelectItem>
+                          <SelectItem value="time_saved">Time Saved</SelectItem>
+                        </SelectContent>
+                      </Select>
+                    </div>
+                    {savingsUpdate.savings_type === 'cost_savings' && (
+                      <div>
+                        <Label>Cost Savings ($)</Label>
+                        <Input
+                          type="number"
+                          placeholder="Enter amount"
+                          value={savingsUpdate.cost_savings || ''}
+                          onChange={(e) => setSavingsUpdate({ ...savingsUpdate, cost_savings: parseFloat(e.target.value) || null })}
+                          data-testid="edit-cost-savings"
+                        />
+                      </div>
+                    )}
+                    {savingsUpdate.savings_type === 'time_saved' && (
+                      <div className="grid grid-cols-2 gap-3">
+                        <div>
+                          <Label>Hours</Label>
+                          <Input
+                            type="number"
+                            placeholder="Hours"
+                            value={savingsUpdate.time_saved_hours || ''}
+                            onChange={(e) => setSavingsUpdate({ ...savingsUpdate, time_saved_hours: parseInt(e.target.value) || null })}
+                            data-testid="edit-time-hours"
+                          />
+                        </div>
+                        <div>
+                          <Label>Minutes</Label>
+                          <Input
+                            type="number"
+                            placeholder="Minutes"
+                            value={savingsUpdate.time_saved_minutes || ''}
+                            onChange={(e) => setSavingsUpdate({ ...savingsUpdate, time_saved_minutes: parseInt(e.target.value) || null })}
+                            data-testid="edit-time-minutes"
+                          />
+                        </div>
+                      </div>
+                    )}
+                    <div className="flex gap-2">
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        onClick={() => setEditingSavings(false)}
+                      >
+                        Cancel
+                      </Button>
+                      <Button
+                        data-testid="save-savings-btn"
+                        size="sm"
+                        onClick={handleUpdateSavings}
+                        disabled={savingUpdating}
+                        className="bg-blue-600 hover:bg-blue-700"
+                      >
+                        {savingUpdating ? 'Saving...' : 'Save'}
+                      </Button>
+                    </div>
+                  </div>
+                )}
               </>
             )}
             {idea.evaluated_by_username && (
