@@ -1127,8 +1127,8 @@ export default function AdminPanel() {
 
                   <div className="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
                     <div>
-                      <Label className="text-sm font-medium">Allow Sub-role Change</Label>
-                      <p className="text-xs text-gray-500 mt-0.5">When disabled, user cannot change their sub-role in Profile</p>
+                      <Label className="text-sm font-medium">Part of C.I. Excellence Team?</Label>
+                      <p className="text-xs text-gray-500 mt-0.5">If No, user will be set as Approver only</p>
                     </div>
                     <button
                       type="button"
