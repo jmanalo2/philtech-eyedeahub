@@ -1058,7 +1058,8 @@ async def update_user(user_id: str, user_data: UserBase, current_user: dict = De
             "pillar": user_data.pillar,
             "manager": user_data.manager,
             "approved_pillars": user_data.approved_pillars if user_data.role == "approver" else [],
-            "approved_departments": user_data.approved_departments if user_data.role == "approver" else []
+            "approved_departments": user_data.approved_departments if user_data.role == "approver" else [],
+            "can_change_subrole": user_data.can_change_subrole if user_data.role == "approver" else True
         }}
     )
     
