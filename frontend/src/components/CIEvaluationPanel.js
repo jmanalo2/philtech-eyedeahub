@@ -15,6 +15,14 @@ export default function CIEvaluationPanel({ idea, onEvaluationComplete }) {
   const [techPersons, setTechPersons] = useState([]);
   const [markingBest, setMarkingBest] = useState(false);
   const [updatingStatus, setUpdatingStatus] = useState(false);
+  const [editingSavings, setEditingSavings] = useState(false);
+  const [savingsUpdate, setSavingsUpdate] = useState({
+    savings_type: null,
+    cost_savings: null,
+    time_saved_hours: null,
+    time_saved_minutes: null
+  });
+  const [savingUpdating, setSavingUpdating] = useState(false);
   const [evaluation, setEvaluation] = useState({
     is_quick_win: null,
     complexity_level: null,
