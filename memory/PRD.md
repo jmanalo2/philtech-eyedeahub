@@ -100,6 +100,10 @@ Pillar (GBS, Tech, Finance, HR)
 - [x] `/api/public/pillars` - No auth required
 - [x] `/api/public/departments` - With pillar filter
 - [x] `/api/public/teams` - With pillar/department filters
+- [x] `/api/public/managers` - Filtered by team for registration dropdown
+
+### Bug Fixes (Jan 18, 2026)
+- [x] Fixed `/api/ideas/best-ideas` route order (was being matched by `{idea_id}` param)
 
 ---
 
