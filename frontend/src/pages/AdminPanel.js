@@ -63,6 +63,11 @@ export default function AdminPanel() {
   const handleUpdateUser = async () => {
     if (!editingUser) return;
     try {
+      // If "Part of C.I. Excellence Team" is false, force sub_role to "approver"
+      const subRoleValue = editingUser.role === 'approver' && editingUser.can_change_subrole === false 
+        ? 'approver' 
+        : editingUser.sub_role;
+      
       await axios.put(`${process.env.REACT_APP_BACKEND_URL}/api/admin/users/${editingUser.id}`, {
         username: editingUser.username,
         email: editingUser.email,
@@ -73,7 +78,8 @@ export default function AdminPanel() {
         manager: editingUser.manager,
         approved_pillars: editingUser.approved_pillars || [],
         approved_departments: editingUser.approved_departments || [],
-        can_change_subrole: editingUser.can_change_subrole
+        can_change_subrole: editingUser.can_change_subrole,
+        sub_role: subRoleValue
       });
       toast.success('User updated successfully');
       setShowUserDialog(false);
