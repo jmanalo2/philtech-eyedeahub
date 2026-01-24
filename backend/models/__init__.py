@@ -136,10 +136,39 @@ class CIStatusUpdate(BaseModel):
 
 
 class SavingsUpdate(BaseModel):
-    savings_type: Optional[str] = None  # cost_savings or time_saved
+    savings_type: Optional[str] = None  # cost_savings, time_saved, or both
     cost_savings: Optional[float] = None
     time_saved_hours: Optional[int] = None
     time_saved_minutes: Optional[int] = None
+    reason: Optional[str] = None  # Reason for re-evaluation
+
+
+class SavingsAuditEntry(BaseModel):
+    """Audit entry for savings re-evaluation"""
+    timestamp: str
+    reviewer_id: str
+    reviewer_username: str
+    reason: Optional[str] = None
+    old_savings_type: Optional[str] = None
+    new_savings_type: Optional[str] = None
+    old_cost_savings: Optional[float] = None
+    new_cost_savings: Optional[float] = None
+    old_time_saved_hours: Optional[int] = None
+    new_time_saved_hours: Optional[int] = None
+    old_time_saved_minutes: Optional[int] = None
+    new_time_saved_minutes: Optional[int] = None
+
+
+class AttachmentInfo(BaseModel):
+    """Attachment metadata"""
+    id: str
+    filename: str
+    original_filename: str
+    content_type: str
+    size: int
+    uploaded_at: str
+    uploaded_by: str
+    uploaded_by_username: str
 
 
 # ==================== COMMENT MODELS ====================
