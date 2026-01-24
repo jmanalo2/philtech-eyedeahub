@@ -6,11 +6,12 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '../co
 import { Badge } from '../components/ui/badge';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '../components/ui/select';
 import { Button } from '../components/ui/button';
-import { TrendingUp, CheckCircle2, XCircle, AlertCircle, Clock, Lightbulb, Award, Wrench, Star, Filter, X } from 'lucide-react';
+import { TrendingUp, CheckCircle2, XCircle, AlertCircle, Clock, Lightbulb, Award, Wrench, Star, Filter, X, Trophy, Medal } from 'lucide-react';
 
 export default function Dashboard() {
   const { user } = useAuth();
   const [stats, setStats] = useState(null);
+  const [leaderboard, setLeaderboard] = useState([]);
   const [loading, setLoading] = useState(true);
   const [pillars, setPillars] = useState([]);
   const [departments, setDepartments] = useState([]);
@@ -24,6 +25,7 @@ export default function Dashboard() {
 
   useEffect(() => {
     fetchFilterData();
+    fetchLeaderboard();
   }, []);
 
   useEffect(() => {
