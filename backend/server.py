@@ -1011,6 +1011,75 @@ async def get_dashboard_stats(
         "best_ideas": best_ideas_list
     }
 
+
+@api_router.get("/dashboard/leaderboard")
+async def get_leaderboard(current_user: dict = Depends(get_current_user)):
+    """
+    Get leaderboard ranking submitters by total points:
+    - Both Cost & Time Saved = 5 pts
+    - Either Cost or Time Saved = 3 pts
+    - Quick Win = 2 pts
+    - No savings & not Quick Win = 1 pt
+    """
+    # Get all ideas with relevant fields
+    ideas = await db.ideas.find(
+        {},
+        {"_id": 0, "submitted_by": 1, "submitted_by_username": 1, "is_quick_win": 1, 
+         "savings_type": 1, "cost_savings": 1, "time_saved_hours": 1, "time_saved_minutes": 1}
+    ).to_list(None)
+    
+    # Calculate points per submitter
+    submitter_points = {}
+    submitter_idea_count = {}
+    
+    for idea in ideas:
+        submitter = idea.get("submitted_by")
+        username = idea.get("submitted_by_username", "Unknown")
+        
+        if not submitter:
+            continue
+        
+        if submitter not in submitter_points:
+            submitter_points[submitter] = {"username": username, "points": 0}
+            submitter_idea_count[submitter] = 0
+        
+        submitter_idea_count[submitter] += 1
+        
+        # Calculate points for this idea
+        points = 0
+        savings_type = idea.get("savings_type")
+        is_quick_win = idea.get("is_quick_win")
+        
+        if savings_type == "both":
+            points = 5  # Both Cost & Time Saved
+        elif savings_type in ["cost_savings", "time_saved"]:
+            points = 3  # Either Cost or Time Saved
+        elif is_quick_win:
+            points = 2  # Quick Win
+        else:
+            points = 1  # No savings & not Quick Win
+        
+        submitter_points[submitter]["points"] += points
+    
+    # Build leaderboard
+    leaderboard = []
+    for submitter, data in submitter_points.items():
+        leaderboard.append({
+            "user_id": submitter,
+            "username": data["username"],
+            "points": data["points"],
+            "ideas_count": submitter_idea_count[submitter]
+        })
+    
+    # Sort by points descending
+    leaderboard.sort(key=lambda x: x["points"], reverse=True)
+    
+    # Add rank
+    for i, entry in enumerate(leaderboard):
+        entry["rank"] = i + 1
+    
+    return {"leaderboard": leaderboard[:20]}  # Return top 20
+
 @api_router.get("/dashboard/analytics")
 async def get_dashboard_analytics(
     start_date: Optional[str] = None,
