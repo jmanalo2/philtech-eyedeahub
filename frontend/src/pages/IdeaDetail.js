@@ -337,6 +337,60 @@ export default function IdeaDetail() {
               <label className="text-sm font-semibold text-gray-700 block mb-2">Benefits</label>
               <p className="text-gray-900 whitespace-pre-wrap">{idea.benefits}</p>
             </div>
+
+            {/* Attachments Section */}
+            {idea.attachments && idea.attachments.length > 0 && (
+              <>
+                <Separator />
+                <div>
+                  <label className="text-sm font-semibold text-gray-700 flex items-center gap-2 mb-3">
+                    <Paperclip className="w-4 h-4" />
+                    Attachments ({idea.attachments.length})
+                  </label>
+                  <div className="space-y-2">
+                    {idea.attachments.map((att) => {
+                      const ext = (att.original_filename || att.filename).split('.').pop().toLowerCase();
+                      const getIcon = () => {
+                        if (['png', 'jpg', 'jpeg'].includes(ext)) return <Image className="w-4 h-4 text-green-600" />;
+                        if (['xls', 'xlsx'].includes(ext)) return <FileSpreadsheet className="w-4 h-4 text-green-600" />;
+                        return <FileText className="w-4 h-4 text-blue-600" />;
+                      };
+                      const formatSize = (bytes) => {
+                        if (bytes < 1024) return bytes + ' B';
+                        if (bytes < 1024 * 1024) return (bytes / 1024).toFixed(1) + ' KB';
+                        return (bytes / (1024 * 1024)).toFixed(1) + ' MB';
+                      };
+                      
+                      return (
+                        <div 
+                          key={att.id} 
+                          className="flex items-center justify-between p-3 bg-gray-50 rounded-lg border hover:bg-gray-100 transition-colors"
+                        >
+                          <div className="flex items-center gap-3">
+                            {getIcon()}
+                            <div>
+                              <p className="text-sm font-medium text-gray-900">{att.original_filename}</p>
+                              <p className="text-xs text-gray-500">
+                                {formatSize(att.size)} • Uploaded by {att.uploaded_by_username}
+                              </p>
+                            </div>
+                          </div>
+                          <Button
+                            variant="outline"
+                            size="sm"
+                            onClick={() => window.open(`${process.env.REACT_APP_BACKEND_URL}/api/ideas/${idea.id}/attachments/${att.id}`, '_blank')}
+                            className="text-blue-600"
+                          >
+                            <Download className="w-4 h-4 mr-1" />
+                            Download
+                          </Button>
+                        </div>
+                      );
+                    })}
+                  </div>
+                </div>
+              </>
+            )}
           </CardContent>
         </Card>
 
