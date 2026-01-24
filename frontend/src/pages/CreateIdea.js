@@ -11,7 +11,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '../co
 import { Calendar } from '../components/ui/calendar';
 import { Popover, PopoverContent, PopoverTrigger } from '../components/ui/popover';
 import { toast } from 'sonner';
-import { ArrowLeft, Save, CalendarIcon } from 'lucide-react';
+import { ArrowLeft, Save, CalendarIcon, Paperclip, X, FileText, Image, FileSpreadsheet } from 'lucide-react';
 import { format } from 'date-fns';
 
 export default function CreateIdea() {
@@ -23,6 +23,8 @@ export default function CreateIdea() {
   const [departments, setDepartments] = useState([]);
   const [teams, setTeams] = useState([]);
   const [filteredTeams, setFilteredTeams] = useState([]);
+  const [attachments, setAttachments] = useState([]);
+  const [uploading, setUploading] = useState(false);
 
   const [formData, setFormData] = useState({
     pillar: '',
@@ -36,6 +38,9 @@ export default function CreateIdea() {
     team: '',
     manager: ''
   });
+
+  const ALLOWED_EXTENSIONS = ['.pdf', '.doc', '.docx', '.xls', '.xlsx', '.ppt', '.pptx', '.png', '.jpg', '.jpeg'];
+  const MAX_FILE_SIZE = 10 * 1024 * 1024; // 10MB
 
   const improvementTypes = [
     'Standardization',
