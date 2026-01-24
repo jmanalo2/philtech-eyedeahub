@@ -58,6 +58,7 @@ Pillar (GBS, Tech, Finance, HR)
 
 ### Idea Management
 - [x] Idea submission form
+- [x] **Attachment support** (multi-file upload: PDF, DOC, DOCX, XLS, XLSX, PPT, PPTX, PNG, JPG, JPEG - max 10MB)
 - [x] Idea listing with filters
 - [x] Idea detail view
 - [x] Approval workflow (Approve/Decline/Request Revision)
