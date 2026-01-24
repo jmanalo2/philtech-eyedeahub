@@ -8,7 +8,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '.
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from './ui/card';
 import { Badge } from './ui/badge';
 import { toast } from 'sonner';
-import { CheckCircle, XCircle, Users, DollarSign, Clock, Award, Star } from 'lucide-react';
+import { CheckCircle, XCircle, Users, DollarSign, Clock, Award, Star, History } from 'lucide-react';
 
 export default function CIEvaluationPanel({ idea, onEvaluationComplete }) {
   const [step, setStep] = useState(1);
@@ -16,11 +16,13 @@ export default function CIEvaluationPanel({ idea, onEvaluationComplete }) {
   const [markingBest, setMarkingBest] = useState(false);
   const [updatingStatus, setUpdatingStatus] = useState(false);
   const [editingSavings, setEditingSavings] = useState(false);
+  const [showAuditHistory, setShowAuditHistory] = useState(false);
   const [savingsUpdate, setSavingsUpdate] = useState({
     savings_type: null,
     cost_savings: null,
     time_saved_hours: null,
-    time_saved_minutes: null
+    time_saved_minutes: null,
+    reason: ''
   });
   const [savingUpdating, setSavingUpdating] = useState(false);
   const [evaluation, setEvaluation] = useState({
