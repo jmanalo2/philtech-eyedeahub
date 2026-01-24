@@ -194,17 +194,19 @@ export default function CIEvaluationPanel({ idea, onEvaluationComplete }) {
                   <div>
                     <span className="font-semibold text-gray-700">Savings Type:</span>
                     <span className="ml-2 text-gray-900">
-                      {idea.savings_type === 'cost_savings' ? 'Cost Savings' : 'Time Saved'}
+                      {idea.savings_type === 'cost_savings' ? 'Cost Savings' : 
+                       idea.savings_type === 'time_saved' ? 'Time Saved' : 
+                       idea.savings_type === 'both' ? 'Both Cost & Time Savings' : idea.savings_type}
                     </span>
                   </div>
                 )}
-                {idea.cost_savings && (
+                {(idea.savings_type === 'cost_savings' || idea.savings_type === 'both') && idea.cost_savings && (
                   <div>
                     <span className="font-semibold text-gray-700">Cost Savings:</span>
                     <span className="ml-2 text-gray-900">${idea.cost_savings.toLocaleString()}</span>
                   </div>
                 )}
-                {(idea.time_saved_hours || idea.time_saved_minutes) && (
+                {(idea.savings_type === 'time_saved' || idea.savings_type === 'both') && (idea.time_saved_hours || idea.time_saved_minutes) && (
                   <div>
                     <span className="font-semibold text-gray-700">Time Saved:</span>
                     <span className="ml-2 text-gray-900">
@@ -221,7 +223,7 @@ export default function CIEvaluationPanel({ idea, onEvaluationComplete }) {
 
                 {/* Edit Savings Section */}
                 {!editingSavings ? (
-                  <div className="pt-3 border-t border-green-300 mt-3">
+                  <div className="pt-3 border-t border-green-300 mt-3 flex gap-2">
                     <Button
                       data-testid="edit-savings-btn"
                       variant="outline"
@@ -232,6 +234,17 @@ export default function CIEvaluationPanel({ idea, onEvaluationComplete }) {
                       <DollarSign className="w-4 h-4 mr-1" />
                       Edit Savings
                     </Button>
+                    {idea.savings_audit_history && idea.savings_audit_history.length > 0 && (
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        onClick={() => setShowAuditHistory(!showAuditHistory)}
+                        className="text-gray-600 border-gray-300 hover:bg-gray-50"
+                      >
+                        <History className="w-4 h-4 mr-1" />
+                        Audit History ({idea.savings_audit_history.length})
+                      </Button>
+                    )}
                   </div>
                 ) : (
                   <div className="pt-3 border-t border-green-300 mt-3 space-y-3 bg-white p-4 rounded-lg">
@@ -248,12 +261,13 @@ export default function CIEvaluationPanel({ idea, onEvaluationComplete }) {
                         <SelectContent>
                           <SelectItem value="cost_savings">Cost Savings ($)</SelectItem>
                           <SelectItem value="time_saved">Time Saved</SelectItem>
+                          <SelectItem value="both">Both Cost & Time Savings</SelectItem>
                         </SelectContent>
                       </Select>
                     </div>
-                    {savingsUpdate.savings_type === 'cost_savings' && (
+                    {(savingsUpdate.savings_type === 'cost_savings' || savingsUpdate.savings_type === 'both') && (
                       <div>
-                        <Label>Cost Savings ($)</Label>
+                        <Label>Validated Cost Savings ($)</Label>
                         <Input
                           type="number"
                           placeholder="Enter amount"
@@ -263,10 +277,10 @@ export default function CIEvaluationPanel({ idea, onEvaluationComplete }) {
                         />
                       </div>
                     )}
-                    {savingsUpdate.savings_type === 'time_saved' && (
+                    {(savingsUpdate.savings_type === 'time_saved' || savingsUpdate.savings_type === 'both') && (
                       <div className="grid grid-cols-2 gap-3">
                         <div>
-                          <Label>Hours</Label>
+                          <Label>Validated Hours</Label>
                           <Input
                             type="number"
                             placeholder="Hours"
@@ -276,7 +290,7 @@ export default function CIEvaluationPanel({ idea, onEvaluationComplete }) {
                           />
                         </div>
                         <div>
-                          <Label>Minutes</Label>
+                          <Label>Validated Minutes</Label>
                           <Input
                             type="number"
                             placeholder="Minutes"
@@ -287,6 +301,15 @@ export default function CIEvaluationPanel({ idea, onEvaluationComplete }) {
                         </div>
                       </div>
                     )}
+                    <div>
+                      <Label>Reason for Re-evaluation</Label>
+                      <Input
+                        placeholder="Enter reason for updating savings"
+                        value={savingsUpdate.reason || ''}
+                        onChange={(e) => setSavingsUpdate({ ...savingsUpdate, reason: e.target.value })}
+                        data-testid="edit-reason"
+                      />
+                    </div>
                     <div className="flex gap-2">
                       <Button
                         variant="outline"
@@ -304,6 +327,36 @@ export default function CIEvaluationPanel({ idea, onEvaluationComplete }) {
                       >
                         {savingUpdating ? 'Saving...' : 'Save'}
                       </Button>
+                    </div>
+                  </div>
+                )}
+
+                {/* Audit History Section */}
+                {showAuditHistory && idea.savings_audit_history && idea.savings_audit_history.length > 0 && (
+                  <div className="pt-3 border-t border-green-300 mt-3 bg-gray-50 p-4 rounded-lg">
+                    <h4 className="font-semibold text-gray-900 mb-3 flex items-center">
+                      <History className="w-4 h-4 mr-2" />
+                      Savings Re-evaluation History
+                    </h4>
+                    <div className="space-y-3 max-h-48 overflow-y-auto">
+                      {idea.savings_audit_history.map((audit, idx) => (
+                        <div key={idx} className="bg-white p-3 rounded border text-sm">
+                          <div className="flex justify-between items-start mb-1">
+                            <span className="font-medium">{audit.reviewer_username}</span>
+                            <span className="text-xs text-gray-500">
+                              {new Date(audit.timestamp).toLocaleDateString()}
+                            </span>
+                          </div>
+                          {audit.reason && (
+                            <p className="text-gray-600 text-xs mb-1">Reason: {audit.reason}</p>
+                          )}
+                          <div className="text-xs text-gray-500">
+                            {audit.old_savings_type} → {audit.new_savings_type}
+                            {audit.new_cost_savings && ` | $${audit.new_cost_savings}`}
+                            {audit.new_time_saved_hours && ` | ${audit.new_time_saved_hours}h`}
+                          </div>
+                        </div>
+                      ))}
                     </div>
                   </div>
                 )}
