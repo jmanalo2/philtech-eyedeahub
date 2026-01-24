@@ -55,6 +55,12 @@ if RESEND_API_KEY:
 app = FastAPI()
 api_router = APIRouter(prefix="/api")
 
+# File upload configuration
+UPLOAD_DIR = Path("/app/uploads")
+UPLOAD_DIR.mkdir(parents=True, exist_ok=True)
+ALLOWED_EXTENSIONS = {'.pdf', '.doc', '.docx', '.xls', '.xlsx', '.ppt', '.pptx', '.png', '.jpg', '.jpeg'}
+MAX_FILE_SIZE = 10 * 1024 * 1024  # 10MB
+
 # Note: Models are imported from models/__init__.py
 # Note: Basic utilities imported from services/__init__.py
 # Database-dependent utilities defined below
