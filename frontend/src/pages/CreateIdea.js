@@ -387,6 +387,75 @@ export default function CreateIdea() {
               />
             </div>
 
+            {/* Attachments Section */}
+            <div className="border-t pt-4">
+              <Label className="flex items-center gap-2 mb-3">
+                <Paperclip className="w-4 h-4" />
+                Attachments (Optional)
+              </Label>
+              <p className="text-xs text-gray-500 mb-3">
+                Supported formats: PDF, DOC, DOCX, XLS, XLSX, PPT, PPTX, PNG, JPG, JPEG (Max 10MB each)
+              </p>
+              
+              <div className="space-y-3">
+                {/* File Input */}
+                <div className="flex items-center gap-3">
+                  <Input
+                    type="file"
+                    id="attachments"
+                    data-testid="attachment-input"
+                    multiple
+                    accept=".pdf,.doc,.docx,.xls,.xlsx,.ppt,.pptx,.png,.jpg,.jpeg"
+                    onChange={handleFileSelect}
+                    className="hidden"
+                  />
+                  <Button
+                    type="button"
+                    variant="outline"
+                    onClick={() => document.getElementById('attachments').click()}
+                    className="text-sm"
+                  >
+                    <Paperclip className="w-4 h-4 mr-2" />
+                    Add Files
+                  </Button>
+                </div>
+                
+                {/* Attachment List */}
+                {attachments.length > 0 && (
+                  <div className="space-y-2">
+                    {attachments.map((att, index) => (
+                      <div 
+                        key={index} 
+                        className="flex items-center justify-between p-2 bg-gray-50 rounded-lg border"
+                      >
+                        <div className="flex items-center gap-2">
+                          {getFileIcon(att.name || att.original_filename)}
+                          <span className="text-sm font-medium truncate max-w-xs">
+                            {att.name || att.original_filename}
+                          </span>
+                          <span className="text-xs text-gray-500">
+                            ({formatFileSize(att.size)})
+                          </span>
+                          {att.isNew && (
+                            <span className="text-xs bg-blue-100 text-blue-700 px-2 py-0.5 rounded">New</span>
+                          )}
+                        </div>
+                        <Button
+                          type="button"
+                          variant="ghost"
+                          size="sm"
+                          onClick={() => removeAttachment(index)}
+                          className="text-red-500 hover:text-red-700 hover:bg-red-50"
+                        >
+                          <X className="w-4 h-4" />
+                        </Button>
+                      </div>
+                    ))}
+                  </div>
+                )}
+              </div>
+            </div>
+
             <div className="flex justify-end space-x-3">
               <Button
                 type="button"
@@ -400,10 +469,10 @@ export default function CreateIdea() {
                 type="submit"
                 data-testid="submit-btn"
                 className="bg-blue-700 hover:bg-blue-800"
-                disabled={loading}
+                disabled={loading || uploading}
               >
                 <Save className="w-4 h-4 mr-2" />
-                {loading ? 'Saving...' : id ? 'Update Eye-dea' : 'Submit Eye-dea'}
+                {loading || uploading ? 'Saving...' : id ? 'Update Eye-dea' : 'Submit Eye-dea'}
               </Button>
             </div>
           </form>
