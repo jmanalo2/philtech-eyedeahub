@@ -263,29 +263,98 @@ export default function Dashboard() {
 
       {/* Best Eye-dea Banner - REMOVED FROM HERE, MOVED TO BOTTOM */}
 
-      <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3 sm:gap-4 mb-6 sm:mb-8">
-        {statCards.map((stat, index) => {
-          const Icon = stat.icon;
-          return (
-            <Link key={index} to={stat.link}>
-              <Card className="hover:shadow-lg transition-shadow duration-300 cursor-pointer h-full" data-testid={`stat-card-${index}`}>
-                <CardHeader className="flex flex-row items-center justify-between pb-1 sm:pb-2 p-3 sm:p-6">
-                  <CardTitle className="text-[10px] sm:text-xs font-medium text-gray-600 leading-tight">
-                    {stat.title}
-                  </CardTitle>
-                  <div className={`${stat.color} p-1.5 sm:p-2 rounded-lg flex-shrink-0`}>
-                    <Icon className="w-3 h-3 sm:w-4 sm:h-4 text-white" />
-                  </div>
-                </CardHeader>
-                <CardContent className="p-3 sm:p-6 pt-0">
-                  <div className={`text-xl sm:text-2xl font-bold ${stat.textColor}`}>
-                    {stat.value}
-                  </div>
-                </CardContent>
-              </Card>
-            </Link>
-          );
-        })}
+      {/* Main content area with leaderboard */}
+      <div className="flex flex-col lg:flex-row gap-6">
+        {/* Left side - Stats and Quick Actions */}
+        <div className="flex-1">
+          <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3 sm:gap-4 mb-6 sm:mb-8">
+            {statCards.map((stat, index) => {
+              const Icon = stat.icon;
+              return (
+                <Link key={index} to={stat.link}>
+                  <Card className="hover:shadow-lg transition-shadow duration-300 cursor-pointer h-full" data-testid={`stat-card-${index}`}>
+                    <CardHeader className="flex flex-row items-center justify-between pb-1 sm:pb-2 p-3 sm:p-6">
+                      <CardTitle className="text-[10px] sm:text-xs font-medium text-gray-600 leading-tight">
+                        {stat.title}
+                      </CardTitle>
+                      <div className={`${stat.color} p-1.5 sm:p-2 rounded-lg flex-shrink-0`}>
+                        <Icon className="w-3 h-3 sm:w-4 sm:h-4 text-white" />
+                      </div>
+                    </CardHeader>
+                    <CardContent className="p-3 sm:p-6 pt-0">
+                      <div className={`text-xl sm:text-2xl font-bold ${stat.textColor}`}>
+                        {stat.value}
+                      </div>
+                    </CardContent>
+                  </Card>
+                </Link>
+              );
+            })}
+          </div>
+        </div>
+
+        {/* Right side - Leaderboard */}
+        <div className="lg:w-80">
+          <Card className="bg-gradient-to-b from-amber-50 to-orange-50 border-amber-200" data-testid="leaderboard-card">
+            <CardHeader className="pb-3">
+              <div className="flex items-center gap-2">
+                <Trophy className="w-5 h-5 text-amber-600" />
+                <CardTitle className="text-lg text-amber-900">Eye-dea Leaderboard</CardTitle>
+              </div>
+              <CardDescription className="text-amber-700 text-xs">
+                Top contributors by points
+              </CardDescription>
+            </CardHeader>
+            <CardContent className="pt-0">
+              {leaderboard.length > 0 ? (
+                <div className="space-y-2">
+                  {leaderboard.slice(0, 10).map((entry, index) => (
+                    <div 
+                      key={entry.user_id}
+                      className={`flex items-center justify-between p-2 rounded-lg ${
+                        index === 0 ? 'bg-yellow-100 border border-yellow-300' :
+                        index === 1 ? 'bg-gray-100 border border-gray-300' :
+                        index === 2 ? 'bg-orange-100 border border-orange-300' :
+                        'bg-white border border-gray-200'
+                      }`}
+                    >
+                      <div className="flex items-center gap-2">
+                        <span className={`w-6 h-6 flex items-center justify-center rounded-full text-xs font-bold ${
+                          index === 0 ? 'bg-yellow-500 text-white' :
+                          index === 1 ? 'bg-gray-400 text-white' :
+                          index === 2 ? 'bg-orange-400 text-white' :
+                          'bg-gray-200 text-gray-600'
+                        }`}>
+                          {entry.rank}
+                        </span>
+                        <div>
+                          <p className="text-sm font-medium text-gray-900 truncate max-w-[120px]">
+                            {entry.username}
+                          </p>
+                          <p className="text-xs text-gray-500">{entry.ideas_count} ideas</p>
+                        </div>
+                      </div>
+                      <div className="text-right">
+                        <span className="text-lg font-bold text-amber-600">{entry.points}</span>
+                        <p className="text-xs text-gray-500">pts</p>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              ) : (
+                <p className="text-sm text-gray-500 text-center py-4">No submissions yet</p>
+              )}
+              <div className="mt-4 pt-3 border-t border-amber-200">
+                <p className="text-xs text-amber-700 space-y-1">
+                  <span className="block">🏆 Both Cost & Time = 5 pts</span>
+                  <span className="block">💰 Cost or Time = 3 pts</span>
+                  <span className="block">⚡ Quick Win = 2 pts</span>
+                  <span className="block">💡 Submission = 1 pt</span>
+                </p>
+              </div>
+            </CardContent>
+          </Card>
+        </div>
       </div>
 
       <div className="mt-6 sm:mt-8">
