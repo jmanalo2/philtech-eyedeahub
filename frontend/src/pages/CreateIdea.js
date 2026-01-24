@@ -111,10 +111,54 @@ export default function CreateIdea() {
         team: response.data.team || '',
         manager: response.data.manager || ''
       });
+      // Load existing attachments
+      if (response.data.attachments) {
+        setAttachments(response.data.attachments);
+      }
     } catch (error) {
       console.error('Failed to fetch idea:', error);
       toast.error('Failed to load Eye-dea');
     }
+  };
+
+  const handleFileSelect = (e) => {
+    const files = Array.from(e.target.files);
+    const validFiles = [];
+    
+    for (const file of files) {
+      const ext = '.' + file.name.split('.').pop().toLowerCase();
+      if (!ALLOWED_EXTENSIONS.includes(ext)) {
+        toast.error(`${file.name}: File type not allowed. Allowed: PDF, DOC, DOCX, XLS, XLSX, PPT, PPTX, PNG, JPG, JPEG`);
+        continue;
+      }
+      if (file.size > MAX_FILE_SIZE) {
+        toast.error(`${file.name}: File exceeds 10MB limit`);
+        continue;
+      }
+      validFiles.push(file);
+    }
+    
+    if (validFiles.length > 0) {
+      setAttachments(prev => [...prev, ...validFiles.map(f => ({ file: f, name: f.name, size: f.size, isNew: true }))]);
+    }
+    e.target.value = '';
+  };
+
+  const removeAttachment = (index) => {
+    setAttachments(prev => prev.filter((_, i) => i !== index));
+  };
+
+  const getFileIcon = (filename) => {
+    const ext = filename.split('.').pop().toLowerCase();
+    if (['png', 'jpg', 'jpeg'].includes(ext)) return <Image className="w-4 h-4" />;
+    if (['xls', 'xlsx'].includes(ext)) return <FileSpreadsheet className="w-4 h-4" />;
+    return <FileText className="w-4 h-4" />;
+  };
+
+  const formatFileSize = (bytes) => {
+    if (bytes < 1024) return bytes + ' B';
+    if (bytes < 1024 * 1024) return (bytes / 1024).toFixed(1) + ' KB';
+    return (bytes / (1024 * 1024)).toFixed(1) + ' MB';
   };
 
   const handleSubmit = async (e) => {
@@ -126,13 +170,35 @@ export default function CreateIdea() {
         target_completion: formData.target_completion ? format(formData.target_completion, 'yyyy-MM-dd') : ''
       };
       
+      let ideaId = id;
+      
       if (id) {
         await axios.put(`${process.env.REACT_APP_BACKEND_URL}/api/ideas/${id}`, submitData);
         toast.success('Eye-dea updated successfully!');
       } else {
-        await axios.post(`${process.env.REACT_APP_BACKEND_URL}/api/ideas`, submitData);
+        const response = await axios.post(`${process.env.REACT_APP_BACKEND_URL}/api/ideas`, submitData);
+        ideaId = response.data.id;
         toast.success('Eye-dea submitted successfully!');
       }
+      
+      // Upload new attachments if any
+      const newAttachments = attachments.filter(a => a.isNew);
+      if (newAttachments.length > 0 && ideaId) {
+        setUploading(true);
+        const formDataUpload = new FormData();
+        newAttachments.forEach(a => formDataUpload.append('files', a.file));
+        
+        try {
+          await axios.post(`${process.env.REACT_APP_BACKEND_URL}/api/ideas/${ideaId}/attachments`, formDataUpload, {
+            headers: { 'Content-Type': 'multipart/form-data' }
+          });
+          toast.success(`${newAttachments.length} attachment(s) uploaded`);
+        } catch (uploadError) {
+          toast.error('Some attachments failed to upload');
+        }
+        setUploading(false);
+      }
+      
       navigate('/ideas');
     } catch (error) {
       toast.error(error.response?.data?.detail || 'Failed to save Eye-dea');
