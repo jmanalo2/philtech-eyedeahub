@@ -85,7 +85,7 @@ class IdeaCreate(IdeaBase):
 class CIEvaluation(BaseModel):
     is_quick_win: bool
     complexity_level: Optional[str] = None  # Low, Medium, High
-    savings_type: Optional[str] = None  # cost_savings, time_saved
+    savings_type: Optional[str] = None  # cost_savings, time_saved, or both
     cost_savings: Optional[float] = None
     time_saved_hours: Optional[float] = None
     time_saved_minutes: Optional[float] = None
