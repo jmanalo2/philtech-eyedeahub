@@ -69,7 +69,8 @@ export default function CIEvaluationPanel({ idea, onEvaluationComplete }) {
       savings_type: idea.savings_type || null,
       cost_savings: idea.cost_savings || null,
       time_saved_hours: idea.time_saved_hours || null,
-      time_saved_minutes: idea.time_saved_minutes || null
+      time_saved_minutes: idea.time_saved_minutes || null,
+      reason: ''
     });
     setEditingSavings(true);
   };
