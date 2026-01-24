@@ -70,6 +70,8 @@ Pillar (GBS, Tech, Finance, HR)
 - [x] CIEvaluationPanel component with Tech Person dropdown
 - [x] Quick Win / Complexity tagging
 - [x] Cost savings / Time saved fields
+- [x] **"Both Cost & Time Savings" option** added to savings type
+- [x] **Validated Cost/Time Savings** input labels updated
 - [x] Sub-role change in Profile page
 - [x] **C.I. Excellence Dashboard** with analytics charts
 - [x] **Excel Export** button for ideas data
@@ -79,6 +81,16 @@ Pillar (GBS, Tech, Finance, HR)
 - [x] **Best Idea** selection and display - **Expanded to 5 Best Eye-deas** (badge on lists, banner on dashboard)
 - [x] Status update for T&E assigned ideas (Edit Status button)
 - [x] **Edit cost/time savings** after evaluation (UI added)
+- [x] **Re-evaluation with Audit History** - tracks old vs new values, date, reviewer, reason
+
+### Dashboard Leaderboard (Jan 24, 2026)
+- [x] **Eye-dea Leaderboard** on right side of Dashboard
+- [x] Ranks submitters by points:
+  - Both Cost & Time = 5 pts
+  - Either Cost or Time = 3 pts
+  - Quick Win = 2 pts
+  - No savings & not Quick Win = 1 pt
+- [x] Shows top 10 contributors with rank, username, ideas count, points
 
 ### Mobile Responsiveness (Jan 2026)
 - [x] Mobile navigation menu with hamburger icon
