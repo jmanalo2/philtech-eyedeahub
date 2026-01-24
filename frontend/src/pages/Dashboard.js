@@ -63,6 +63,15 @@ export default function Dashboard() {
     }
   };
 
+  const fetchLeaderboard = async () => {
+    try {
+      const response = await axios.get(`${process.env.REACT_APP_BACKEND_URL}/api/dashboard/leaderboard`);
+      setLeaderboard(response.data.leaderboard || []);
+    } catch (error) {
+      console.error('Failed to fetch leaderboard:', error);
+    }
+  };
+
   const handleFilterChange = (key, value) => {
     const actualValue = value === ' ' ? '' : value;
     const newFilters = { ...filters, [key]: actualValue };
