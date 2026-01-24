@@ -110,10 +110,12 @@ class Idea(IdeaBase):
     assigned_approver_username: Optional[str] = None
     created_at: str
     updated_at: str
+    # Attachments
+    attachments: Optional[List[dict]] = []
     # C.I. Excellence Team Evaluation fields
     is_quick_win: Optional[bool] = None
     complexity_level: Optional[str] = None
-    savings_type: Optional[str] = None
+    savings_type: Optional[str] = None  # cost_savings, time_saved, or both
     cost_savings: Optional[float] = None
     time_saved_hours: Optional[float] = None
     time_saved_minutes: Optional[float] = None
@@ -125,6 +127,8 @@ class Idea(IdeaBase):
     evaluated_by_username: Optional[str] = None
     evaluated_at: Optional[str] = None
     is_evaluated: Optional[bool] = False
+    # Savings audit history
+    savings_audit_history: Optional[List[dict]] = []
 
 
 class IdeaAction(BaseModel):
