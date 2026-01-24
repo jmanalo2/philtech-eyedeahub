@@ -782,9 +782,26 @@ async def update_idea_savings(idea_id: str, savings: SavingsUpdate, current_user
     if not idea:
         raise HTTPException(status_code=404, detail="Idea not found")
     
-    # Only allow updating savings for evaluated ideas
+    # Only allow updating savings for evaluated ideas or implemented ideas
     if not idea.get("is_quick_win") and not idea.get("complexity_level"):
-        raise HTTPException(status_code=400, detail="Can only update savings for evaluated ideas")
+        if idea.get("status") != "implemented":
+            raise HTTPException(status_code=400, detail="Can only update savings for evaluated or implemented ideas")
+    
+    # Create audit entry
+    audit_entry = {
+        "timestamp": datetime.now(timezone.utc).isoformat(),
+        "reviewer_id": current_user["id"],
+        "reviewer_username": current_user["username"],
+        "reason": savings.reason,
+        "old_savings_type": idea.get("savings_type"),
+        "new_savings_type": savings.savings_type,
+        "old_cost_savings": idea.get("cost_savings"),
+        "new_cost_savings": savings.cost_savings if savings.savings_type in ["cost_savings", "both"] else None,
+        "old_time_saved_hours": idea.get("time_saved_hours"),
+        "new_time_saved_hours": savings.time_saved_hours if savings.savings_type in ["time_saved", "both"] else None,
+        "old_time_saved_minutes": idea.get("time_saved_minutes"),
+        "new_time_saved_minutes": savings.time_saved_minutes if savings.savings_type in ["time_saved", "both"] else None
+    }
     
     update_doc = {"updated_at": datetime.now(timezone.utc).isoformat()}
     
@@ -799,10 +816,154 @@ async def update_idea_savings(idea_id: str, savings: SavingsUpdate, current_user
         update_doc["time_saved_hours"] = savings.time_saved_hours
         update_doc["time_saved_minutes"] = savings.time_saved_minutes
         update_doc["cost_savings"] = None
+    elif savings.savings_type == "both":
+        update_doc["cost_savings"] = savings.cost_savings
+        update_doc["time_saved_hours"] = savings.time_saved_hours
+        update_doc["time_saved_minutes"] = savings.time_saved_minutes
     
-    await db.ideas.update_one({"id": idea_id}, {"$set": update_doc})
+    await db.ideas.update_one(
+        {"id": idea_id}, 
+        {
+            "$set": update_doc,
+            "$push": {"savings_audit_history": audit_entry}
+        }
+    )
     
     return {"message": "Savings updated successfully"}
+
+
+# ==================== FILE ATTACHMENT ROUTES ====================
+
+@api_router.post("/ideas/{idea_id}/attachments")
+async def upload_attachment(
+    idea_id: str,
+    files: List[UploadFile] = File(...),
+    current_user: dict = Depends(get_current_user)
+):
+    """Upload attachments to an idea"""
+    idea = await db.ideas.find_one({"id": idea_id}, {"_id": 0})
+    if not idea:
+        raise HTTPException(status_code=404, detail="Idea not found")
+    
+    # Only allow submitter, approvers, and admins to upload
+    if idea["submitted_by"] != current_user["id"] and current_user["role"] not in ["approver", "admin"]:
+        raise HTTPException(status_code=403, detail="Not authorized to upload attachments")
+    
+    uploaded_files = []
+    
+    for file in files:
+        # Check file extension
+        file_ext = Path(file.filename).suffix.lower()
+        if file_ext not in ALLOWED_EXTENSIONS:
+            raise HTTPException(
+                status_code=400, 
+                detail=f"File type {file_ext} not allowed. Allowed: {', '.join(ALLOWED_EXTENSIONS)}"
+            )
+        
+        # Check file size
+        content = await file.read()
+        if len(content) > MAX_FILE_SIZE:
+            raise HTTPException(status_code=400, detail=f"File {file.filename} exceeds 10MB limit")
+        
+        # Save file
+        file_id = str(uuid.uuid4())
+        safe_filename = f"{file_id}{file_ext}"
+        file_path = UPLOAD_DIR / safe_filename
+        
+        with open(file_path, "wb") as f:
+            f.write(content)
+        
+        attachment_info = {
+            "id": file_id,
+            "filename": safe_filename,
+            "original_filename": file.filename,
+            "content_type": file.content_type,
+            "size": len(content),
+            "uploaded_at": datetime.now(timezone.utc).isoformat(),
+            "uploaded_by": current_user["id"],
+            "uploaded_by_username": current_user["username"]
+        }
+        
+        uploaded_files.append(attachment_info)
+    
+    # Add attachments to idea
+    await db.ideas.update_one(
+        {"id": idea_id},
+        {"$push": {"attachments": {"$each": uploaded_files}}}
+    )
+    
+    return {"message": f"{len(uploaded_files)} file(s) uploaded successfully", "attachments": uploaded_files}
+
+
+@api_router.get("/ideas/{idea_id}/attachments/{attachment_id}")
+async def download_attachment(
+    idea_id: str,
+    attachment_id: str,
+    current_user: dict = Depends(get_current_user)
+):
+    """Download an attachment"""
+    idea = await db.ideas.find_one({"id": idea_id}, {"_id": 0})
+    if not idea:
+        raise HTTPException(status_code=404, detail="Idea not found")
+    
+    # Find the attachment
+    attachment = None
+    for att in idea.get("attachments", []):
+        if att["id"] == attachment_id:
+            attachment = att
+            break
+    
+    if not attachment:
+        raise HTTPException(status_code=404, detail="Attachment not found")
+    
+    file_path = UPLOAD_DIR / attachment["filename"]
+    if not file_path.exists():
+        raise HTTPException(status_code=404, detail="File not found on server")
+    
+    return FileResponse(
+        path=str(file_path),
+        filename=attachment["original_filename"],
+        media_type=attachment["content_type"]
+    )
+
+
+@api_router.delete("/ideas/{idea_id}/attachments/{attachment_id}")
+async def delete_attachment(
+    idea_id: str,
+    attachment_id: str,
+    current_user: dict = Depends(get_current_user)
+):
+    """Delete an attachment"""
+    idea = await db.ideas.find_one({"id": idea_id}, {"_id": 0})
+    if not idea:
+        raise HTTPException(status_code=404, detail="Idea not found")
+    
+    # Only allow submitter and admin to delete
+    if idea["submitted_by"] != current_user["id"] and current_user["role"] != "admin":
+        raise HTTPException(status_code=403, detail="Not authorized to delete attachment")
+    
+    # Find and remove the attachment
+    attachment = None
+    for att in idea.get("attachments", []):
+        if att["id"] == attachment_id:
+            attachment = att
+            break
+    
+    if not attachment:
+        raise HTTPException(status_code=404, detail="Attachment not found")
+    
+    # Delete file from disk
+    file_path = UPLOAD_DIR / attachment["filename"]
+    if file_path.exists():
+        file_path.unlink()
+    
+    # Remove from database
+    await db.ideas.update_one(
+        {"id": idea_id},
+        {"$pull": {"attachments": {"id": attachment_id}}}
+    )
+    
+    return {"message": "Attachment deleted successfully"}
 
 # ==================== DASHBOARD ROUTES ====================
 
