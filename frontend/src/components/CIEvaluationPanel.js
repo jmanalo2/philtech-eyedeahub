@@ -501,7 +501,7 @@ export default function CIEvaluationPanel({ idea, onEvaluationComplete }) {
             {/* Savings Type Selection */}
             <div>
               <Label className="text-base font-semibold mb-3 block">Impact Type</Label>
-              <div className="grid grid-cols-2 gap-3">
+              <div className="grid grid-cols-3 gap-3">
                 <button
                   onClick={() => setEvaluation({ ...evaluation, savings_type: 'cost_savings' })}
                   className={`p-4 border-2 rounded-lg text-left transition-all ${
@@ -511,7 +511,7 @@ export default function CIEvaluationPanel({ idea, onEvaluationComplete }) {
                   }`}
                 >
                   <DollarSign className="w-6 h-6 text-green-600 mb-2" />
-                  <div className="font-semibold">Cost Savings</div>
+                  <div className="font-semibold text-sm">Cost Savings</div>
                   <div className="text-xs text-gray-600">Financial impact</div>
                 </button>
                 <button
@@ -523,16 +523,31 @@ export default function CIEvaluationPanel({ idea, onEvaluationComplete }) {
                   }`}
                 >
                   <Clock className="w-6 h-6 text-blue-600 mb-2" />
-                  <div className="font-semibold">Time Saved</div>
+                  <div className="font-semibold text-sm">Time Saved</div>
                   <div className="text-xs text-gray-600">Efficiency gain</div>
+                </button>
+                <button
+                  onClick={() => setEvaluation({ ...evaluation, savings_type: 'both' })}
+                  className={`p-4 border-2 rounded-lg text-left transition-all ${
+                    evaluation.savings_type === 'both'
+                      ? 'border-purple-500 bg-purple-50'
+                      : 'border-gray-300 hover:border-purple-300'
+                  }`}
+                >
+                  <div className="flex gap-1 mb-2">
+                    <DollarSign className="w-5 h-5 text-purple-600" />
+                    <Clock className="w-5 h-5 text-purple-600" />
+                  </div>
+                  <div className="font-semibold text-sm">Both</div>
+                  <div className="text-xs text-gray-600">Cost & Time</div>
                 </button>
               </div>
             </div>
 
-            {/* Cost Savings Input */}
-            {evaluation.savings_type === 'cost_savings' && (
+            {/* Cost Savings Input - show for cost_savings or both */}
+            {(evaluation.savings_type === 'cost_savings' || evaluation.savings_type === 'both') && (
               <div>
-                <Label htmlFor="cost-savings">Estimated Cost Savings ($)</Label>
+                <Label htmlFor="cost-savings">Validated Cost Savings ($)</Label>
                 <Input
                   id="cost-savings"
                   type="number"
@@ -543,11 +558,11 @@ export default function CIEvaluationPanel({ idea, onEvaluationComplete }) {
               </div>
             )}
 
-            {/* Time Saved Input */}
-            {evaluation.savings_type === 'time_saved' && (
+            {/* Time Saved Input - show for time_saved or both */}
+            {(evaluation.savings_type === 'time_saved' || evaluation.savings_type === 'both') && (
               <div className="grid grid-cols-2 gap-4">
                 <div>
-                  <Label htmlFor="time-hours">Hours Saved</Label>
+                  <Label htmlFor="time-hours">Validated Hours Saved</Label>
                   <Input
                     id="time-hours"
                     type="number"
@@ -557,7 +572,7 @@ export default function CIEvaluationPanel({ idea, onEvaluationComplete }) {
                   />
                 </div>
                 <div>
-                  <Label htmlFor="time-minutes">Minutes Saved</Label>
+                  <Label htmlFor="time-minutes">Validated Minutes Saved</Label>
                   <Input
                     id="time-minutes"
                     type="number"
