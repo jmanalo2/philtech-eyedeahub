@@ -295,62 +295,143 @@ export default function Dashboard() {
 
         {/* Right side - Leaderboard */}
         <div className="lg:w-80">
-          <Card className="bg-gradient-to-b from-amber-50 to-orange-50 border-amber-200" data-testid="leaderboard-card">
-            <CardHeader className="pb-3">
-              <div className="flex items-center gap-2">
-                <Trophy className="w-5 h-5 text-amber-600" />
-                <CardTitle className="text-lg text-amber-900">Eye-dea Leaderboard</CardTitle>
+          <Card className="overflow-hidden border-0 shadow-xl" data-testid="leaderboard-card">
+            {/* Header with gradient */}
+            <div className="bg-gradient-to-r from-violet-600 via-purple-600 to-indigo-600 p-4">
+              <div className="flex items-center gap-3">
+                <div className="bg-white/20 backdrop-blur-sm p-2 rounded-xl">
+                  <Trophy className="w-6 h-6 text-yellow-300" />
+                </div>
+                <div>
+                  <h3 className="text-white font-bold text-lg">Eye-dea Champions</h3>
+                  <p className="text-purple-200 text-xs">Top contributors this month</p>
+                </div>
               </div>
-              <CardDescription className="text-amber-700 text-xs">
-                Top contributors by points
-              </CardDescription>
-            </CardHeader>
-            <CardContent className="pt-0">
+            </div>
+            
+            <CardContent className="p-0">
               {leaderboard.length > 0 ? (
-                <div className="space-y-2">
-                  {leaderboard.slice(0, 10).map((entry, index) => (
-                    <div 
-                      key={entry.user_id}
-                      className={`flex items-center justify-between p-2 rounded-lg ${
-                        index === 0 ? 'bg-yellow-100 border border-yellow-300' :
-                        index === 1 ? 'bg-gray-100 border border-gray-300' :
-                        index === 2 ? 'bg-orange-100 border border-orange-300' :
-                        'bg-white border border-gray-200'
-                      }`}
-                    >
-                      <div className="flex items-center gap-2">
-                        <span className={`w-6 h-6 flex items-center justify-center rounded-full text-xs font-bold ${
-                          index === 0 ? 'bg-yellow-500 text-white' :
-                          index === 1 ? 'bg-gray-400 text-white' :
-                          index === 2 ? 'bg-orange-400 text-white' :
-                          'bg-gray-200 text-gray-600'
-                        }`}>
-                          {entry.rank}
-                        </span>
-                        <div>
-                          <p className="text-sm font-medium text-gray-900 truncate max-w-[120px]">
-                            {entry.username}
-                          </p>
-                          <p className="text-xs text-gray-500">{entry.ideas_count} ideas</p>
+                <div>
+                  {/* Top 3 Podium */}
+                  <div className="bg-gradient-to-b from-purple-50 to-white p-4">
+                    <div className="flex items-end justify-center gap-2 h-32">
+                      {/* 2nd Place */}
+                      {leaderboard[1] && (
+                        <div className="flex flex-col items-center">
+                          <div className="w-12 h-12 rounded-full bg-gradient-to-br from-gray-300 to-gray-400 flex items-center justify-center text-white font-bold text-lg shadow-lg border-2 border-white">
+                            {leaderboard[1].username.charAt(0).toUpperCase()}
+                          </div>
+                          <div className="mt-1 text-center">
+                            <p className="text-xs font-semibold text-gray-700 truncate w-16">{leaderboard[1].username}</p>
+                            <p className="text-sm font-bold text-gray-500">{leaderboard[1].points} pts</p>
+                          </div>
+                          <div className="w-16 h-16 bg-gradient-to-t from-gray-300 to-gray-200 rounded-t-lg flex items-center justify-center mt-1">
+                            <span className="text-2xl font-bold text-gray-600">2</span>
+                          </div>
                         </div>
-                      </div>
-                      <div className="text-right">
-                        <span className="text-lg font-bold text-amber-600">{entry.points}</span>
-                        <p className="text-xs text-gray-500">pts</p>
+                      )}
+                      
+                      {/* 1st Place */}
+                      {leaderboard[0] && (
+                        <div className="flex flex-col items-center -mt-4">
+                          <div className="relative">
+                            <div className="absolute -top-3 left-1/2 -translate-x-1/2">
+                              <span className="text-2xl">👑</span>
+                            </div>
+                            <div className="w-14 h-14 rounded-full bg-gradient-to-br from-yellow-400 to-amber-500 flex items-center justify-center text-white font-bold text-xl shadow-lg border-3 border-yellow-300 ring-4 ring-yellow-200">
+                              {leaderboard[0].username.charAt(0).toUpperCase()}
+                            </div>
+                          </div>
+                          <div className="mt-1 text-center">
+                            <p className="text-xs font-bold text-gray-800 truncate w-16">{leaderboard[0].username}</p>
+                            <p className="text-sm font-bold text-amber-600">{leaderboard[0].points} pts</p>
+                          </div>
+                          <div className="w-16 h-20 bg-gradient-to-t from-yellow-400 to-amber-300 rounded-t-lg flex items-center justify-center mt-1 shadow-md">
+                            <span className="text-2xl font-bold text-yellow-800">1</span>
+                          </div>
+                        </div>
+                      )}
+                      
+                      {/* 3rd Place */}
+                      {leaderboard[2] && (
+                        <div className="flex flex-col items-center">
+                          <div className="w-12 h-12 rounded-full bg-gradient-to-br from-orange-400 to-amber-600 flex items-center justify-center text-white font-bold text-lg shadow-lg border-2 border-white">
+                            {leaderboard[2].username.charAt(0).toUpperCase()}
+                          </div>
+                          <div className="mt-1 text-center">
+                            <p className="text-xs font-semibold text-gray-700 truncate w-16">{leaderboard[2].username}</p>
+                            <p className="text-sm font-bold text-orange-500">{leaderboard[2].points} pts</p>
+                          </div>
+                          <div className="w-16 h-12 bg-gradient-to-t from-orange-400 to-orange-300 rounded-t-lg flex items-center justify-center mt-1">
+                            <span className="text-2xl font-bold text-orange-700">3</span>
+                          </div>
+                        </div>
+                      )}
+                    </div>
+                  </div>
+                  
+                  {/* Rest of the list */}
+                  {leaderboard.length > 3 && (
+                    <div className="px-3 pb-3">
+                      <div className="space-y-1.5">
+                        {leaderboard.slice(3, 10).map((entry) => (
+                          <div 
+                            key={entry.user_id}
+                            className="flex items-center justify-between p-2.5 rounded-xl bg-gray-50 hover:bg-gray-100 transition-colors"
+                          >
+                            <div className="flex items-center gap-3">
+                              <span className="w-7 h-7 flex items-center justify-center rounded-full bg-gray-200 text-xs font-bold text-gray-600">
+                                {entry.rank}
+                              </span>
+                              <div className="w-8 h-8 rounded-full bg-gradient-to-br from-purple-400 to-indigo-500 flex items-center justify-center text-white text-xs font-semibold">
+                                {entry.username.charAt(0).toUpperCase()}
+                              </div>
+                              <div>
+                                <p className="text-sm font-medium text-gray-800 truncate max-w-[90px]">
+                                  {entry.username}
+                                </p>
+                                <p className="text-xs text-gray-400">{entry.ideas_count} ideas</p>
+                              </div>
+                            </div>
+                            <div className="bg-purple-100 px-2.5 py-1 rounded-full">
+                              <span className="text-sm font-bold text-purple-700">{entry.points}</span>
+                            </div>
+                          </div>
+                        ))}
                       </div>
                     </div>
-                  ))}
+                  )}
                 </div>
               ) : (
-                <p className="text-sm text-gray-500 text-center py-4">No submissions yet</p>
+                <div className="p-8 text-center">
+                  <div className="w-16 h-16 mx-auto bg-gray-100 rounded-full flex items-center justify-center mb-3">
+                    <Trophy className="w-8 h-8 text-gray-300" />
+                  </div>
+                  <p className="text-sm text-gray-500">No submissions yet</p>
+                  <p className="text-xs text-gray-400 mt-1">Be the first to submit an Eye-dea!</p>
+                </div>
               )}
-              <div className="mt-4 pt-3 border-t border-amber-200">
-                <p className="text-xs text-amber-700 space-y-1">
-                  <span className="block">🏆 Both Cost & Time = 5 pts</span>
-                  <span className="block">💰 Cost or Time = 3 pts</span>
-                  <span className="block">⚡ Quick Win = 2 pts</span>
-                  <span className="block">💡 Submission = 1 pt</span>
-                </p>
+              
+              {/* Points Legend */}
+              <div className="bg-gray-50 px-4 py-3 border-t">
+                <div className="grid grid-cols-2 gap-2 text-xs">
+                  <div className="flex items-center gap-1.5">
+                    <span className="w-5 h-5 rounded-full bg-purple-600 text-white flex items-center justify-center text-[10px] font-bold">5</span>
+                    <span className="text-gray-600">Both Savings</span>
+                  </div>
+                  <div className="flex items-center gap-1.5">
+                    <span className="w-5 h-5 rounded-full bg-blue-500 text-white flex items-center justify-center text-[10px] font-bold">3</span>
+                    <span className="text-gray-600">Cost or Time</span>
+                  </div>
+                  <div className="flex items-center gap-1.5">
+                    <span className="w-5 h-5 rounded-full bg-green-500 text-white flex items-center justify-center text-[10px] font-bold">2</span>
+                    <span className="text-gray-600">Quick Win</span>
+                  </div>
+                  <div className="flex items-center gap-1.5">
+                    <span className="w-5 h-5 rounded-full bg-gray-400 text-white flex items-center justify-center text-[10px] font-bold">1</span>
+                    <span className="text-gray-600">Submission</span>
+                  </div>
+                </div>
               </div>
             </CardContent>
           </Card>
