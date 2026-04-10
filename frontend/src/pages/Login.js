@@ -155,12 +155,9 @@ export default function Login() {
     <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-blue-50 flex items-center justify-center px-4">
       <div className="w-full max-w-2xl">
         <div className="text-center mb-8">
-          <div className="inline-flex items-center justify-center mb-4">
-            <img src="/eyedea-logo.png" alt="Eye-dea Logo" className="w-20 h-20 rounded-2xl object-contain" />
-          </div>
-          <h1 className="text-4xl font-bold text-blue-900 mb-2">
+          <h1 className="text-5xl font-bold text-blue-900 mb-2">
             <span className="inline-flex items-center gap-1">
-              <img src="/eyedea-logo.png" alt="" className="w-10 h-10 inline-block" />
+              <img src="/eyedea-logo.png" alt="Eye-dea" className="w-14 h-14 inline-block" style={{ filter: 'brightness(0) saturate(100%) invert(12%) sepia(63%) saturate(3000%) hue-rotate(210deg) brightness(0.85)' }} />
               <span>-dea</span>
             </span>
           </h1>
