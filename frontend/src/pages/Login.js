@@ -9,7 +9,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '.
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '../components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '../components/ui/tabs';
 import { toast } from 'sonner';
-import { Lightbulb } from 'lucide-react';
+// Logo image used instead of Lightbulb icon
 
 export default function Login() {
   const { login, register } = useAuth();
@@ -155,10 +155,15 @@ export default function Login() {
     <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-blue-50 flex items-center justify-center px-4">
       <div className="w-full max-w-2xl">
         <div className="text-center mb-8">
-          <div className="inline-flex items-center justify-center w-16 h-16 bg-blue-700 rounded-2xl mb-4">
-            <Lightbulb className="w-10 h-10 text-white" />
+          <div className="inline-flex items-center justify-center mb-4">
+            <img src="/eyedea-logo.png" alt="Eye-dea Logo" className="w-20 h-20 rounded-2xl object-contain" />
           </div>
-          <h1 className="text-4xl font-bold text-blue-900 mb-2">Philtech Eye-dea</h1>
+          <h1 className="text-4xl font-bold text-blue-900 mb-2">
+            <span className="inline-flex items-center gap-1">
+              <img src="/eyedea-logo.png" alt="" className="w-10 h-10 inline-block" />
+              <span>-dea</span>
+            </span>
+          </h1>
           <p className="text-gray-600">Innovation Management System</p>
         </div>
 

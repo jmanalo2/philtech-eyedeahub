@@ -323,8 +323,8 @@ async def get_ideas(
 
 @api_router.get("/ideas/best-ideas")
 async def get_best_ideas(current_user: dict = Depends(get_current_user)):
-    """Get all best ideas (up to 5)"""
-    best_ideas = await db.ideas.find({"is_best_idea": True}, {"_id": 0}).to_list(5)
+    """Get all best ideas"""
+    best_ideas = await db.ideas.find({"is_best_idea": True}, {"_id": 0}).to_list(None)
     return [add_is_evaluated(idea) for idea in best_ideas]
 
 @api_router.post("/ideas", response_model=Idea)
@@ -693,10 +693,7 @@ async def set_best_idea(idea_id: str, selection: BestIdeaSelection, current_user
             raise HTTPException(status_code=403, detail="Only C.I. Excellence Team can select best ideas")
     
     if selection.is_best_idea:
-        # Check how many best ideas already exist
-        best_count = await db.ideas.count_documents({"is_best_idea": True})
-        if best_count >= 5:
-            raise HTTPException(status_code=400, detail="Maximum 5 Best Eye-deas can be selected. Please unselect one first.")
+        pass  # No limit on best ideas
     
     await db.ideas.update_one(
         {"id": idea_id},
@@ -723,11 +720,6 @@ async def mark_best_idea(idea_id: str, current_user: dict = Depends(get_current_
             {"$set": {"is_best_idea": False, "updated_at": datetime.now(timezone.utc).isoformat()}}
         )
         return {"message": "Idea unmarked as best Eye-dea"}
-    
-    # Check how many best ideas already exist
-    best_count = await db.ideas.count_documents({"is_best_idea": True})
-    if best_count >= 5:
-        raise HTTPException(status_code=400, detail="Maximum 5 Best Eye-deas can be selected. Please unselect one first.")
     
     # Set this idea as best
     await db.ideas.update_one(
@@ -992,8 +984,8 @@ async def get_dashboard_stats(
     assigned_to_te = await db.ideas.count_documents({**base_filter, "status": "assigned_to_te"})
     my_ideas = await db.ideas.count_documents({**base_filter, "submitted_by": current_user["id"]})
     
-    # Get all best ideas (up to 5)
-    best_ideas_docs = await db.ideas.find({"is_best_idea": True}, {"_id": 0}).to_list(5)
+    # Get all best ideas (no limit)
+    best_ideas_docs = await db.ideas.find({"is_best_idea": True}, {"_id": 0}).to_list(None)
     best_ideas_list = [add_is_evaluated(doc) for doc in best_ideas_docs]
     # For backwards compatibility, also return first best idea
     best_idea_data = best_ideas_list[0] if best_ideas_list else None
@@ -1027,6 +1019,10 @@ async def get_leaderboard(current_user: dict = Depends(get_current_user)):
         {"_id": 0, "submitted_by": 1, "submitted_by_username": 1, "is_quick_win": 1, 
          "savings_type": 1, "cost_savings": 1, "time_saved_hours": 1, "time_saved_minutes": 1}
     ).to_list(None)
+    
+    # Get all users to map user_id -> team
+    users_list = await db.users.find({}, {"_id": 0, "id": 1, "team": 1}).to_list(None)
+    user_team_map = {u["id"]: u.get("team", "") for u in users_list}
     
     # Calculate points per submitter
     submitter_points = {}
@@ -1067,6 +1063,7 @@ async def get_leaderboard(current_user: dict = Depends(get_current_user)):
         leaderboard.append({
             "user_id": submitter,
             "username": data["username"],
+            "team": user_team_map.get(submitter, ""),
             "points": data["points"],
             "ideas_count": submitter_idea_count[submitter]
         })

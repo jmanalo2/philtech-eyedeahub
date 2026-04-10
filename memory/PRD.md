@@ -78,19 +78,20 @@ Pillar (GBS, Tech, Finance, HR)
 - [x] Complexity distribution pie chart
 - [x] Approval overview bar chart
 - [x] Cost savings & time saved summaries
-- [x] **Best Idea** selection and display - **Expanded to 5 Best Eye-deas** (badge on lists, banner on dashboard)
+- [x] **Best Idea** selection and display - **Unlimited Best Eye-deas** (no cap; CI Team tags as many as needed)
 - [x] Status update for T&E assigned ideas (Edit Status button)
 - [x] **Edit cost/time savings** after evaluation (UI added)
 - [x] **Re-evaluation with Audit History** - tracks old vs new values, date, reviewer, reason
 
 ### Dashboard Leaderboard (Jan 24, 2026)
-- [x] **Eye-dea Leaderboard** on right side of Dashboard
+- [x] **Eye-dea Leaderboard** table on right side of Dashboard (Rank, Name, Team, Points)
+- [x] Points legend displayed at the top of the leaderboard
 - [x] Ranks submitters by points:
   - Both Cost & Time = 5 pts
   - Either Cost or Time = 3 pts
   - Quick Win = 2 pts
   - No savings & not Quick Win = 1 pt
-- [x] Shows top 10 contributors with rank, username, ideas count, points
+- [x] Shows top 20 contributors with rank, username, team, points
 
 ### Mobile Responsiveness (Jan 2026)
 - [x] Mobile navigation menu with hamburger icon

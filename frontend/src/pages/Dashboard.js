@@ -6,7 +6,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '../co
 import { Badge } from '../components/ui/badge';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '../components/ui/select';
 import { Button } from '../components/ui/button';
-import { TrendingUp, CheckCircle2, XCircle, AlertCircle, Clock, Lightbulb, Award, Wrench, Star, Filter, X, Trophy, Medal } from 'lucide-react';
+import { TrendingUp, CheckCircle2, XCircle, AlertCircle, Clock, Lightbulb, Award, Wrench, Star, Filter, X, Trophy } from 'lucide-react';
 
 export default function Dashboard() {
   const { user } = useAuth();
@@ -294,7 +294,7 @@ export default function Dashboard() {
         </div>
 
         {/* Right side - Leaderboard */}
-        <div className="lg:w-80">
+        <div className="lg:w-96">
           <Card className="overflow-hidden border-0 shadow-xl" data-testid="leaderboard-card">
             {/* Header with gradient */}
             <div className="bg-gradient-to-r from-violet-600 via-purple-600 to-indigo-600 p-4">
@@ -304,116 +304,14 @@ export default function Dashboard() {
                 </div>
                 <div>
                   <h3 className="text-white font-bold text-lg">Eye-dea Champions</h3>
-                  <p className="text-purple-200 text-xs">Top contributors this month</p>
+                  <p className="text-purple-200 text-xs">Top contributors</p>
                 </div>
               </div>
             </div>
             
             <CardContent className="p-0">
-              {leaderboard.length > 0 ? (
-                <div>
-                  {/* Top 3 Podium */}
-                  <div className="bg-gradient-to-b from-purple-50 to-white p-4">
-                    <div className="flex items-end justify-center gap-2 h-32">
-                      {/* 2nd Place */}
-                      {leaderboard[1] && (
-                        <div className="flex flex-col items-center">
-                          <div className="w-12 h-12 rounded-full bg-gradient-to-br from-gray-300 to-gray-400 flex items-center justify-center text-white font-bold text-lg shadow-lg border-2 border-white">
-                            {leaderboard[1].username.charAt(0).toUpperCase()}
-                          </div>
-                          <div className="mt-1 text-center">
-                            <p className="text-xs font-semibold text-gray-700 truncate w-16">{leaderboard[1].username}</p>
-                            <p className="text-sm font-bold text-gray-500">{leaderboard[1].points} pts</p>
-                          </div>
-                          <div className="w-16 h-16 bg-gradient-to-t from-gray-300 to-gray-200 rounded-t-lg flex items-center justify-center mt-1">
-                            <span className="text-2xl font-bold text-gray-600">2</span>
-                          </div>
-                        </div>
-                      )}
-                      
-                      {/* 1st Place */}
-                      {leaderboard[0] && (
-                        <div className="flex flex-col items-center -mt-4">
-                          <div className="relative">
-                            <div className="absolute -top-3 left-1/2 -translate-x-1/2">
-                              <span className="text-2xl">👑</span>
-                            </div>
-                            <div className="w-14 h-14 rounded-full bg-gradient-to-br from-yellow-400 to-amber-500 flex items-center justify-center text-white font-bold text-xl shadow-lg border-3 border-yellow-300 ring-4 ring-yellow-200">
-                              {leaderboard[0].username.charAt(0).toUpperCase()}
-                            </div>
-                          </div>
-                          <div className="mt-1 text-center">
-                            <p className="text-xs font-bold text-gray-800 truncate w-16">{leaderboard[0].username}</p>
-                            <p className="text-sm font-bold text-amber-600">{leaderboard[0].points} pts</p>
-                          </div>
-                          <div className="w-16 h-20 bg-gradient-to-t from-yellow-400 to-amber-300 rounded-t-lg flex items-center justify-center mt-1 shadow-md">
-                            <span className="text-2xl font-bold text-yellow-800">1</span>
-                          </div>
-                        </div>
-                      )}
-                      
-                      {/* 3rd Place */}
-                      {leaderboard[2] && (
-                        <div className="flex flex-col items-center">
-                          <div className="w-12 h-12 rounded-full bg-gradient-to-br from-orange-400 to-amber-600 flex items-center justify-center text-white font-bold text-lg shadow-lg border-2 border-white">
-                            {leaderboard[2].username.charAt(0).toUpperCase()}
-                          </div>
-                          <div className="mt-1 text-center">
-                            <p className="text-xs font-semibold text-gray-700 truncate w-16">{leaderboard[2].username}</p>
-                            <p className="text-sm font-bold text-orange-500">{leaderboard[2].points} pts</p>
-                          </div>
-                          <div className="w-16 h-12 bg-gradient-to-t from-orange-400 to-orange-300 rounded-t-lg flex items-center justify-center mt-1">
-                            <span className="text-2xl font-bold text-orange-700">3</span>
-                          </div>
-                        </div>
-                      )}
-                    </div>
-                  </div>
-                  
-                  {/* Rest of the list */}
-                  {leaderboard.length > 3 && (
-                    <div className="px-3 pb-3">
-                      <div className="space-y-1.5">
-                        {leaderboard.slice(3, 10).map((entry) => (
-                          <div 
-                            key={entry.user_id}
-                            className="flex items-center justify-between p-2.5 rounded-xl bg-gray-50 hover:bg-gray-100 transition-colors"
-                          >
-                            <div className="flex items-center gap-3">
-                              <span className="w-7 h-7 flex items-center justify-center rounded-full bg-gray-200 text-xs font-bold text-gray-600">
-                                {entry.rank}
-                              </span>
-                              <div className="w-8 h-8 rounded-full bg-gradient-to-br from-purple-400 to-indigo-500 flex items-center justify-center text-white text-xs font-semibold">
-                                {entry.username.charAt(0).toUpperCase()}
-                              </div>
-                              <div>
-                                <p className="text-sm font-medium text-gray-800 truncate max-w-[90px]">
-                                  {entry.username}
-                                </p>
-                                <p className="text-xs text-gray-400">{entry.ideas_count} ideas</p>
-                              </div>
-                            </div>
-                            <div className="bg-purple-100 px-2.5 py-1 rounded-full">
-                              <span className="text-sm font-bold text-purple-700">{entry.points}</span>
-                            </div>
-                          </div>
-                        ))}
-                      </div>
-                    </div>
-                  )}
-                </div>
-              ) : (
-                <div className="p-8 text-center">
-                  <div className="w-16 h-16 mx-auto bg-gray-100 rounded-full flex items-center justify-center mb-3">
-                    <Trophy className="w-8 h-8 text-gray-300" />
-                  </div>
-                  <p className="text-sm text-gray-500">No submissions yet</p>
-                  <p className="text-xs text-gray-400 mt-1">Be the first to submit an Eye-dea!</p>
-                </div>
-              )}
-              
-              {/* Points Legend */}
-              <div className="bg-gray-50 px-4 py-3 border-t">
+              {/* Points Legend - At the top */}
+              <div className="bg-gray-50 px-4 py-3 border-b">
                 <div className="grid grid-cols-2 gap-2 text-xs">
                   <div className="flex items-center gap-1.5">
                     <span className="w-5 h-5 rounded-full bg-purple-600 text-white flex items-center justify-center text-[10px] font-bold">5</span>
@@ -433,6 +331,51 @@ export default function Dashboard() {
                   </div>
                 </div>
               </div>
+
+              {leaderboard.length > 0 ? (
+                <div className="overflow-x-auto">
+                  <table className="w-full text-sm">
+                    <thead>
+                      <tr className="border-b bg-gray-50/50">
+                        <th className="text-left py-2.5 px-3 text-xs font-semibold text-gray-500 uppercase tracking-wider w-12">Rank</th>
+                        <th className="text-left py-2.5 px-3 text-xs font-semibold text-gray-500 uppercase tracking-wider">Name</th>
+                        <th className="text-left py-2.5 px-3 text-xs font-semibold text-gray-500 uppercase tracking-wider">Team</th>
+                        <th className="text-right py-2.5 px-3 text-xs font-semibold text-gray-500 uppercase tracking-wider w-16">Points</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {leaderboard.map((entry) => (
+                        <tr key={entry.user_id} className="border-b last:border-b-0 hover:bg-gray-50 transition-colors">
+                          <td className="py-2.5 px-3">
+                            {entry.rank === 1 ? (
+                              <span className="w-7 h-7 flex items-center justify-center rounded-full bg-gradient-to-br from-yellow-400 to-amber-500 text-white text-xs font-bold shadow-sm">1</span>
+                            ) : entry.rank === 2 ? (
+                              <span className="w-7 h-7 flex items-center justify-center rounded-full bg-gradient-to-br from-gray-300 to-gray-400 text-white text-xs font-bold shadow-sm">2</span>
+                            ) : entry.rank === 3 ? (
+                              <span className="w-7 h-7 flex items-center justify-center rounded-full bg-gradient-to-br from-orange-400 to-amber-600 text-white text-xs font-bold shadow-sm">3</span>
+                            ) : (
+                              <span className="w-7 h-7 flex items-center justify-center rounded-full bg-gray-100 text-gray-600 text-xs font-bold">{entry.rank}</span>
+                            )}
+                          </td>
+                          <td className="py-2.5 px-3 font-medium text-gray-800 truncate max-w-[120px]">{entry.username}</td>
+                          <td className="py-2.5 px-3 text-gray-500 truncate max-w-[100px] text-xs">{entry.team || '—'}</td>
+                          <td className="py-2.5 px-3 text-right">
+                            <span className="inline-flex items-center justify-center bg-purple-100 text-purple-700 font-bold text-xs px-2 py-0.5 rounded-full min-w-[32px]">{entry.points}</span>
+                          </td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
+              ) : (
+                <div className="p-8 text-center">
+                  <div className="w-16 h-16 mx-auto bg-gray-100 rounded-full flex items-center justify-center mb-3">
+                    <Trophy className="w-8 h-8 text-gray-300" />
+                  </div>
+                  <p className="text-sm text-gray-500">No submissions yet</p>
+                  <p className="text-xs text-gray-400 mt-1">Be the first to submit an Eye-dea!</p>
+                </div>
+              )}
             </CardContent>
           </Card>
         </div>
@@ -489,7 +432,7 @@ export default function Dashboard() {
                 </div>
                 <div>
                   <CardTitle className="text-lg sm:text-xl text-yellow-800">Best Eye-deas</CardTitle>
-                  <CardDescription className="text-yellow-700">Top ideas recognized by C.I. Excellence Team ({stats.best_ideas.length}/5)</CardDescription>
+                  <CardDescription className="text-yellow-700">Top ideas recognized by C.I. Excellence Team</CardDescription>
                 </div>
               </div>
             </CardHeader>
