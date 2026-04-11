@@ -426,14 +426,13 @@ export default function CIDashboard() {
           </CardHeader>
           <CardContent>
             {statusData.length > 0 ? (
-              <ResponsiveContainer width="100%" height={300}>
-                <BarChart data={statusData}>
+              <ResponsiveContainer width="100%" height={380}>
+                <BarChart data={statusData} margin={{ top: 5, right: 20, left: 0, bottom: 60 }}>
                   <CartesianGrid strokeDasharray="3 3" />
-                  <XAxis dataKey="name" />
-                  <YAxis />
+                  <XAxis dataKey="name" angle={-35} textAnchor="end" interval={0} tick={{ fontSize: 11 }} height={80} />
+                  <YAxis allowDecimals={false} />
                   <Tooltip />
-                  <Legend />
-                  <Bar dataKey="value" fill="#3B82F6" name="Count" />
+                  <Bar dataKey="value" fill="#3B82F6" name="Count" label={{ position: 'top', fontSize: 11, fill: '#374151' }} />
                 </BarChart>
               </ResponsiveContainer>
             ) : (
@@ -524,7 +523,7 @@ export default function CIDashboard() {
                   <Star className="w-6 h-6 text-white" />
                 </div>
                 <div>
-                  <CardTitle className="text-yellow-900">Best Eye-deas ({bestIdeas.length}/5)</CardTitle>
+                  <CardTitle className="text-yellow-900">Best Eye-deas</CardTitle>
                   <CardDescription className="text-yellow-700">Top ideas selected by the C.I. Excellence Team</CardDescription>
                 </div>
               </div>
