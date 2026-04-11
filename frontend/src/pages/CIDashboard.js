@@ -405,7 +405,7 @@ export default function CIDashboard() {
                     ))}
                   </Pie>
                   <Tooltip />
-                  <Legend />
+                  <Legend wrapperStyle={{ fontSize: '11px' }} />
                 </PieChart>
               </ResponsiveContainer>
             ) : (
@@ -431,7 +431,7 @@ export default function CIDashboard() {
                 <BarChart data={statusData} margin={{ top: 5, right: 20, left: 0, bottom: 60 }}>
                   <CartesianGrid strokeDasharray="3 3" />
                   <XAxis dataKey="name" angle={-35} textAnchor="end" interval={0} tick={{ fontSize: 11 }} height={80} />
-                  <YAxis allowDecimals={false} />
+                  <YAxis allowDecimals={false} tick={{ fontSize: 11 }} />
                   <Tooltip />
                   <Bar dataKey="value" fill="#3B82F6" name="Count" label={{ position: 'top', fontSize: 11, fill: '#374151' }} />
                 </BarChart>
