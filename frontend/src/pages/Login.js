@@ -156,9 +156,9 @@ export default function Login() {
       <div className="w-full max-w-2xl">
         <div className="text-center mb-8">
           <h1 className="text-5xl font-bold text-blue-900 mb-2">
-            <span className="inline-flex items-center gap-1">
-              <img src="/eyedea-logo.png" alt="Eye-dea" className="w-14 h-14 inline-block" style={{ filter: 'brightness(0) saturate(100%) invert(12%) sepia(63%) saturate(3000%) hue-rotate(210deg) brightness(0.85)' }} />
-              <span>-dea</span>
+            <span className="inline-flex items-center" style={{ gap: 0 }}>
+              <img src="/eyedea-logo.png" alt="Eye" className="inline-block" style={{ width: '64px', height: '64px', marginRight: '-2px', filter: 'brightness(0) saturate(100%) invert(12%) sepia(63%) saturate(3000%) hue-rotate(210deg) brightness(0.85)' }} />
+              <span className="tracking-tight">DEA</span>
             </span>
           </h1>
           <p className="text-gray-600">Innovation Management System</p>
