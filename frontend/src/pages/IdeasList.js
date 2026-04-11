@@ -28,7 +28,8 @@ export default function IdeasList() {
     status: searchParams.get('status') || '',
     pillar: searchParams.get('pillar') || '',
     department: searchParams.get('department') || '',
-    team: searchParams.get('team') || ''
+    team: searchParams.get('team') || '',
+    mine: searchParams.get('mine') || ''
   });
 
   useEffect(() => {
@@ -45,6 +46,7 @@ export default function IdeasList() {
       if (filters.pillar) params.pillar = filters.pillar;
       if (filters.department) params.department = filters.department;
       if (filters.team) params.team = filters.team;
+      if (filters.mine === 'true' && user?.id) params.submitted_by = user.id;
 
       const response = await axios.get(`${process.env.REACT_APP_BACKEND_URL}/api/ideas`, { params });
       setIdeas(response.data);

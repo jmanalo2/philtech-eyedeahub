@@ -170,7 +170,7 @@ export default function Dashboard() {
       icon: TrendingUp,
       color: 'bg-indigo-500',
       textColor: 'text-indigo-600',
-      link: '/ideas'
+      link: '/ideas?mine=true'
     }
   ];
 
