@@ -313,7 +313,7 @@ export default function CIDashboard() {
         {statsCards.map((stat, index) => {
           const Icon = stat.icon;
           return (
-            <Card key={index} className="hover:shadow-lg transition-shadow" data-testid={`ci-stat-${index}`}>
+            <Card key={index} className="hover:shadow-lg transition-shadow card-hover animate-slide-up" style={{ animationDelay: `${index * 80}ms` }} data-testid={`ci-stat-${index}`}>
               <CardHeader className="flex flex-row items-center justify-between pb-2">
                 <CardTitle className="text-sm font-medium text-gray-600">
                   {stat.title}
@@ -335,7 +335,7 @@ export default function CIDashboard() {
 
       {/* Savings Summary */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
-        <Card className="bg-gradient-to-br from-green-50 to-emerald-50 border-green-200">
+        <Card className="bg-gradient-to-br from-green-50 to-emerald-50 border-green-200 animate-slide-up" style={{ animationDelay: '350ms' }}>
           <CardHeader>
             <div className="flex items-center space-x-3">
               <div className="bg-green-600 p-3 rounded-lg">
@@ -354,7 +354,7 @@ export default function CIDashboard() {
           </CardContent>
         </Card>
 
-        <Card className="bg-gradient-to-br from-blue-50 to-indigo-50 border-blue-200">
+        <Card className="bg-gradient-to-br from-blue-50 to-indigo-50 border-blue-200 animate-slide-up" style={{ animationDelay: '420ms' }}>
           <CardHeader>
             <div className="flex items-center space-x-3">
               <div className="bg-blue-600 p-3 rounded-lg">

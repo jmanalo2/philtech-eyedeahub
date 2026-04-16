@@ -46,7 +46,7 @@ export default function Layout() {
                 <Button
                   data-testid="nav-dashboard-btn"
                   variant={isActive('/dashboard') ? 'secondary' : 'ghost'}
-                  className={isActive('/dashboard') ? 'bg-white text-blue-900' : 'text-white hover:bg-blue-800'}
+                  className={`nav-link-animated ${isActive('/dashboard') ? 'bg-white text-blue-900' : 'text-white hover:bg-blue-800'}`}
                 >
                   <Home className="w-4 h-4 mr-2" />
                   Dashboard
@@ -56,7 +56,7 @@ export default function Layout() {
                 <Button
                   data-testid="nav-ideas-btn"
                   variant={isActive('/ideas') ? 'secondary' : 'ghost'}
-                  className={isActive('/ideas') ? 'bg-white text-blue-900' : 'text-white hover:bg-blue-800'}
+                  className={`nav-link-animated ${isActive('/ideas') ? 'bg-white text-blue-900' : 'text-white hover:bg-blue-800'}`}
                 >
                   <Lightbulb className="w-4 h-4 mr-2" />
                   Eye-deas
@@ -119,7 +119,7 @@ export default function Layout() {
 
           {/* Mobile Navigation */}
           {mobileMenuOpen && (
-            <nav className="md:hidden pb-4 space-y-1 border-t border-blue-600 pt-3" data-testid="mobile-nav">
+            <nav className="md:hidden pb-4 space-y-1 border-t border-blue-600 pt-3 animate-slide-down" data-testid="mobile-nav">
               <Link to="/dashboard" onClick={() => setMobileMenuOpen(false)}>
                 <Button variant="ghost" className="w-full justify-start text-white hover:bg-blue-800">
                   <Home className="w-4 h-4 mr-2" />
@@ -168,7 +168,7 @@ export default function Layout() {
       </header>
 
       {/* Main Content */}
-      <main className="max-w-7xl mx-auto px-3 sm:px-6 lg:px-8 py-4 sm:py-8">
+      <main className="max-w-7xl mx-auto px-3 sm:px-6 lg:px-8 py-4 sm:py-8 page-enter">
         <Outlet />
       </main>
     </div>

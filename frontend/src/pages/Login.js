@@ -207,7 +207,7 @@ export default function Login() {
             <p className="text-gray-500 text-sm">Innovation Management System</p>
           </div>
 
-          <div className="mb-8">
+          <div className="mb-8 animate-slide-down">
             <h2 className="text-2xl font-bold text-gray-900">Welcome back</h2>
             <p className="text-gray-500 mt-1 text-sm">Sign in to your account or create a new one</p>
           </div>
@@ -248,7 +248,7 @@ export default function Login() {
                 <Button
                   type="submit"
                   data-testid="login-submit-btn"
-                  className="w-full h-11 bg-blue-700 hover:bg-blue-800 rounded-xl text-sm font-semibold transition-all duration-200 hover:shadow-lg hover:shadow-blue-700/25"
+                  className="w-full h-11 bg-blue-700 hover:bg-blue-800 rounded-xl text-sm font-semibold transition-all duration-200 hover:shadow-lg hover:shadow-blue-700/25 btn-press"
                   disabled={loading}
                 >
                   {loading ? 'Signing in...' : 'Sign In'}
@@ -411,7 +411,7 @@ export default function Login() {
                 <Button
                   type="submit"
                   data-testid="register-submit-btn"
-                  className="w-full h-11 bg-blue-700 hover:bg-blue-800 rounded-xl text-sm font-semibold transition-all duration-200 hover:shadow-lg hover:shadow-blue-700/25"
+                  className="w-full h-11 bg-blue-700 hover:bg-blue-800 rounded-xl text-sm font-semibold transition-all duration-200 hover:shadow-lg hover:shadow-blue-700/25 btn-press"
                   disabled={loading}
                 >
                   {loading ? 'Creating account...' : 'Create Account'}

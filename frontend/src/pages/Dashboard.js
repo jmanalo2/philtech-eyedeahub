@@ -272,7 +272,7 @@ export default function Dashboard() {
               const Icon = stat.icon;
               return (
                 <Link key={index} to={stat.link}>
-                  <Card className="hover:shadow-lg transition-shadow duration-300 cursor-pointer h-full" data-testid={`stat-card-${index}`}>
+                  <Card className="hover:shadow-lg transition-shadow duration-300 cursor-pointer h-full card-hover animate-slide-up" style={{ animationDelay: `${index * 60}ms` }} data-testid={`stat-card-${index}`}>
                     <CardHeader className="flex flex-row items-center justify-between pb-1 sm:pb-2 p-3 sm:p-6">
                       <CardTitle className="text-[10px] sm:text-xs font-medium text-gray-600 leading-tight">
                         {stat.title}
@@ -295,7 +295,7 @@ export default function Dashboard() {
 
         {/* Right side - Leaderboard */}
         <div className="lg:w-96">
-          <Card className="overflow-hidden border-0 shadow-xl" data-testid="leaderboard-card">
+          <Card className="overflow-hidden border-0 shadow-xl animate-slide-right" style={{ animationDelay: '200ms' }} data-testid="leaderboard-card">
             {/* Header with gradient */}
             <div className="bg-gradient-to-r from-violet-600 via-purple-600 to-indigo-600 p-4">
               <div className="flex items-center gap-3">
@@ -381,7 +381,7 @@ export default function Dashboard() {
         </div>
       </div>
 
-      <div className="mt-6 sm:mt-8">
+      <div className="mt-6 sm:mt-8 animate-slide-up" style={{ animationDelay: '400ms' }}>
         <Card>
           <CardHeader className="p-4 sm:p-6">
             <CardTitle className="text-lg sm:text-xl">Quick Actions</CardTitle>
@@ -391,7 +391,7 @@ export default function Dashboard() {
             <a
               href="/ideas/new"
               data-testid="quick-action-new-idea"
-              className="p-4 sm:p-6 bg-blue-50 hover:bg-blue-100 rounded-lg border-2 border-blue-200 transition-colors duration-200 cursor-pointer"
+              className="p-4 sm:p-6 bg-blue-50 hover:bg-blue-100 rounded-lg border-2 border-blue-200 transition-all duration-200 cursor-pointer card-hover"
             >
               <Lightbulb className="w-6 h-6 sm:w-8 sm:h-8 text-blue-600 mb-2 sm:mb-3" />
               <h3 className="font-semibold text-gray-900 mb-1 text-sm sm:text-base">Submit New Eye-dea</h3>
@@ -400,7 +400,7 @@ export default function Dashboard() {
             <a
               href="/ideas"
               data-testid="quick-action-view-ideas"
-              className="p-4 sm:p-6 bg-green-50 hover:bg-green-100 rounded-lg border-2 border-green-200 transition-colors duration-200 cursor-pointer"
+              className="p-4 sm:p-6 bg-green-50 hover:bg-green-100 rounded-lg border-2 border-green-200 transition-all duration-200 cursor-pointer card-hover"
             >
               <TrendingUp className="w-6 h-6 sm:w-8 sm:h-8 text-green-600 mb-2 sm:mb-3" />
               <h3 className="font-semibold text-gray-900 mb-1 text-sm sm:text-base">View All Eye-deas</h3>
@@ -410,7 +410,7 @@ export default function Dashboard() {
               <a
                 href="/ideas?status=pending"
                 data-testid="quick-action-pending"
-                className="p-4 sm:p-6 bg-yellow-50 hover:bg-yellow-100 rounded-lg border-2 border-yellow-200 transition-colors duration-200 cursor-pointer"
+                className="p-4 sm:p-6 bg-yellow-50 hover:bg-yellow-100 rounded-lg border-2 border-yellow-200 transition-all duration-200 cursor-pointer card-hover"
               >
                 <Clock className="w-6 h-6 sm:w-8 sm:h-8 text-yellow-600 mb-2 sm:mb-3" />
                 <h3 className="font-semibold text-gray-900 mb-1 text-sm sm:text-base">Review Pending</h3>

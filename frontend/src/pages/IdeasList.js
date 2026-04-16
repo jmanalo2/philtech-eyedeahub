@@ -285,17 +285,18 @@ export default function IdeasList() {
             </CardContent>
           </Card>
         ) : (
-          ideas.map((idea) => {
+          ideas.map((idea, index) => {
             const needsRevision = idea.status === 'revision_requested' && idea.submitted_by === user?.id;
             const isBestIdea = idea.is_best_idea;
             return (
               <div 
                 key={idea.id} 
                 onClick={() => navigate(`/ideas/${idea.id}`, { state: { filters: searchParams.toString() } })}
-                className="cursor-pointer"
+                className="cursor-pointer animate-slide-up"
+                style={{ animationDelay: `${Math.min(index, 8) * 50}ms` }}
               >
                 <Card 
-                  className={`hover:shadow-lg transition-all duration-200 ${
+                  className={`hover:shadow-lg transition-all duration-200 card-hover ${
                     isBestIdea ? 'border-2 border-yellow-400 bg-yellow-50' :
                     needsRevision ? 'border-2 border-orange-400 bg-orange-50' : ''
                   }`} 
