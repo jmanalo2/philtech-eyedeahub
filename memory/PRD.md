@@ -178,6 +178,17 @@ Pillar (GBS, Tech, Finance, HR)
 - Public: `/api/public/{pillars,departments,teams}`
 - Analytics: `/api/dashboard/{stats,analytics,export-excel}`
 
+### Live Demo Page (Apr 11, 2026)
+- [x] Interactive 12-step guided walkthrough at `/demo` (no auth required)
+- [x] Steps: Dashboard, Create, Submit, Approve, CI Evaluate, CI Analytics, Not Quick Win, Savings, T&E, Implementation, Leaderboard, Best Ideas
+- [x] Step indicators, progress bar, auto-play mode, smooth animations
+- [x] Tooltips on each step explaining features
+- [x] Role badges (User, Approver, CI Team, Admin) per step
+- [x] "Try Demo" button linking to production app
+- [x] "Record Walkthrough" for video capture and download
+- [x] "Watch Demo" button on login page left panel
+- [x] Step grid navigation at bottom
+
 ---
 
 ## Test Accounts

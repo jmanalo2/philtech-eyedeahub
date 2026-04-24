@@ -178,6 +178,13 @@ export default function Login() {
             Submit, evaluate and track ideas that drive organizational improvement
           </p>
 
+          <Link to="/demo" className="mt-8">
+            <Button className="bg-white/10 hover:bg-white/20 text-white border border-white/20 backdrop-blur-sm btn-press" data-testid="watch-demo-btn">
+              <svg className="w-4 h-4 mr-2" viewBox="0 0 24 24" fill="currentColor"><polygon points="5 3 19 12 5 21 5 3" /></svg>
+              Watch Demo
+            </Button>
+          </Link>
+
           {/* Tech dots decoration */}
           <div className="absolute bottom-12 left-12 flex gap-2">
             {[...Array(5)].map((_, i) => (
