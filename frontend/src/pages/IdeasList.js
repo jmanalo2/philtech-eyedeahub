@@ -267,7 +267,9 @@ export default function IdeasList() {
                 <SelectContent>
                   <SelectItem value=" ">All Teams</SelectItem>
                   {teams.map((team) => (
-                    <SelectItem key={team.id} value={team.name}>{team.name}</SelectItem>
+                    <SelectItem key={team.id} value={team.name}>
+                      <span>{team.name}</span>
+                    </SelectItem>
                   ))}
                 </SelectContent>
               </Select>
@@ -355,6 +357,10 @@ export default function IdeasList() {
                       <div>
                         <span className="font-medium text-gray-700">Submitted By:</span>
                         <span className="ml-2 text-gray-600">{idea.submitted_by_username}</span>
+                      </div>
+                      <div>
+                        <span className="font-medium text-gray-700">Date Submitted:</span>
+                        <span className="ml-2 text-gray-600">{idea.created_at ? new Date(idea.created_at).toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric' }) : 'N/A'}</span>
                       </div>
                       {idea.assigned_approver_username && (
                         <div>
