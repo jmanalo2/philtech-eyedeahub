@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { Outlet, Link, useNavigate, useLocation } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
+import { isSSOConfigured, msalInstance } from '../auth/msalConfig';
 import { Button } from './ui/button';
 import { Menu, X, Home, Lightbulb, UserCog, User, LogOut, BarChart3 } from 'lucide-react';
 
@@ -12,6 +13,14 @@ export default function Layout() {
 
   const handleLogout = () => {
     logout();
+    // If user was authenticated via SSO, also clear MSAL session
+    if (isSSOConfigured() && msalInstance && user?.auth_provider === 'azure_ad') {
+      msalInstance.logoutPopup({
+        postLogoutRedirectUri: window.location.origin + '/login',
+      }).catch(() => {
+        // If popup logout fails, still navigate to login
+      });
+    }
     navigate('/login');
   };
 

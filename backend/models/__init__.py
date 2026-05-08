@@ -23,6 +23,10 @@ class UserBase(BaseModel):
     manager: Optional[str] = None
     approved_pillars: Optional[List[str]] = []
     approved_departments: Optional[List[str]] = []
+    # SSO fields
+    azure_oid: Optional[str] = None
+    auth_provider: Optional[str] = None  # "local" or "azure_ad"
+    last_sso_login: Optional[str] = None
 
 
 class UserCreate(UserBase):

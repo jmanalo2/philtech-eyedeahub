@@ -1,6 +1,7 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
+import { loginRequest, isSSOConfigured, msalInstance as msalApp } from '../auth/msalConfig';
 import axios from 'axios';
 import { Button } from '../components/ui/button';
 import { Input } from '../components/ui/input';
@@ -12,15 +13,19 @@ import { toast } from 'sonner';
 // Logo image used instead of Lightbulb icon
 
 export default function Login() {
-  const { login, register } = useAuth();
+  const { login, ssoLogin, register, ssoConfig } = useAuth();
   const navigate = useNavigate();
   const [loading, setLoading] = useState(false);
+  const [ssoLoading, setSsoLoading] = useState(false);
   const [pillars, setPillars] = useState([]);
   const [departments, setDepartments] = useState([]);
   const [teams, setTeams] = useState([]);
   const [managers, setManagers] = useState([]);
   const [filteredDepartments, setFilteredDepartments] = useState([]);
   const [filteredTeams, setFilteredTeams] = useState([]);
+
+  const ssoAvailable = isSSOConfigured() && ssoConfig?.sso_enabled;
+  const localLoginAvailable = !ssoConfig?.sso_enabled || ssoConfig?.dev_mode_login_enabled;
 
   const [loginForm, setLoginForm] = useState({ username: '', password: '' });
   const [registerForm, setRegisterForm] = useState({
@@ -101,6 +106,32 @@ export default function Login() {
       toast.error(error.response?.data?.detail || 'Login failed');
     } finally {
       setLoading(false);
+    }
+  };
+
+  const handleSSOLogin = async () => {
+    if (!msalApp) return;
+    
+    setSsoLoading(true);
+    try {
+      // Trigger Microsoft login popup
+      const response = await msalApp.loginPopup(loginRequest);
+      
+      if (response && response.idToken) {
+        // Exchange Azure AD token for internal app token
+        await ssoLogin(response.idToken);
+        toast.success('Microsoft SSO login successful!');
+        navigate('/dashboard');
+      }
+    } catch (error) {
+      console.error('SSO login error:', error);
+      if (error.errorCode === 'user_cancelled') {
+        toast.info('Login cancelled');
+      } else {
+        toast.error(error.message || 'Microsoft SSO login failed');
+      }
+    } finally {
+      setSsoLoading(false);
     }
   };
 
@@ -216,9 +247,46 @@ export default function Login() {
 
           <div className="mb-8 animate-slide-down">
             <h2 className="text-2xl font-bold text-gray-900">Welcome back</h2>
-            <p className="text-gray-500 mt-1 text-sm">Sign in to your account or create a new one</p>
+            <p className="text-gray-500 mt-1 text-sm">
+              {ssoAvailable 
+                ? 'Sign in with your Microsoft corporate account' 
+                : 'Sign in to your account or create a new one'}
+            </p>
           </div>
 
+          {/* Microsoft SSO Login Button */}
+          {ssoAvailable && (
+            <div className="mb-6">
+              <Button
+                type="button"
+                onClick={handleSSOLogin}
+                disabled={ssoLoading}
+                className="w-full h-12 bg-[#2F2F2F] hover:bg-[#1a1a1a] text-white rounded-xl text-sm font-semibold transition-all duration-200 hover:shadow-lg flex items-center justify-center gap-3"
+                data-testid="sso-login-btn"
+              >
+                {/* Microsoft logo */}
+                <svg width="20" height="20" viewBox="0 0 21 21" fill="none" xmlns="http://www.w3.org/2000/svg">
+                  <rect x="1" y="1" width="9" height="9" fill="#F25022"/>
+                  <rect x="11" y="1" width="9" height="9" fill="#7FBA00"/>
+                  <rect x="1" y="11" width="9" height="9" fill="#00A4EF"/>
+                  <rect x="11" y="11" width="9" height="9" fill="#FFB900"/>
+                </svg>
+                {ssoLoading ? 'Signing in with Microsoft...' : 'Sign in with Microsoft'}
+              </Button>
+              {localLoginAvailable && (
+                <div className="relative my-5">
+                  <div className="absolute inset-0 flex items-center">
+                    <div className="w-full border-t border-gray-200" />
+                  </div>
+                  <div className="relative flex justify-center text-xs">
+                    <span className="bg-white px-3 text-gray-400">or sign in with credentials</span>
+                  </div>
+                </div>
+              )}
+            </div>
+          )}
+
+          {localLoginAvailable && (
           <Tabs defaultValue="login" className="w-full">
             <TabsList className="grid w-full grid-cols-2 mb-6 bg-gray-100/80 p-1 rounded-xl">
               <TabsTrigger value="login" data-testid="login-tab" className="rounded-lg data-[state=active]:bg-white data-[state=active]:shadow-sm text-sm font-medium">Login</TabsTrigger>
@@ -426,6 +494,14 @@ export default function Login() {
               </form>
             </TabsContent>
           </Tabs>
+          )}
+
+          {/* SSO-only mode: show hint if local login is hidden */}
+          {ssoAvailable && !localLoginAvailable && (
+            <p className="text-center text-xs text-gray-400 mt-4">
+              Corporate Microsoft account required. Contact your admin if you cannot access.
+            </p>
+          )}
         </div>
       </div>
     </div>

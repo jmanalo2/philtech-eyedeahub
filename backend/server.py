@@ -33,6 +33,12 @@ from services import (
     add_is_evaluated, SECRET_KEY, ALGORITHM
 )
 
+# Import SSO module
+from auth_sso import (
+    validate_azure_token, extract_user_info_from_claims, determine_app_role,
+    SSO_ENABLED, DEV_MODE_LOGIN_ENABLED, AZURE_TENANT_ID, AZURE_CLIENT_ID
+)
+
 ROOT_DIR = Path(__file__).parent
 load_dotenv(ROOT_DIR / '.env')
 
@@ -187,6 +193,11 @@ async def register(user_data: UserCreate):
 
 @api_router.post("/auth/login", response_model=TokenResponse)
 async def login(credentials: UserLogin):
+    if SSO_ENABLED and not DEV_MODE_LOGIN_ENABLED:
+        raise HTTPException(
+            status_code=403,
+            detail="Local login is disabled. Please use Microsoft SSO to sign in."
+        )
     user = await db.users.find_one({"username": credentials.username}, {"_id": 0})
     if not user or not verify_password(credentials.password, user["password_hash"]):
         raise HTTPException(status_code=401, detail="Incorrect username or password")
@@ -194,6 +205,115 @@ async def login(credentials: UserLogin):
     token = create_access_token(data={"sub": user["id"]})
     user.pop("password_hash")
     return TokenResponse(access_token=token, token_type="bearer", user=User(**user))
+
+
+# ==================== SSO ROUTES ====================
+
+class SSOTokenRequest(BaseModel):
+    """Request body for SSO token exchange."""
+    access_token: str
+
+
+@api_router.get("/auth/sso/config")
+async def get_sso_config():
+    """
+    Public endpoint returning SSO configuration for the frontend.
+    Does NOT expose secrets - only public client configuration.
+    """
+    return {
+        "sso_enabled": SSO_ENABLED,
+        "dev_mode_login_enabled": DEV_MODE_LOGIN_ENABLED,
+        "tenant_id": AZURE_TENANT_ID,
+        "client_id": AZURE_CLIENT_ID,
+        "authority": f"https://login.microsoftonline.com/{AZURE_TENANT_ID}" if AZURE_TENANT_ID else "",
+    }
+
+
+@api_router.post("/auth/sso/login", response_model=TokenResponse)
+async def sso_login(sso_request: SSOTokenRequest):
+    """
+    Exchange a validated Azure AD token for an internal app token.
+
+    Flow:
+    1. Frontend authenticates with Azure AD via MSAL
+    2. Frontend sends the Azure AD ID token to this endpoint
+    3. Backend validates the token against Azure AD JWKS
+    4. Backend creates/updates local user profile
+    5. Backend issues internal JWT for API access
+    """
+    # Validate the Azure AD token
+    claims = await validate_azure_token(sso_request.access_token)
+
+    # Extract user info from claims
+    user_info = extract_user_info_from_claims(claims)
+
+    if not user_info["email"]:
+        raise HTTPException(status_code=400, detail="Token missing email claim")
+
+    # Find or create user in local database
+    existing_user = await db.users.find_one(
+        {"$or": [
+            {"email": user_info["email"]},
+            {"azure_oid": user_info["azure_oid"]}
+        ]},
+        {"_id": 0}
+    )
+
+    if existing_user:
+        # Update existing user with latest Azure AD info
+        update_fields = {
+            "azure_oid": user_info["azure_oid"],
+            "first_name": user_info["first_name"] or existing_user.get("first_name", ""),
+            "last_name": user_info["last_name"] or existing_user.get("last_name", ""),
+            "last_sso_login": datetime.now(timezone.utc).isoformat(),
+            "auth_provider": "azure_ad",
+        }
+        # Only update email if it changed (edge case)
+        if user_info["email"] != existing_user.get("email"):
+            update_fields["email"] = user_info["email"]
+
+        await db.users.update_one(
+            {"id": existing_user["id"]},
+            {"$set": update_fields}
+        )
+        existing_user.update(update_fields)
+        user_doc = existing_user
+    else:
+        # Create new user from SSO
+        app_role = determine_app_role(user_info)
+        user_id = f"user_{datetime.now(timezone.utc).timestamp()}"
+        username = user_info["email"].split("@")[0]  # Use email prefix as username
+
+        # Ensure username uniqueness
+        existing_username = await db.users.find_one({"username": username}, {"_id": 0})
+        if existing_username:
+            username = f"{username}_{user_id[-6:]}"
+
+        user_doc = {
+            "id": user_id,
+            "username": username,
+            "email": user_info["email"],
+            "first_name": user_info["first_name"],
+            "last_name": user_info["last_name"],
+            "password_hash": "",  # No password for SSO users
+            "role": app_role,
+            "department": "",
+            "team": "",
+            "pillar": "",
+            "manager": "",
+            "azure_oid": user_info["azure_oid"],
+            "auth_provider": "azure_ad",
+            "created_at": datetime.now(timezone.utc).isoformat(),
+            "last_sso_login": datetime.now(timezone.utc).isoformat(),
+        }
+        await db.users.insert_one(user_doc)
+
+    # Issue internal JWT
+    token = create_access_token(data={"sub": user_doc["id"]})
+    user_doc.pop("password_hash", None)
+    user_doc.pop("_id", None)
+
+    return TokenResponse(access_token=token, token_type="bearer", user=User(**user_doc))
 
 @api_router.get("/auth/me", response_model=User)
 async def get_me(current_user: dict = Depends(get_current_user)):

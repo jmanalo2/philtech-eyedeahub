@@ -15,6 +15,11 @@ export const AuthProvider = ({ children }) => {
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
   const [token, setToken] = useState(localStorage.getItem('token'));
+  const [ssoConfig, setSsoConfig] = useState(null);
+
+  useEffect(() => {
+    fetchSSOConfig();
+  }, []);
 
   useEffect(() => {
     if (token) {
@@ -24,6 +29,17 @@ export const AuthProvider = ({ children }) => {
       setLoading(false);
     }
   }, [token]);
+
+  const fetchSSOConfig = async () => {
+    try {
+      const response = await axios.get(`${process.env.REACT_APP_BACKEND_URL}/api/auth/sso/config`);
+      setSsoConfig(response.data);
+    } catch (error) {
+      console.error('Failed to fetch SSO config:', error);
+      // Default to allowing local login if SSO config fetch fails
+      setSsoConfig({ sso_enabled: false, dev_mode_login_enabled: true });
+    }
+  };
 
   const fetchCurrentUser = async () => {
     try {
@@ -50,6 +66,22 @@ export const AuthProvider = ({ children }) => {
     return userData;
   };
 
+  /**
+   * SSO Login: Exchange Azure AD token for internal app token.
+   * Called after MSAL authentication completes successfully.
+   */
+  const ssoLogin = async (azureAccessToken) => {
+    const response = await axios.post(`${process.env.REACT_APP_BACKEND_URL}/api/auth/sso/login`, {
+      access_token: azureAccessToken
+    });
+    const { access_token, user: userData } = response.data;
+    localStorage.setItem('token', access_token);
+    axios.defaults.headers.common['Authorization'] = `Bearer ${access_token}`;
+    setToken(access_token);
+    setUser(userData);
+    return userData;
+  };
+
   const register = async (userData) => {
     await axios.post(`${process.env.REACT_APP_BACKEND_URL}/api/auth/register`, userData);
   };
@@ -62,7 +94,7 @@ export const AuthProvider = ({ children }) => {
   };
 
   return (
-    <AuthContext.Provider value={{ user, login, register, logout, loading }}>
+    <AuthContext.Provider value={{ user, login, ssoLogin, register, logout, loading, ssoConfig }}>
       {children}
     </AuthContext.Provider>
   );
