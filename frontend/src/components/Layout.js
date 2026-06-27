@@ -34,18 +34,13 @@ export default function Layout() {
           <div className="flex justify-between items-center h-16 sm:h-20">
             <Link to="/dashboard" className="flex items-center space-x-2 sm:space-x-3">
               <img 
-                src="https://customer-assets.emergentagent.com/job_idea-gateway/artifacts/pvc8r5o3_IMG_8308.jpeg" 
-                alt="Philtech Logo" 
+                src="/NEX.png" 
+                alt="GBS NEXT" 
                 className="h-8 sm:h-12 w-auto"
               />
-              <div className="flex items-center space-x-1 sm:space-x-2">
-                <div className="w-8 h-8 sm:w-10 sm:h-10 bg-white rounded-lg flex items-center justify-center">
-                  <Lightbulb className="w-4 h-4 sm:w-6 sm:h-6 text-blue-700" />
-                </div>
-                <div className="hidden xs:block">
-                  <h1 className="text-lg sm:text-2xl font-bold tracking-tight">Eye-dea</h1>
-                  <p className="text-[10px] sm:text-xs text-blue-200 hidden sm:block">Innovation Management</p>
-                </div>
+              <div className="hidden xs:block">
+                <h1 className="text-lg sm:text-2xl font-bold tracking-tight">GBS NEXT</h1>
+                <p className="text-[10px] sm:text-xs text-blue-200 hidden sm:block">NEXT CI Web App</p>
               </div>
             </Link>
 

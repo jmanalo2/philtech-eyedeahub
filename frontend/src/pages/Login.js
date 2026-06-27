@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
 import { loginRequest, isSSOConfigured, msalInstance as msalApp } from '../auth/msalConfig';
@@ -10,7 +10,6 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '.
 import { Card, CardContent } from '../components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '../components/ui/tabs';
 import { toast } from 'sonner';
-// Logo image used instead of Lightbulb icon
 
 export default function Login() {
   const { login, ssoLogin, register, ssoConfig } = useAuth();
@@ -117,7 +116,7 @@ export default function Login() {
       // Trigger Microsoft login popup
       const response = await msalApp.loginPopup(loginRequest);
       
-      if (response && response.idToken) {
+      if (response?.idToken) {
         // Exchange Azure AD token for internal app token
         await ssoLogin(response.idToken);
         toast.success('Microsoft SSO login successful!');
@@ -183,76 +182,49 @@ export default function Login() {
   };
 
   return (
-    <div className="min-h-screen flex">
+    <div className="min-h-screen flex flex-col lg:flex-row bg-slate-100">
       {/* Left Panel - Branding */}
-      <div className="hidden lg:flex lg:w-1/2 relative overflow-hidden bg-gradient-to-br from-blue-900 via-blue-800 to-blue-950">
+      <div className="relative flex min-h-[38vh] w-full overflow-hidden bg-gradient-to-br from-slate-950 via-blue-900 to-cyan-900 lg:min-h-screen lg:w-[48%]">
         {/* Grid pattern overlay */}
         <div className="absolute inset-0 opacity-[0.07]" style={{
           backgroundImage: 'linear-gradient(rgba(255,255,255,0.1) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,0.1) 1px, transparent 1px)',
           backgroundSize: '40px 40px'
         }} />
-        {/* Floating circles */}
-        <div className="absolute top-20 left-16 w-64 h-64 bg-blue-500/10 rounded-full blur-3xl" />
-        <div className="absolute bottom-32 right-10 w-80 h-80 bg-blue-400/10 rounded-full blur-3xl" />
-        <div className="absolute top-1/3 right-20 w-40 h-40 bg-cyan-400/8 rounded-full blur-2xl" />
+        <div className="absolute -top-16 left-8 h-56 w-56 rounded-full bg-cyan-300/10 blur-3xl" />
+        <div className="absolute bottom-0 right-0 h-64 w-64 translate-x-1/4 translate-y-1/4 rounded-full bg-blue-400/10 blur-3xl" />
 
-        <div className="relative z-10 flex flex-col justify-center items-center w-full px-12">
-          <div className="flex items-center mb-6" style={{ gap: 0 }}>
-            <img src="/eyedea-logo.png" alt="Eye" style={{ width: '120px', height: '120px', marginRight: '-4px', filter: 'brightness(0) saturate(100%) invert(100%)' }} />
-            <span className="text-7xl font-extrabold text-white tracking-tight">DEA</span>
-          </div>
-          <div className="w-16 h-0.5 bg-blue-400/50 rounded-full mb-6" />
-          <p className="text-blue-200 text-lg font-light text-center max-w-sm leading-relaxed">
-            Innovation Management System
-          </p>
-          <p className="text-blue-400/60 text-sm mt-3 text-center max-w-xs">
-            Submit, evaluate and track ideas that drive organizational improvement
-          </p>
-
-          <Link to="/demo" className="mt-8">
-            <Button className="bg-white/10 hover:bg-white/20 text-white border border-white/20 backdrop-blur-sm btn-press" data-testid="watch-demo-btn">
-              <svg className="w-4 h-4 mr-2" viewBox="0 0 24 24" fill="currentColor"><polygon points="5 3 19 12 5 21 5 3" /></svg>
-              Watch Demo
-            </Button>
-          </Link>
-
-          {/* Tech dots decoration */}
-          <div className="absolute bottom-12 left-12 flex gap-2">
-            {[...Array(5)].map((_, i) => (
-              <div key={i} className="w-1.5 h-1.5 rounded-full bg-blue-400/30" />
-            ))}
-          </div>
-          <div className="absolute top-12 right-12 flex flex-col gap-2">
-            {[...Array(4)].map((_, i) => (
-              <div key={i} className="w-1.5 h-1.5 rounded-full bg-blue-400/20" />
-            ))}
+        <div className="relative z-10 flex w-full items-center justify-center px-6 py-10 sm:px-10 sm:py-12 lg:px-14 lg:py-16">
+          <div className="mx-auto flex max-w-[420px] flex-col items-center text-center">
+            <div className="mb-8 w-full rounded-[32px] border border-white/10 bg-white/8 p-6 shadow-2xl shadow-slate-950/30 backdrop-blur-sm sm:p-8">
+              <div className="flex flex-col items-center gap-5 sm:flex-row sm:items-center sm:justify-center sm:gap-8">
+                <img src="/Nex the navigator.png" alt="NEXT Navigator" style={{ width: '150px', height: 'auto' }} />
+                <img src="/NEX.png" alt="GBS NEXT" style={{ width: '126px', height: 'auto' }} />
+              </div>
+            </div>
+            <p className="mb-3 text-sm font-semibold uppercase tracking-[0.34em] text-cyan-100/90">NEXT CI Web App</p>
+            <h1 className="mb-3 text-4xl font-extrabold tracking-tight text-white sm:text-5xl">GBS NEXT</h1>
+            <p className="mb-4 max-w-md text-xl font-semibold leading-relaxed text-white sm:text-2xl">
+              Welcome NEXT CI Ambassadors
+            </p>
+            <p className="max-w-md text-sm leading-7 text-blue-100/80 sm:text-base">
+              Navigate Efficiency through Xcellence &amp; Transformation
+            </p>
           </div>
         </div>
       </div>
 
       {/* Right Panel - Form */}
-      <div className="w-full lg:w-1/2 flex items-center justify-center bg-white px-6 py-10 relative">
-        {/* Subtle top-right accent */}
-        <div className="absolute top-0 right-0 w-48 h-48 bg-blue-50 rounded-bl-[80px] -z-0" />
-
-        <div className="w-full max-w-md relative z-10">
-          {/* Mobile logo */}
-          <div className="lg:hidden text-center mb-8">
-            <div className="flex items-center justify-center mb-2" style={{ gap: 0 }}>
-              <img src="/eyedea-logo.png" alt="Eye" style={{ width: '80px', height: '80px', marginRight: '-2px', filter: 'brightness(0) saturate(100%) invert(12%) sepia(63%) saturate(3000%) hue-rotate(210deg) brightness(0.85)' }} />
-              <span className="text-5xl font-extrabold text-blue-900 tracking-tight">DEA</span>
-            </div>
-            <p className="text-gray-500 text-sm">Innovation Management System</p>
-          </div>
-
-          <div className="mb-8 animate-slide-down">
-            <h2 className="text-2xl font-bold text-gray-900">Welcome back</h2>
-            <p className="text-gray-500 mt-1 text-sm">
-              {ssoAvailable 
-                ? 'Sign in with your Microsoft corporate account' 
-                : 'Sign in to your account or create a new one'}
-            </p>
-          </div>
+      <div className="relative flex w-full items-center justify-center bg-slate-100 px-4 py-6 sm:px-6 sm:py-8 lg:min-h-screen lg:w-[52%] lg:px-8 lg:py-10">
+        <div className="absolute inset-x-0 top-0 h-40 bg-gradient-to-b from-blue-50 to-transparent" />
+        <div className="relative z-10 w-full max-w-[440px]">
+          <Card className="overflow-hidden rounded-[28px] border border-slate-200/80 bg-white shadow-[0_24px_80px_-32px_rgba(15,23,42,0.35)]">
+            <CardContent className="p-6 sm:p-8">
+              <div className="mb-8 text-center">
+                <h2 className="text-2xl font-bold text-slate-900 sm:text-[28px]">Welcome back</h2>
+                <p className="mt-2 text-sm leading-6 text-slate-500">
+                  Sign in to continue to GBS NEXT
+                </p>
+              </div>
 
           {/* Microsoft SSO Login Button */}
           {ssoAvailable && (
@@ -279,7 +251,7 @@ export default function Login() {
                     <div className="w-full border-t border-gray-200" />
                   </div>
                   <div className="relative flex justify-center text-xs">
-                    <span className="bg-white px-3 text-gray-400">or sign in with credentials</span>
+                    <span className="bg-white px-3 text-slate-400">or sign in with credentials</span>
                   </div>
                 </div>
               )}
@@ -498,10 +470,12 @@ export default function Login() {
 
           {/* SSO-only mode: show hint if local login is hidden */}
           {ssoAvailable && !localLoginAvailable && (
-            <p className="text-center text-xs text-gray-400 mt-4">
+            <p className="mt-4 text-center text-xs text-slate-400">
               Corporate Microsoft account required. Contact your admin if you cannot access.
             </p>
           )}
+            </CardContent>
+          </Card>
         </div>
       </div>
     </div>
